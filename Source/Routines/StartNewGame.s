@@ -11,7 +11,7 @@ StartNewGame:          .block
 
 InitGameVars:
           ;; Set up actual game vars for a new game
-          lda #ModeMap
+          lda #ModePlay
           sta GameMode
 
           lda # 0
@@ -25,6 +25,15 @@ InitGameVars:
           sta ClockSeconds
           sta ClockMinutes
           sta ClockFourHours
+          sta AlarmSeconds
+          sta AlarmFrames
+          sta CountdownSeconds
+          sta CountdownFrames
+          sta PlayerXFraction
+          sta PlayerYFraction
+          sta DeltaX
+          sta DeltaY
+          sta MovementStyle     ; standing
 
           lda # 80              ; Player start position
           sta BlessedX
@@ -32,13 +41,7 @@ InitGameVars:
           lda # 25
           sta BlessedY
           sta PlayerY
-
-          lda # STARTER         ; STARTER Grizzard
-          sta CurrentGrizzard
-          lda # 1
-          sta GrizzardAttack
-          sta GrizzardDefense
-          sta GrizzardDefense + 1 ; unused for now
+          
 
           lda #$0f              ; learn 4 moves to start TODO
           sta MovesKnown
@@ -53,37 +56,23 @@ InitGameVars:
           lda #$ff
           sta ProvinceFlags + 7
 
-          lda # 10
-          sta MaxHP
+          lda # 100
           sta CurrentHP
-
-          lda #0
-          sta StartGameWipeBlock
+          lda # 1
+          sta CurrentTanks
+          sta MaxTanks
 
           .WaitScreenBottom
           .if TV != NTSC
           stx WSYNC
           .fi
 
-          .if NOSAVE
-
-          lda #$ff
-          sta ProvinceFlags + 4
-
-          .else
-
 Loop:
           .WaitScreenTopMinus 1, -1
-
-          lda StartGameWipeBlock
-          cmp #$ff
-          beq Leave
 
           jsr i2cStartWrite
           bcc LetsStart
           jsr i2cStopWrite
-          lda #ModeNoAtariVox
-          sta GameMode
           brk
 
 LetsStart:
@@ -93,35 +82,20 @@ LetsStart:
           jsr i2cTxByte
           clc
           ;; if this is non-zero other things will bomb
-          .if ($ff & SaveGameSlotPrefix) != 0
-          .error "SaveGameSlotPrefix should be page-aligned, got ", SaveGameSlotPrefix
+          .if ($3f & SaveGameSlotPrefix) != 0
+          .error "SaveGameSlotPrefix should be $40-aligned, got ", SaveGameSlotPrefix
           .fi
           lda #<SaveGameSlotPrefix
-          adc StartGameWipeBlock
           jsr i2cTxByte
 
-          ldx #SaveWritesPerScreen
-WipeBlock:
-          lda # 0
+          lda SaveGameSlot
+          clc
+          .rept 6
+          asl a
+          .next
           jsr i2cTxByte
-          dex
-          bne WipeBlock
 
           jsr i2cStopWrite
-
-          lda StartGameWipeBlock
-          clc
-          adc #SaveWritesPerScreen
-          bcs DoneWiping
-          sta StartGameWipeBlock
-
-          jmp WaitForScreenEnd
-
-DoneWiping:
-          lda #$ff
-          sta StartGameWipeBlock
-
-          sta ProvinceFlags + 7
 
 WaitForScreenEnd:
           lda GameMode
@@ -136,8 +110,6 @@ WaitForScreenEnd:
 Leave:
           .FarJSR SaveKeyBank, ServiceSaveToSlot
 
-          .fi       ; end of not-NOSAVE
-
-          jmp GoMap
+          jmp GoPlay
 
           .bend

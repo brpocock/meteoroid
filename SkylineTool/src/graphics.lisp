@@ -1,5 +1,4 @@
 (in-package :skyline-tool)
-
 (defvar *tileset*)
 
 (define-constant +c64-names+
@@ -177,7 +176,7 @@
                                    (machine-palette) red green blue)
         (let ((use (position (list r g b) (machine-palette) :test 'equalp)))
           (unless (position (list red green blue) *palette-warnings* :test 'equalp)
-            (warn-once "Colour not in ~a palette: #~2,'0X~2,'0X~2,'0X; used ~x (#~2,'0X~2,'0X~2,'0X)"
+            (warn-once "Colour not in ~a palette: #~2,'0X~2,'0X~2,'0X; used $~2,'0x (#~2,'0X~2,'0X~2,'0X)"
                        (machine-short-name) red green blue
                        use r g b)
             (push (list red green blue) *palette-warnings*))
@@ -491,6 +490,148 @@ Shape:~{~{~a~}~2%~}
           append (loop for line from (1- group-height) downto 0
                        collecting (elt shape (+ group line))))))
 
+(defun most-popular-number (list)
+  (let ((popularity (make-hash-table :test #'eql)))
+    (dolist (number list)
+      (incf (gethash number popularity 0)))
+    (let ((most-popular 0) (most-popularity 0))
+      (dolist (number list)
+        (when (> (gethash number popularity) most-popularity)
+          (setf most-popular number
+                most-popularity (gethash number popularity))))
+      most-popular)))
+
+(assert (= 3 (most-popular-number '(1 2 3 3 3 4 5 6))))
+
+(defun colu-from-color (color)
+  (let ((co (/ (logand #xf0 color) #x10))
+        (lu (logand #x0e color)))
+    (format nil "COL~a, $~x"
+            (elt '(grey yellow brawn orange red magenta purple indigo
+                   blue turquoise cyan teal seafoam green springgreen gold) 
+                 co)
+            lu)))
+
+(assert (equal "COLPURPLE, $6" (colu-from-color #x66)))
+
+(defun tia-colors-on-line (rgb y)
+  (loop for x from 0 below (array-dimension rgb 0)
+        collecting (rgb->palette (aref rgb x y 0)
+                                 (aref rgb x y 1)
+                                 (aref rgb x y 2))))
+
+(defun most-popular-non-black-color (pixels line)
+  (most-popular-number (remove-if #'zerop (tia-colors-on-line pixels line))))
+
+(defun per-line-colu (pixels)
+  (loop for line from 0 below (array-dimension pixels 1)
+        collecting (mapcan #'colu-from-color (most-popular-non-black-color pixels line))))
+
+(defun pixels-subset-copy (pixels x0 x1 y0 y1)
+  (let ((output (make-array (list (1+ (- x1 x0)) (1+ (- y1 y0)) 3) :element-type 'number)))
+    (loop for x from x0 upto x1
+          for x-out from 0
+          do (loop for y from y0 upto y1
+                   for y-out from 0
+                   do (setf (aref output x-out y-out 0) (aref pixels x y 0)
+                            (aref output x-out y-out 1) (aref pixels x y 1)
+                            (aref output x-out y-out 2) (aref pixels x y 2))))))
+
+(defun split-20×20-map-into-rows (pixels)
+  (loop for row from 0 below (/ (array-dimension pixels 1) 20)
+        collecting (pixels-subset-copy pixels 0 (1- (array-dimension pixels 0))
+                                       (* row 20) (+ (* row 20) 19))))
+
+(defun split-20×20-map-row-into-screens (pixels)
+  (loop for screen from 0 below (/ (array-dimension pixels 0) 20)
+        collecting (pixels-subset-copy pixels (* screen 20) (+ (* screen 20) 19)
+                                       0 19)))
+
+(defun concatenate-pixels (pixels screen)
+  (unless screen (error "Concatenate nothing?"))
+  (if 
+   pixels
+   (let* ((width (array-dimension pixels 0))
+          (output (make-array (list (+ width 20) 20 3))))
+     (dotimes (x (array-dimension pixels 0))
+       (dotimes (y 20) 
+         (setf (aref output x y 0) (aref pixels x y 0)
+               (aref output x y 1) (aref pixels x y 1)
+               (aref output x y 2) (aref pixels x y 2))))
+     (dotimes (x 20)
+       (dotimes (y 20)
+         (setf (aref output (+ width x) y 0) (aref screen x y 0)
+               (aref output (+ width x) y 1) (aref screen x y 1)
+               (aref output (+ width x) y 2) (aref screen x y 2))))
+     output)
+   screen))
+
+(defun screen-solid-white-p (screen)
+  (when screen
+    (dotimes (x 20)
+      (dotimes (y 20)
+        (dotimes (ch 3)
+          (unless (= #xff (aref screen x y ch))
+            (return-from screen-solid-white-p nil)))))
+    t))
+
+(defun split-20×20-map-row-into-spans (pixels)
+  (let ((screens (split-20×20-map-row-into-screens pixels))
+        (spans (list (cons 0 nil))))
+    (labels ((append-span (screen)
+               (format *trace-output* "~&(screen found, span will now be ~d screens wide)"
+                       (1+ (if (cdr (lastcar spans))
+                               (/ (array-dimension (cdr (lastcar spans)) 0) 20)
+                               0)))
+               (let ((new-span (concatenate-pixels (cdr (lastcar spans)) screen)))
+                 (format *trace-output* " (new span is ~d screens wide)"
+                         (/ (array-dimension new-span 0) 20))
+                 (setf (lastcar spans) 
+                       (cons (car (lastcar spans)) new-span))))
+             (start-new-span (offset)
+               (format *trace-output* "~&(blank area found)")
+               (appendf spans (cons offset nil))))
+      (loop for screen in screens
+            for offset from 0
+            if (screen-solid-white-p screen) 
+              do (start-new-span offset)
+            else do (append-span screen)))
+    spans))
+
+(defun compile-map-20×20 (png-file out-dir height width pixels)
+  (let ((out-file (merge-pathnames
+                   (make-pathname :name (pathname-name png-file)
+                                  :type "s")
+                   out-dir)))
+    (with-output-to-file (src-file out-file :if-exists :supersede)
+      (format src-file ";;; -*- asm -*-
+;;; Generated file; editing is futile. Source is ~a
+
+~a:	.block
+	Height = ~d
+	Width = ~d
+"
+              (pathname-name png-file)
+              (assembler-label-name (pathname-base-name png-file))
+              height width)
+      (loop for row in (split-20×20-map-into-rows pixels)
+            for row-index from 0
+            do
+               (dolist (span (split-20×20-map-row-into-spans row))
+                 (destructuring-bind (span-offset . span-pixels) span
+                   (when (and span-offset span-pixels)
+                     (format *trace-output* "~& — Span at row ~d offset ~d (width ~d)"
+                             row-index span-offset (array-dimension span-pixels 0))
+                     (format src-file "
+;;; Row ~d: span at offset ~d, runs for ~d
+	.byte ~d, ~d, ~d
+;;; Row per-line-group colors 
+~{~&	.colu ~a~}"
+                             row-index span-offset (array-dimension span-pixels 0)
+                             row-index span-offset (array-dimension span-pixels 0)
+                             (per-line-colu span-pixels)))))) 
+      (format src-file "	.bend~%"))))
+
 (defun compile-tia-player (png-file out-dir 
                            height width image-pixels)
   (let ((out-file-name (merge-pathnames
@@ -506,7 +647,7 @@ Shape:~{~{~a~}~2%~}
       (multiple-value-bind (shape colors) (tia-player-interpret image-pixels)
         (format source-file ";;; -*- fundamental -*-
 ;;; Compiled sprite data from ~a
-;;; Edit the original (probably art/sprites/~:*~a.xcf),
+;;; Edit the original (probably ~:*~a.xcf),
 ;;; editing this file is futile.
 
 ~a:	.block
@@ -695,17 +836,17 @@ VIC2Font:
 "
               png-file)
       (let ((colour (loop for char from 0 to #xff
-                       for x-cell = (mod (* char 8) width)
-                       for y-cell = (* 8 (floor (* char 8) width))
-                       for char-data = (extract-region image-nybbles
-                                                       x-cell y-cell (+ 7 x-cell) (+ 7 y-cell))
-                       do (format src-file
-                                  "~%	;; 		 character ~d ($~:*~x)~{~a~}"
-                                  char
-                                  (map 'list #'byte-and-art
-                                       (tile->bits char-data)))
-                       collect (tile->colour char-data))))
-
+                          for x-cell = (mod (* char 8) width)
+                          for y-cell = (* 8 (floor (* char 8) width))
+                          for char-data = (extract-region image-nybbles
+                                                          x-cell y-cell (+ 7 x-cell) (+ 7 y-cell))
+                          do (format src-file
+                                     "~%	;; 		 character ~d ($~:*~x)~{~a~}"
+                                     char
+                                     (map 'list #'byte-and-art
+                                          (tile->bits char-data)))
+                          collect (tile->colour char-data))))
+        
         (unless (= 1 (length (remove-if #'null (remove-duplicates colour :test 'equalp))))
           (warn "Font with multicolor data detected?"))
         (format *error-output* "~% Wrote binary font (monochrome) data to ~A." out-file)))))
@@ -793,14 +934,14 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
   (every
    #'identity
    (loop for row from 0 below height
-      for colors = (remove-duplicates
-                    (remove-if
-                     #'zerop
-                     (loop for column from 0 below width
-                        collect (aref palette-pixels column row)))
-                    :test #'=)
-      collect (or (null colors)
-                  (= 1 (length colors))))))
+         for colors = (remove-duplicates
+                       (remove-if
+                        #'zerop
+                        (loop for column from 0 below width
+                              collect (aref palette-pixels column row)))
+                       :test #'=)
+         collect (or (null colors)
+                     (= 1 (length colors))))))
 
 (defgeneric dispatch-png% (machine png-file target-dir
                            png height width α palette-pixels))
@@ -832,6 +973,10 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
                           png height width α palette-pixels)
   (let ((monochrome-lines-p (monochrome-lines-p palette-pixels height width)))
     (cond
+      ((and (zerop (mod height 20))
+            (zerop (mod width 20)))
+       (format *trace-output* "~% Image ~A seems to be a 20×20 map" png-file)
+       (compile-map-20×20 png-file target-dir height width (png-read:image-data png)))
       ((and (zerop (mod height 5))
             (zerop (mod width 4))
             (= 48 (* (/ height 5) (/ width 4)))
@@ -908,7 +1053,7 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
 
 (defun compile-art (index-out &rest png-files)
   (let ((*machine* (or (machine-from-filename index-out)
-		       2600)))
+		   2600)))
     (dolist (file png-files)
       (dispatch-png file index-out))))
 

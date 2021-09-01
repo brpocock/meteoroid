@@ -21,7 +21,7 @@ CheckSwitches:
 NoReset:
           and # SWCHBSelect
           bne NoSelect
-          lda #ModeGrizzardStats
+          lda #ModeSubscreen
           sta GameMode
 NoSelect:
           .if TV == SECAM

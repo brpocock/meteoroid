@@ -70,16 +70,19 @@ BlessedY:
 
 CurrentHP:
           .byte ?
+CurrentTanks:
+          .byte ?
+MaxTanks:
+          .byte ?
+
+MovementStyle:
+          .byte ?
+
+Equipment:
+          .byte ?
 
 ;;; Grizzard currently with the player
-CurrentGrizzard:
-          .byte ?
-
 CurrentProvince:
-          .byte ?
-
-          ;; Reserve one byte in the save file in case I forgot something
-GlobalZeroPad:
           .byte ?
 
 EndGlobalGameData:
@@ -114,8 +117,15 @@ MovesKnown:
 NextMap:
           .byte ?
 ;;; An alarm can be set for various in-game special events.
-;;; This happens in real time. The units are ½ seconds.
-AlarmCountdown:
+;;; This happens in real time.
+AlarmSeconds:
+          .byte ?
+AlarmFrames:
+          .byte ?
+
+CountdownSeconds:
+          .byte ?
+CountdownFrames:
           .byte ?
 
 ;;; String Buffer for text displays of composed text,
@@ -159,6 +169,20 @@ LineCounter:
 RunLength:
           .byte ?
 
+PixelPointers:
+pp0l:     .byte ?
+pp0h:     .byte ?
+pp1l:     .byte ?
+pp1h:     .byte ?
+pp2l:     .byte ?
+pp2h:     .byte ?
+pp3l:     .byte ?
+pp3h:     .byte ?
+pp4l:     .byte ?
+pp4h:     .byte ?
+pp5l:     .byte ?
+pp5h:     .byte ?
+          
 ;;; 
 ;;; SpeakJet
 
@@ -236,17 +260,9 @@ AttractStoryProgress:
 
           * = Scratchpad
 
-;;; Which memory block is being wiped right now?
-;;; We need to blank global + all provincial data
-StartGameWipeBlock:
-          .word ?
 ;;; 
-;;; Scratchpad for Game mode
+;;; Scratchpad for Game Play mode
             * = Scratchpad
-
-;;; Pointer to the start of the map's RLE display data
-MapLinesPointer:
-          .word ?
 
 ;;; How many non-player sprites are on screen now?
 ;;; These virtual sprites are multiplexed onto Player Graphic 1
@@ -266,11 +282,16 @@ P0LineCounter:
           .byte ?
 P1LineCounter:
           .byte ?
+M0LineCounter:
+          .byte ?
+M1LineCounter:
+          .byte ?
+BallLineCounter:
+          .byte ?
 
-SpriteIndex:
-          .byte ?, ?, ?, ?
-
-
+ScrollLeft:
+          .byte ?
+          
 BumpCooldown:
           .byte ?
 

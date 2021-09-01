@@ -1,42 +1,30 @@
-;;; Meteoroid Source/Banks/Bank06/Bank06.s
+;;; Meteoroid Source/Banks/Bank04/Bank04.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-          BANK = $06
-
-          ;; Combat for encounters $00 … $7f
+	BANK = $06
+          PROVINCE = 2
 
           .include "StartBank.s"
-          .include "Prepare48pxMobBlob.s"
-          .include "6BitCompression.s"
-          .include "Source/Generated/Bank07/SpeakJetIDs.s"
 
-          MonsterPhrase = Phrase_Monster6_0
-
-DoVBlankWork:
-          .include "CombatVBlank.s"
+          ;; The addresses of these must be known to the Map Services bank
+          .include "PlayerSprite.s"
+          .include "MapSprites.s"
 DoLocal:
-          .include "CombatSetup.s"
-          ;; falls through to:
-          .FarJSR TextBank, ServiceCombatIntro
-          ;; on return, falls through to:
-          .include "CombatMainScreen.s"
+          .include "SetUpScreen.s"
+          ;; falls through to
+          .include "DrawMainScreen.s"
 
-          .include "GrizzardStatsScreen.s"
-          .include "CombatAnnouncementScreen.s"
-          .include "ExecuteCombatMove.s"
-          .include "FindHighBit.s"
-          .include "CopyPointerText.s"
-          .include "ShowMonsterName.s"
+          .include "MapsProvince0.s"
+          .include "Maps0RLE.s"
+
+          .include "Province0.s"
 
           .include "VSync.s"
           .include "VBlank.s"
           .include "Overscan.s"
           .include "Random.s"
-          .include "48Pixels.s"
-          .include "MoveEffects.s"
 
-          .include "Combat6.s"
-          .include "Monsters6.s"
-          .include "MonsterMoves6.s"
+          .include "PlayMusic.s"
+          rts
+
           .include "WaitScreenBottom.s"
-
           .include "EndBank.s"

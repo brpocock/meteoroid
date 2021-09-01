@@ -1,14 +1,8 @@
-;;; Meteoroid Source/Routines/MapSetup.s
+;;; Meteoroid Source/Routines/SetUpScroon.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 
-MapSetup: .block
+SetUpScreen: .block
           .WaitScreenTopMinus 2, -1
-
-          jsr Random
-          and #$4f
-          ora #$20
-          sta BumpCooldown
-          sta CXCLR
 
           lda # 0
           sta SpriteFlicker
@@ -41,18 +35,11 @@ NewRoomTimerRunning:
 
           lda CurrentProvince
 
-          .switch BANK
-          .case 4
-          cmp # 0
-          .case 3
-          cmp # 1
-          .case 5
-          cmp # 2
-          .endswitch
+          cmp #PROVINCE
 
           beq +
           .WaitScreenBottom
-          jmp GoMap
+          jmp GoPlay
 +
           lda NextMap
           sta CurrentMap
@@ -228,11 +215,13 @@ SpritesDone:
 ;;; 
           .WaitScreenBottom
 
-          lda #ModeMap
+          lda #ModePlay
           sta GameMode
 
-          lda # 2
-          sta AlarmCountdown
+          lda # 1
+          sta AlarmSeconds
+          lda # 0
+          sta AlarmFrames
 
           ;; fall through to Map
           .bend

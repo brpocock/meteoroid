@@ -4,10 +4,28 @@
 
           .include "StartBank.s"
 
-          .if DEMO
-          .include "Bank03Demo.s"
-          .else
-          .include "Bank03Game.s"
-          .fi
+          .include "Source/Generated/Bank07/SpeakJetIDs.s"
+
+          .include "AttractStory.s"
+          .include "Death.s"
+          .include "WinnerFireworks.s"
+
+          .include "48Pixels.s"
+          .include "VSync.s"
+          .include "VBlank.s"
+          .include "Overscan.s"
+          .include "Prepare48pxMobBlob.s"
+          .include "Random.s"
+
+DoLocal:
+          cpy #ServiceAttractStory
+          beq AttractStory
+          cpy #ServiceDeath
+          beq Death
+          cpy #ServiceFireworks
+          beq WinnerFireworks
+          brk
+
+          .include "WaitScreenBottom.s"
 
           .include "EndBank.s"

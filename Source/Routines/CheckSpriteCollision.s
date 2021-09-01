@@ -11,7 +11,9 @@ CheckSpriteCollision:         .block
           lda MapFlags
           .BitBit MapFlagRandomSpawn
           bne NoRePosition
-          lda AlarmCountdown
+          lda AlarmFrames
+          bne NoRePosition
+          lda AlarmSeconds
           bne NoRePosition
           lda # 0
           sta SpriteX, x

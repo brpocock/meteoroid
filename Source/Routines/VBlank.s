@@ -64,6 +64,11 @@ ButtonsChanged:
           sta DebounceSWCHB
 DoneButtons:
 
+          .weak
+          UserInput = 0
+          .endweak
+          .if UserInput > 0
+          
           lda GameMode
           cmp #ModePlay
           bne NotPlaying
@@ -72,6 +77,8 @@ DoneButtons:
           jsr SpriteMovement
           jsr CheckPlayerCollision
           jsr UserInput
+
+          .fi
 
 NotPlaying:
 

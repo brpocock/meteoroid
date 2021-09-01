@@ -28,7 +28,7 @@ AS2600=64tass ${ASFLAGS} --m6502 -m --tab-size=1 --verbose-list
 
 ';
 
-for my $bank (qw( 05 07 08 09 0a 0b 0c 0d 0e )) {
+for my $bank (qw( 04 )) {
   print "Source/Generated/Bank$bank/SpeakJetIDs.s:	\$(shell ls -1 Source/Banks/Bank$bank/*Speech.txt)
 	bin/make-speakjet-enums $bank
 

@@ -1,42 +1,30 @@
-;;; Meteoroid Source/Banks/Bank0f/Bank0f.s
+;;; Meteoroid Source/Banks/Bank04/Bank04.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-          BANK = $0f
+	BANK = $0f
+          PROVINCE = 2
 
           .include "StartBank.s"
 
-          .include "Source/Generated/Bank07/SpeakJetIDs.s"
+          ;; The addresses of these must be known to the Map Services bank
+          .include "PlayerSprite.s"
+          .include "MapSprites.s"
+DoLocal:
+          .include "SetUpScreen.s"
+          ;; falls through to
+          .include "DrawMainScreen.s"
 
-          .include "AttractStory.s"
-          .include "Death.s"
-          .include "DrawMonsterGroup.s"
-          .include "WinnerFireworks.s"
-          .include "DrawGrizzard.s"
+          .include "MapsProvince0.s"
+          .include "Maps0RLE.s"
 
-          .include "MonsterArt.s"
-          .include "GrizzardImages.s"
-          .include "GrizzardArt.s"
-          .include "CombatSpriteTables.s"
+          .include "Province0.s"
 
-          .include "48Pixels.s"
           .include "VSync.s"
           .include "VBlank.s"
           .include "Overscan.s"
-          .include "Prepare48pxMobBlob.s"
           .include "Random.s"
 
-DoLocal:
-          cpy #ServiceAttractStory
-          beq AttractStory
-          cpy #ServiceDeath
-          beq Death
-          cpy #ServiceDrawMonsterGroup
-          beq DrawMonsterGroup
-          cpy #ServiceFireworks
-          beq WinnerFireworks
-          cpy #ServiceDrawGrizzard
-          beq DrawGrizzard
-          brk
+          .include "PlayMusic.s"
+          rts
 
           .include "WaitScreenBottom.s"
-
           .include "EndBank.s"

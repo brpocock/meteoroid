@@ -35,12 +35,6 @@ Loop:
           sta AUDV1
 
           lda GameMode
-          cmp #ModeNoAtariVox
-          bne WhiteSadFace
-
-          .ldacolu COLRED, $6
-          jmp CommonSadness
-
 WhiteSadFace:
           lda #COLGRAY | $f
 
@@ -68,17 +62,6 @@ DrawSadFace:
           jsr Prepare48pxMobBlob
 
           lda GameMode
-          cmp #ModeNoAtariVox
-          bne Crashed
-NoVoxMessage:
-          .SetPointer MemoryText
-          jsr DrawPointerText
-          .SetPointer DeviceText
-          jsr DrawPointerText
-          .SetPointer NeededText
-          jsr DrawPointerText
-          jmp ShowReturnAddress
-
 Crashed:
           .SetPointer ErrorText
           jsr DrawPointerText

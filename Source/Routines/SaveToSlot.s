@@ -10,23 +10,23 @@ SaveToSlot:	.block
 WriteMasterBlock:
           ;; OK, now we're going to actually write the Master block,
           ;; this is a 5 byte signature, then the Global vars space
-          ;; (which must end before $20) and then the 32 bytes of
-          ;; Province flags (8 bytes × 4 provinces)
 
           ;; First set the write pointer up for the first block of this
-          ;; save game slot ($1700, $1800, or $1900)
+          ;; save game slot
 	jsr i2cStartWrite
 
 	lda #>SaveGameSlotPrefix
-	clc
-	adc SaveGameSlot
 	jsr i2cTxByte
 
-          .if (SaveGameSlotPrefix & $ff) != 0
-          .error "Save routines assume that SaveGameSlotPrefix is aligned to $100"
+          .if (SaveGameSlotPrefix & $3f) != 0
+          .error "Save routines assume that SaveGameSlotPrefix is aligned to $40"
           .fi
           
-	lda # 0
+	lda SaveGameSlot
+          clc
+          .rept 6
+          asl a
+          .next
 	jsr i2cTxByte
 
           ;; The signature is how we can tell that the slot is
@@ -55,33 +55,20 @@ WriteGlobalLoop:
           .WaitScreenTop
 
           ;; Pad out to $20
-          ldx # $20 - 5 - GlobalGameDataLength
+          ldx # $40 - 5 - GlobalGameDataLength
 WritePadAfterGlobal:
-          lda # $fe             ; totally arbitrary pad value
+          lda # $bb             ; totally arbitrary pad value
           jsr i2cTxByte
           dex
           bne WritePadAfterGlobal
 
           jsr i2cStopWrite
 
-          ;; Wait for acknowledge bit
--
-          jsr i2cStartWrite
-          bcs -
-          jsr i2cStopWrite
           .WaitScreenBottom
-WriteCurrentProvince:
-          jsr SaveProvinceData
           .WaitScreenTop
 
           ;; Wait for acknowledge bit
--
-          jsr i2cStartWrite
-          bcs -
-          jsr i2cStopWrite
-
-WriteCurrentGrizzard:
-          jmp SaveGrizzard      ; tail call
+          rts
 
 SaveRetry:
           .WaitScreenBottom

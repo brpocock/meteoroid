@@ -40,8 +40,11 @@ WarmStart:
 
           lda # 4
           sta DeltaY
-          lda # 8
-          sta AlarmCountdown
+          ;lda # 4
+          sta AlarmSeconds
+          lda # 0
+          sta AlarmFrames
+          
 ;;; 
 Loop:
           .WaitScreenBottom
@@ -92,16 +95,16 @@ TitleMode:
           sta CurrentUtterance
           sta AttractHasSpoken
 DoneTitleSpeech:
-          .ldacolu COLINDIGO, $a
+          .ldacolu COLRED, $6
           sta COLUP0
           sta COLUP1
 
-          .ldacolu COLTURQUOISE, $e
+          .ldacolu COLGRAY, 0
           sta WSYNC
           sta COLUBK
 
-          .SetUpFortyEight Title1
-          ldy #Title1.Height
+          .SetUpFortyEight Title
+          ldy #Title.Height
           sty LineCounter
           jsr ShowPicture
 
@@ -175,109 +178,21 @@ DoneTitleSpeech:
 
           sta WSYNC             ; just for line count
 
-          lda ClockFrame
-          .BitBit $20
-          beq DrawTitle3
-
-          .SetUpFortyEight Title2
-          ldy #Title2.Height
-          sty LineCounter
-          jsr ShowPicture
 
           jmp PrepareFillAttractBottom
 
-DrawTitle3:
-          .SetUpFortyEight Title3
-          ldy #Title3.Height
-          sty LineCounter
-          jsr ShowPicture
-
-          ldy # 0
-          sty PF2
 
 PrepareFillAttractBottom:
 
-          .switch STARTER
 
-          .case 1
-
-          jsr Random
-          and # 7
-          bne +
-
-          jsr Random
-          and # 1
-          sta PlayerXFraction
-+
-          lda PlayerXFraction
-          beq +
-          inc PlayerYFraction
-          jmp SetWaveLevel
-+
-          dec PlayerYFraction
-SetWaveLevel:
-          lda PlayerYFraction
-          lsr a
-          clc
-          lsr a
-          clc
-          lsr a
-          lsr a
-          tax
-          and #$1f
-          inx
--
-          stx WSYNC
-          dex
-          bne -
-
-          .ldacolu COLBLUE, $e
-          sta COLUBK
-          stx WSYNC
-          .ldacolu COLGRAY, $e
-          sta COLUBK
-          stx WSYNC
-          .ldacolu COLBLUE, $e
-          sta COLUBK
-          stx WSYNC
-          .ldacolu COLBLUE, $8
-          sta COLUBK
-
-          .case 2
-
-          .ldacolu COLBROWN, $4
-          sta COLUBK
-          .SkipLines 10
-
-          stx WSYNC
-          .SleepX $18
-          sta RESP0
-          nop
-          nop
-          nop
-          nop
-          sta RESP1
-          lda # NUSIZQuad
-          sta NUSIZ0
-          sta NUSIZ1
-          stx WSYNC
-          .ldacolu COLBROWN, $4
-          sta COLUP0
-          sta COLUP1
-          lda #$ff
-          sta GRP0
-          sta GRP1
-
-          .ldacolu COLTURQUOISE, $e
-          sta COLUBK
-
-          .endswitch
-
-          lda AlarmCountdown
+          lda AlarmSeconds
+          bne DoneKernel
+          lda AlarmFrames
           bne DoneKernel
 
-          lda # 16
-          sta AlarmCountdown
+          sta AlarmFrames       ; zero
+          lda # 8
+          sta AlarmSeconds
           lda #ModeAttractCopyright
           sta GameMode
           ;; fall through

@@ -1,0 +1,11 @@
+TitleIntro:
+Meteoroid
+
+TitleCopyright:
+Copyright twenty twenty one Bruce-Robert Pocock
+
+Credits:
+With love to Zephyr Salz
+
+GameOver:
+Game Over

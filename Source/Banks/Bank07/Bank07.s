@@ -1,32 +1,30 @@
-;;; Meteoroid Source/Banks/Bank07/Bank07.s
+;;; Meteoroid Source/Banks/Bank04/Bank04.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-          BANK = $07
-
-          ;;
-          ;; Sound and Music services
-          ;;
+	BANK = $07
+          PROVINCE = 2
 
           .include "StartBank.s"
 
+          ;; The addresses of these must be known to the Map Services bank
+          .include "PlayerSprite.s"
+          .include "MapSprites.s"
 DoLocal:
-          .include "PlaySFX.s"
+          .include "SetUpScreen.s"
+          ;; falls through to
+          .include "DrawMainScreen.s"
+
+          .include "MapsProvince0.s"
+          .include "Maps0RLE.s"
+
+          .include "Province0.s"
+
+          .include "VSync.s"
+          .include "VBlank.s"
+          .include "Overscan.s"
+          .include "Random.s"
+
           .include "PlayMusic.s"
-          .include "PlaySpeech.s"
           rts
 
-          .include "SoundEffects.s"
-
-          .include "SpeakJetIndex.s"
-          ;; Speech index uses a wildcard on this directory
-          ;; All files must be included or the index will break
-          .include "Monsters6Speech.s"
-          .include "MovesSpeech.s"
-          .include "MeteoroidSpeech.s"
-          .include "CombatSpeech.s"
-          .include "TitleSpeech.s"
-          .include "AtariToday.s"
-          .include "Theme.s"
-          .include "Victory.s"
-          .include "GameOver.s"
-
+          .include "WaitScreenBottom.s"
           .include "EndBank.s"

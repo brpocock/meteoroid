@@ -1,6 +1,7 @@
-;;; Meteoroid Source/Routines/Map.s
+;;; Meteoroid Source/Routines/DrawMainScreen.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-Map:    .block
+
+DrawMainScreen:    .block
 
 Loop:
           .FarJSR MapServicesBank, ServiceTopOfScreen
@@ -292,7 +293,7 @@ GoScreen:
           beq ScreenBounce
           sta NextMap
 
-          lda #ModeMapNewRoom
+          lda #ModePlayNewRoom
           sta GameMode
           gne ShouldIStayOrShouldIGo
 
@@ -305,57 +306,34 @@ ScreenBounce:
 
 ShouldIStayOrShouldIGo:
           lda GameMode
-          cmp #ModeMap
+          cmp #ModePlay
           bne Leave
           .WaitForTimer
           jsr Overscan
           jmp Loop
 ;;; 
 Leave:
-          cmp #ModeMapNewRoom
-          beq MapSetup.NewRoom
+          cmp #ModePlayNewRoom
+          beq SetUpScreen.NewRoom
 
-          cmp #ModeMapNewRoomDoor
-          beq MapSetup.NewRoom
+          cmp #ModePlayNewRoomDoor
+          beq SetUpScreen.NewRoom
 
           ldx # 0
           stx CurrentMusic + 1
-
-          cmp #ModeGrizzardDepot
-          beq EnterGrizzardDepot
 
           .WaitForTimer
           jsr Overscan
 
           lda GameMode
-          cmp #ModeCombat
-          beq GoCombat
-          cmp #ModeNewGrizzard
-          beq GetNewGrizzard
-          cmp #ModeGrizzardStats
-          beq ShowStats
-          cmp #ModeSignpost
-          bne UnknownMode
-          ldx #SignpostBank
-          jsr FarCall
-          lda #ModeMap
-          sta GameMode
-          .WaitScreenBottom
-          jmp MapSetup
+          cmp #ModeSubscreen
+          beq ShowSubscreen
 
 UnknownMode:
           brk
 
-EnterGrizzardDepot:
-          .FarJMP MapServicesBank, ServiceGrizzardDepot
-
-GetNewGrizzard:
-          lda NextMap
-          sta Temp
-          .FarJSR MapServicesBank, ServiceNewGrizzard ; does not return
-
-ShowStats:
-          .FarJSR MapServicesBank, ServiceGrizzardStatsScreen
-          jmp MapSetup
+ShowSubscreen:
+          .FarJSR MapServicesBank, ServiceSubscreen
+          jmp SetUpScreen
 
           .bend

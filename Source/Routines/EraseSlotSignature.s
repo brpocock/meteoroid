@@ -2,8 +2,6 @@
 ;;; Copyright © 2021 Bruce-Robert Pocock
 EEPROMFail:
 	jsr i2cStopWrite
-          lda #ModeNoAtariVox
-          sta GameMode
 	brk
 
 EraseSlotSignature: .block

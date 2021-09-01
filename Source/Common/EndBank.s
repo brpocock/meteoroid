@@ -17,7 +17,7 @@ EndBank:
 
           .proff
           ;; Fill with cute junk
-          .fill BankEndAddress - *, format("%d-%d-%d;github:brpocock/grizzards;", YEARNOW, MONTHNOW, DATENOW)
+          .fill BankEndAddress - *, format("%d-%d-%d;github:brpocock/meteoroid;", YEARNOW, MONTHNOW, DATENOW)
           .pron
 
 BankJump: .macro label, bank
@@ -51,37 +51,14 @@ GoColdStart:
           BankJump ColdStart, ColdStartBank
 
 ;;; Go to the current map memory bank, and jump to DoMap.
-GoMap:
+GoPlay:
           ldx #$ff              ; smash the stack
           txs
           
-          .if DEMO
-
-          sta BankSwitch0 + Province0MapBank
-          jmp DoLocal
-
-          .else
-
-          lda CurrentProvince
-          bne +
-          sta BankSwitch0 + Province0MapBank
-          jmp DoLocal
-+
-          cmp #2
-          beq +
-          sta BankSwitch0 + Province1MapBank
-          jmp DoLocal
-+
-          sta BankSwitch0 + Province2MapBank
-          jmp DoLocal
-
-          .fi
-
-;;; Go to the current combat memory bank, and jump to DoCombat.
-GoCombat:
-          ldx #$ff              ; smash the stack
-          txs
-          sta BankSwitch0 + CombatBank0To127
+          ldx CurrentProvince
+          cpx #ProvincesCount
+          bge Break
+          sta BankSwitch0 + Province0Bank, x
           jmp DoLocal
 
 ;;; Perform a far call to a memory bank with a specific local
@@ -143,22 +120,14 @@ BitMask:
           * = $fff4
           .offs -$f000
 
-          .text "grizbrp", 0
+          .text "metrbrp", 0
 
           .else
 
           * = $ffe0
           .offs -$f000
 
-          .text "grizbrp", 0
-          .switch STARTER
-          .case 0
-          .text "dirtex", 0, 0
-          .case 1
-          .text "aquax", 0, 0, 0
-          .case 2
-          .text "airex", 0, 0, 0
-          .endswitch
+          .text "meteoroid-brp", 0, 0, 0
 
           ;; magic cookie for Stella
           nop $1fe0

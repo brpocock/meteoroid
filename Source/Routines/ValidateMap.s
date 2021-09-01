@@ -7,19 +7,9 @@ ValidateMap:        .block
           ldx SpriteCount
           dex
 
-          lda SpriteAction, x
-          cmp #SpriteGrizzard
-          bne +
-
-          lda SpriteParam, x
-          sta Temp
-          .FarJSR SaveKeyBank, ServicePeekGrizzard
-          bcc +                 ; Grizzard not found
-          dec SpriteCount
-+
 ;;; 
           lda GameMode
-          cmp #ModeMapNewRoomDoor
+          cmp #ModePlayNewRoomDoor
           bne DonePlacing
 PlacePlayerUnderDoor:
           ldx SpriteCount

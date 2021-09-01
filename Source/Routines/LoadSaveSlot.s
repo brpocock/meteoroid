@@ -52,14 +52,7 @@ ReadGlobalLoop:
           sta NextMap
 
           .WaitScreenBottom
-          .WaitScreenTop
-
-          jsr LoadProvinceData
-
-          jsr LoadGrizzardData
-
-          .WaitScreenBottom
-          jmp GoMap
+          jmp GoPlay
 
 LoadFailed:
           lda #SoundMiss

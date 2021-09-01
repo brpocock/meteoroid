@@ -1,4 +1,4 @@
-;;; Meteoroid Source/Routines/MapTopService.s
+;;; Meteoroid Source/Routines/ScreenTopService.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 TopOfScreenService: .block
 
@@ -112,9 +112,6 @@ SetUpSprites:
           bne +
           lda # SpriteDoor
 +
-          tax
-          lda SpriteColor, x
-          sta COLUP1
 
           ldx SpriteFlicker
           lda #>MapSprites
@@ -126,12 +123,12 @@ SetUpSprites:
           bne +
           lda # SpriteDoor
 +
-          ldy AlarmCountdown
+          ldy AlarmFrames
+          beq +
+          ldy AlarmSeconds
           beq +
           cmp #SpriteCombat
           bne +
-          lda SpriteColor + SpriteCombatPuff
-          sta COLUP1
           lda #SpriteCombatPuff
 +
           .rept 4

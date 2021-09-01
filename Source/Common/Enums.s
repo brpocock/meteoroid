@@ -22,12 +22,12 @@
           ModeSelectSlot = $20
           ModeEraseSlot = $21
           ModeErasing = $22
-          ModeNoAtariVox = $23
           ModeStartGame = $24
+          ModePlusCardSlot = $25
 
-          ModeMap = $30
-          ModeMapNewRoom = $31
-          ModeMapNewRoomDoor = $32
+          ModePlay = $30
+          ModePlayNewRoom = $31
+          ModePlayNewRoomDoor = $32
 
           ModeSubscreen = $70
 
@@ -35,6 +35,8 @@
           ModeSignpostDone = $81
           ModeSignpostSetFlag = $82
           ModeSignpostClearFlag = $83
+
+          ModeDeath = $90
 ;;; 
 ;;; Sounds in the library (index values)
           SoundDrone = 1
@@ -110,32 +112,18 @@
           ColdStartBank = $00
           SaveKeyBank = $00
           MapServicesBank = $01
-          .if DEMO
-          AnimationsBank = $03
-          .else
-          AnimationsBank = $0f
-          .fi
-          TextBank = $02
           FailureBank = $01
-          Province0MapBank = $04
-          .if !DEMO
-          Province1MapBank = $03
-          Province2MapBank = $05
-          .fi
-          CombatBank0To127 = $06
-          CombatBank128To255 = $06
-          SFXBank = $07
+          TextBank = $02
+          AnimationsBank = $03
+          FinaleBank = $03
+          SFXBank = $04
+          Province0Bank = $05
           .if DEMO
-          SignpostBank = $05
-          SignpostBankCount = 1
+          ProvincesCount = 3
           .else
-          SignpostBank = $08
-          SignpostBankCount = 7
+          ProvincesCount = 11
           .fi
 
-          .if !DEMO
-          FinaleBank = $0f
-          .fi
 ;;; 
 ;;; Text bank provides multiple services, selected with .y
 
@@ -157,9 +145,7 @@
 ;;; Map services bank, same
 
           ServiceBottomOfScreen = $09
-          ServiceGrizzardDepot = $07
-          ServiceGrizzardStatsScreen = $19
-          ServiceNewGrizzard = $0c
+          ServiceSubscreen = $19
           ServiceTopOfScreen = $08
           ServiceValidateMap = $1d
 
@@ -174,13 +160,8 @@
 ;;; Also the cold start / save game bank
 
           ServiceColdStart = $00
-          ServicePeekGrizzard = $12
-          ServiceSaveGrizzard = $11
           ServiceSaveToSlot = $10
           ServiceAttract = $1e
-          ServiceSaveProvinceData = $20
-          ServiceLoadProvinceData = $21
-          ServiceLoadGrizzard = $22
 ;;; 
 ;;; Screen boundaries for popping to the next screen
 
@@ -194,21 +175,32 @@
           LangEng = $0e
           LangSpa = $05
           LangFra = $0f
-;;; 
-;;; Indices into the monster table
-          MonsterNameIndex = 0
-          MonsterArtIndex = 9
-          MonsterColorIndex = 10
-          MonsterAttackIndex = 11
-          MonsterDefendIndex = 12
-          MonsterHPIndex = 13
-          MonsterPointsIndex = 14
-          MonsterSpareValueIndex = 15
+
 ;;; 
 ;;; MapFlags values
           MapFlagRandomSpawn = $04
           MapFlagFacing = $08   ; matches REFP0 REFLECTED bit
-          MapFlagSprite0Moved = $10
-          MapFlagSprite1Moved = $20
-          MapFlagSprite2Moved = $40
-          MapFlagSprite3Moved = $80
+
+;;; 
+;;; Equipment
+
+          EquipMorph = $01
+          EquipCharge = $02
+          EquipBomb = $04
+          EquipMissile = $08
+          EquipFreeze = $10
+          EquipBarrierSuit = $20
+          EquipScubaSuit = $40
+
+;;; 
+;;; Movement Style
+
+          MoveStand = $00
+          MoveWalk = $01
+          MoveJump = $02
+          MoveFall = $03
+          MoveMorphRest = $04
+          MoveMorphRoll = $05
+          MoveFloat = $06
+          MoveSwim = $07
+          MoveSink = $08

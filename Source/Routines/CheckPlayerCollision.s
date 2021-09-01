@@ -1,6 +1,6 @@
 ;;; Meteoroid Source/Routines/CheckPlayerCollision.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-
+          
 CheckPlayerCollision:         .block
           lda CXP0FB
           and #$c0              ; hit playfield or ball
@@ -27,50 +27,30 @@ BumpSprite:
 
           cmp #SpriteCombat
           beq FightWithSprite
-          cmp #SpriteGrizzardDepot
-          beq EnterDepot
-          cmp #SpriteGrizzard
-          beq GetNewGrizzard
-          cmp #SpriteSign
-          beq ReadSign
-          cmp #SpritePerson
-          beq ReadSign
           and #SpriteProvinceDoor
           cmp #SpriteProvinceDoor
           bne PlayerMoveOK      ; No action
           geq ProvinceChange    
 
-ReadSign:
-          lda SpriteParam, x
-          sta SignpostIndex
-          lda #ModeSignpost
-          sta GameMode
-          rts
-
 FightWithSprite:
           ldx SpriteFlicker     ; ? Seems unnecessary XXX
 FightWithSpriteX:
-          lda SpriteParam, x
-          sta CurrentCombatEncounter
-          lda SpriteIndex, x
-          sta CurrentCombatIndex
-          lda #ModeCombat
-          sta GameMode
+          lda CurrentHP
+          sbc SpriteParam, x
+          bpl +
+          lda # 0
++
+          sta CurrentHP
+          lda # 6               ; Cooldown time after a hit
+          sta BumpCooldown
+          ;; TODO: knock back?
           rts
 
 DoorWithSprite:
           lda SpriteParam, x
           sta NextMap
-          ldy #ModeMapNewRoomDoor
+          ldy #ModePlayNewRoomDoor
           sty GameMode
-          rts
-
-GetNewGrizzard:
-          lda #ModeNewGrizzard
-          sta GameMode
-          ldx SpriteFlicker
-          lda SpriteParam, x
-          sta NextMap
           rts
 
 PlayerMoveOK:
@@ -89,11 +69,6 @@ PlayerMoveOK:
 DonePlayerMove:
           rts
 
-EnterDepot:
-          lda #ModeGrizzardDepot
-          sta GameMode
-          rts
-
 ProvinceChange:
           stx P0LineCounter
           ldx #$ff              ; smash the stack
@@ -109,7 +84,6 @@ ProvinceChange:
           sta TIM64T
           .fi
           .WaitScreenBottom
-          .FarJSR SaveKeyBank, ServiceSaveProvinceData
           .WaitScreenTop
           ldx P0LineCounter
           lda SpriteAction, x
@@ -122,11 +96,10 @@ ProvinceChange:
           sta CurrentProvince
           lda SpriteParam, x
           sta NextMap
-          ldy #ModeMapNewRoomDoor
+          ldy #ModePlayNewRoomDoor
           sty GameMode
-          .FarJSR SaveKeyBank, ServiceLoadProvinceData  ; tail call
           .WaitScreenBottom
-          jmp GoMap
+          jmp GoPlay
 
 ;;; 
 BumpWall:

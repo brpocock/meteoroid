@@ -23,20 +23,27 @@ VSync: .block
           sty PF2
           sta WSYNC                    ; VSYNC line 1/3
 
+          ldy AlarmFrames
+          beq AlarmFZero
+DecAlarm:
+          dec AlarmFrames
+          bpl DoClock
+
+          ldy AlarmSeconds
+          beq DoClock
+          dec AlarmSeconds
+          jmp DoClock
+
+AlarmFZero:
+          ldy AlarmSeconds
+          bne DecAlarm
+
+DoClock:
           inc ClockFrame
           lda ClockFrame
           cmp # FramesPerSecond
           bne FrameNZero
-          ldy AlarmCountdown
-          beq FrameNZero
-          dec AlarmCountdown
 FrameNZero:
-          cmp # (FramesPerSecond / 2)
-          bne FramesNHalf
-          ldy AlarmCountdown
-          beq FramesNHalf
-          dec AlarmCountdown
-FramesNHalf:
           cmp #FramesPerSecond
           bne NoTime
 

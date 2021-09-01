@@ -7,44 +7,28 @@
           .include "StartBank.s"
           .include "Source/Generated/Bank07/SpeakJetIDs.s"
 
-DoVBlankWork:
-          .include "MapVBlank.s"
-
           .include "VSync.s"
           .include "VBlank.s"
           .include "Overscan.s"
           .include "48Pixels.s"
           .include "Prepare48pxMobBlob.s"
-          .include "LearntMove.s"
           .include "Failure.s"
 
 DoLocal:
           cpy #ServiceTopOfScreen
           beq TopOfScreenService
-          cpy #ServiceNewGrizzard
-          beq NewGrizzard
           cpy #ServiceNewGame
           beq StartNewGame
-          cpy #ServiceLearntMove
-          beq LearntMove
-          cpy #ServiceGrizzardDepot
-          beq GrizzardDepot
-          cpy #ServiceGrizzardStatsScreen
-          beq GrizzardStatsScreen
           cpy #ServiceValidateMap
           beq ValidateMap
           brk
 
           .include "CopyPointerText.s"
-          .include "MapTopService.s"
-          .include "NewGrizzard.s"
+          .include "ScreenTop.s"
           .include "Random.s"
-          .include "GrizzardStartingStats.s"
           .include "StartNewGame.s"
           .include "DecodeScore.s"
 
-          .include "GrizzardStatsScreen.s"
-          .include "GrizzardDepot.s"
           .include "ValidateMap.s"
 
           .include "CheckSpriteCollision.s"
@@ -58,8 +42,6 @@ DoLocal:
           .fi
 
           .include "WaitScreenBottom.s"
-
-          .include "SpriteColor.s"
 
 ShowPointerText:
           jsr CopyPointerText

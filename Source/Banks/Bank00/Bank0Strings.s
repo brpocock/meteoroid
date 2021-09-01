@@ -4,6 +4,8 @@ SelectText:
           .MiniText "SELECT"
 EraseText:
           .MiniText "ERASE "
+PlusCartText:
+          .MiniText " PLUS "
 BeginText:
           .MiniText "BEGIN "
 VacantText:
