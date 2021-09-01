@@ -1,10 +1,10 @@
 default:	all
 
-all:	game demo no-save unerase doc
+all:	game demo unerase doc
 
 unerase:	Dist/Meteoroid.Unerase.zip
 
-publish:	demo game no-save doc unerase Dist/Meteoroid.Source.tar.gz
+publish:	demo game doc unerase Dist/Meteoroid.Source.tar.gz
 	@until rsync -essh --progress \
 		Dist/Meteoroid.Demo.NTSC.a26 Dist/Meteoroid.Demo.PAL.a26 Dist/Meteoroid.Demo.SECAM.a26 \
 		Dist/Meteoroid.Demo.zip Dist/Meteoroid.Source.tar.gz \
@@ -12,14 +12,7 @@ publish:	demo game no-save doc unerase Dist/Meteoroid.Source.tar.gz
 		Dist/Meteoroid.Demo.NTSC-book.pdf \
 		Dist/Meteoroid.Demo.PAL-book.pdf \
 		Dist/Meteoroid.Demo.SECAM-book.pdf \
-		Dist/Meteoroid.NoSave.NTSC-book.pdf \
-		Dist/Meteoroid.NoSave.PAL-book.pdf \
-		Dist/Meteoroid.NoSave.SECAM-book.pdf \
-		Dist/Meteoroid.NoSave.NTSC.a26 Dist/Meteoroid.NoSave.PAL.a26 Dist/Meteoroid.NoSave.SECAM.a26 \
-		Dist/Meteoroid.NoSave.NTSC.pdf Dist/Meteoroid.NoSave.PAL.pdf Dist/Meteoroid.NoSave.SECAM.pdf \
-		Dist/Meteoroid.Dirtex.NTSC.a26 Dist/Meteoroid.Dirtex.PAL.a26 Dist/Meteoroid.Dirtex.SECAM.a26 \
-		Dist/Meteoroid.Aquax.NTSC.a26 Dist/Meteoroid.Aquax.PAL.a26 Dist/Meteoroid.Aquax.SECAM.a26 \
-		Dist/Meteoroid.Airex.NTSC.a26 Dist/Meteoroid.Airex.PAL.a26 Dist/Meteoroid.Airex.SECAM.a26 \
+		Dist/Meteoroid.NTSC.a26 Dist/Meteoroid.PAL.a26 Dist/Meteoroid.SECAM.a26 \
 		Dist/Meteoroid.NTSC.pdf Dist/Meteoroid.PAL.pdf Dist/Meteoroid.SECAM.pdf \
 		Dist/Meteoroid.Unerase.NTSC.a26 \
 		Dist/Meteoroid.Unerase.PAL.a26 \
@@ -27,30 +20,19 @@ publish:	demo game no-save doc unerase Dist/Meteoroid.Source.tar.gz
 		star-hope.org:star-hope.org/games/Meteoroid/ ; \
 	do sleep 1; done
 
-plus:	game demo no-save
-	@echo 'put Dist/Meteoroid.Aquax.NTSC.a26 Meteoroid.Aquax.NTSC.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Aquax.PAL.a26 Meteoroid.Aquax.PAL.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Aquax.SECAM.a26 Meteoroid.Aquax.SECAM.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Airex.NTSC.a26 Meteoroid.Airex.NTSC.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Airex.PAL.a26 Meteoroid.Airex.PAL.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Airex.SECAM.a26 Meteoroid.Airex.SECAM.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Dirtex.NTSC.a26 Meteoroid.Dirtex.NTSC.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Dirtex.PAL.a26 Meteoroid.Dirtex.PAL.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Dirtex.SECAM.a26 Meteoroid.Dirtex.SECAM.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+plus:	game demo
+	@echo 'put Dist/Meteoroid.NTSC.a26 Meteoroid.NTSC.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.PAL.a26 Meteoroid.PAL.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.SECAM.a26 Meteoroid.SECAM.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Demo.NTSC.a26 Meteoroid.Demo.NTSC.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Demo.PAL.a26 Meteoroid.Demo.PAL.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Demo.SECAM.a26 Meteoroid.Demo.SECAM.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.NoSave.NTSC.a26 Meteoroid.NoSave.NTSC.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.NoSave.PAL.a26 Meteoroid.NoSave.PAL.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.NoSave.SECAM.a26 Meteoroid.NoSave.SECAM.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Unerase.NTSC.a26 Meteoroid.Unerase.NTSC.a26' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Unerase.PAL.a26 Meteoroid.Unerase.PAL.a26' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Unerase.SECAM.a26 Meteoroid.Unerase.SECAM.a26' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Manual.txt Meteoroid.Manual.txt' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 
 demo:	Dist/Meteoroid.Demo.zip
-
-no-save:	Dist/Meteoroid.NoSave.zip
 
 Dist/Meteoroid.Source.tar.gz:	game
 	find Source Manual -name \*~ -exec rm {} \;
@@ -72,16 +54,10 @@ HARMONY=/run/media/${USER}/HARMONY/
 harmony:	Dist/Meteoroid.Demo.NTSC.a26 \
 		Dist/Meteoroid.Demo.PAL.a26 \
 		Dist/Meteoroid.Demo.SECAM.a26 \
-		Dist/Meteoroid.NoSave.NTSC.a26 \
-		Dist/Meteoroid.NoSave.PAL.a26 \
-		Dist/Meteoroid.NoSave.SECAM.a26 \
 	if [ $$(uname -s) = 'Linux' ] ; then \
 	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(HARMONY)/Meteoroid.D.NTSC.F4 ;\
 	  cp -v Dist/Meteoroid.Demo.PAL.a26 $(HARMONY)/Meteoroid.D.PAL.F4 ;\
 	  cp -v Dist/Meteoroid.Demo.SECAM.a26 $(HARMONY)/Meteoroid.D.SECAM.F4 ;\
-	  cp -v Dist/Meteoroid.NoSave.NTSC.a26 $(HARMONY)/Meteoroid.NS.NTSC.F4 ;\
-	  cp -v Dist/Meteoroid.NoSave.PAL.a26 $(HARMONY)/Meteoroid.NS.PAL.F4 ;\
-	  cp -v Dist/Meteoroid.NoSave.SECAM.a26 $(HARMONY)/Meteoroid.NS.SECAM.F4 ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi
@@ -89,31 +65,21 @@ harmony:	Dist/Meteoroid.Demo.NTSC.a26 \
 # Uno needs special extension to detect  us as an EF cartridge and shows
 # fairyl short names only
 UNOCART=/run/media/${USER}/TBA_2600/
-uno:	Dist/Meteoroid.Dirtex.NTSC.a26 \
-	Dist/Meteoroid.Aquax.NTSC.a26 \
-	Dist/Meteoroid.Airex.NTSC.a26 \
+uno:	Dist/Meteoroid.NTSC.a26 \
 	Dist/Meteoroid.Demo.NTSC.a26 \
-	Dist/Meteoroid.NoSave.NTSC.a26 \
 	Dist/Meteoroid.Unerase.NTSC.a26
 	@if [ $$(uname -s) = 'Linux' ] ; then \
 	  mkdir -p $(UNOCART)/METEOROID/ ;\
-	  cp -v Dist/Meteoroid.Dirtex.NTSC.a26 $(UNOCART)/METEOROID/DIRTEX.NTSC.EF ;\
-	  cp -v Dist/Meteoroid.Aquax.NTSC.a26 $(UNOCART)/METEOROID/AQUAX.NTSC.EF ;\
-	  cp -v Dist/Meteoroid.Airex.NTSC.a26 $(UNOCART)/METEOROID/AIREX.NTSC.EF ;\
+	  cp -v Dist/Meteoroid.NTSC.a26 $(UNOCART)/METEOROID/DIRTEX.NTSC.EF ;\
 	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(UNOCART)/METEOROID/DEMO.NTSC.F4 ;\
-	  cp -v Dist/Meteoroid.NoSave.NTSC.a26 $(UNOCART)/METEOROID/NOSAVE.NTSC.F4 ;\
 	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(UNOCART)/METEOROID/UNERASE.NTSC.F4 ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi
 
 Dist/Meteoroid.AtariAge.zip:	\
-	Dist/Meteoroid.Dirtex.NTSC.a26 Dist/Meteoroid.Dirtex.PAL.a26 Dist/Meteoroid.Dirtex.SECAM.a26 \
-	Dist/Meteoroid.Aquax.NTSC.a26 Dist/Meteoroid.Aquax.PAL.a26 Dist/Meteoroid.Aquax.SECAM.a26 \
-	Dist/Meteoroid.Airex.NTSC.a26 Dist/Meteoroid.Airex.PAL.a26 Dist/Meteoroid.Airex.SECAM.a26 \
-	Dist/Meteoroid.Dirtex.NTSC.pro Dist/Meteoroid.Dirtex.PAL.pro Dist/Meteoroid.Dirtex.SECAM.pro \
-	Dist/Meteoroid.Aquax.NTSC.pro Dist/Meteoroid.Aquax.PAL.pro Dist/Meteoroid.Aquax.SECAM.pro \
-	Dist/Meteoroid.Airex.NTSC.pro Dist/Meteoroid.Airex.PAL.pro Dist/Meteoroid.Airex.SECAM.pro \
+	Dist/Meteoroid.NTSC.a26 Dist/Meteoroid.PAL.a26 Dist/Meteoroid.SECAM.a26 \
+	Dist/Meteoroid.NTSC.pro Dist/Meteoroid.PAL.pro Dist/Meteoroid.SECAM.pro \
 	Dist/Meteoroid.NTSC.pdf Dist/Meteoroid.PAL.pdf Dist/Meteoroid.SECAM.pdf \
 	Dist/Meteoroid.NTSC-book.pdf Dist/Meteoroid.PAL-book.pdf Dist/Meteoroid.SECAM-book.pdf
 	zip $@ $^
@@ -138,18 +104,6 @@ Dist/Meteoroid.Demo.zip: \
 	Dist/Meteoroid.Demo.SECAM-book.pdf
 	zip $@ $^
 
-Dist/Meteoroid.NoSave.zip: \
-	Dist/Meteoroid.NoSave.NTSC.a26 \
-	Dist/Meteoroid.NoSave.NTSC.pdf \
-	Dist/Meteoroid.NoSave.NTSC.pro \
-	Dist/Meteoroid.NoSave.PAL.a26 \
-	Dist/Meteoroid.NoSave.PAL.pdf \
-	Dist/Meteoroid.NoSave.PAL.pro \
-	Dist/Meteoroid.NoSave.SECAM.a26 \
-	Dist/Meteoroid.NoSave.SECAM.pdf \
-	Dist/Meteoroid.NoSave.SECAM.pro
-	zip $@ $^
-
 game:	Dist/Meteoroid.AtariAge.zip
 
 doc:	Dist/Meteoroid.NTSC.pdf Dist/Meteoroid.PAL.pdf Dist/Meteoroid.SECAM.pdf \
@@ -158,12 +112,8 @@ doc:	Dist/Meteoroid.NTSC.pdf Dist/Meteoroid.PAL.pdf Dist/Meteoroid.SECAM.pdf \
 	Dist/Meteoroid.Demo.NTSC-book.pdf \
 	Dist/Meteoroid.Demo.PAL-book.pdf \
 	Dist/Meteoroid.Demo.SECAM-book.pdf \
-	Dist/Meteoroid.NoSave.NTSC-book.pdf \
-	Dist/Meteoroid.NoSave.PAL-book.pdf \
-	Dist/Meteoroid.NoSave.SECAM-book.pdf \
 	Dist/Meteoroid.Manual.txt \
-	Dist/Meteoroid.Unerase.pdf \
-	Dist/Meteoroid.NoSave.NTSC.pdf Dist/Meteoroid.NoSave.PAL.pdf Dist/Meteoroid.NoSave.SECAM.pdf
+	Dist/Meteoroid.Unerase.pdf
 
 .PRECIOUS: %.s %.png %.a26 %.txt %.zip %.tar.gz
 
@@ -181,41 +131,14 @@ Dist/Meteoroid.Demo.PAL.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-to
 Dist/Meteoroid.Demo.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
 	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Demo.SECAM.a26
 
-Dist/Meteoroid.NoSave.NTSC.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.NoSave.NTSC.a26
+Dist/Meteoroid.NTSC.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
+	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.NTSC.a26
 
-Dist/Meteoroid.NoSave.PAL.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.NoSave.PAL.a26
+Dist/Meteoroid.PAL.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
+	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.PAL.a26
 
-Dist/Meteoroid.NoSave.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.NoSave.SECAM.a26
-
-Dist/Meteoroid.Dirtex.NTSC.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Dirtex.NTSC.a26
-
-Dist/Meteoroid.Dirtex.PAL.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Dirtex.PAL.a26
-
-Dist/Meteoroid.Dirtex.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Dirtex.SECAM.a26
-
-Dist/Meteoroid.Aquax.NTSC.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Aquax.NTSC.a26
-
-Dist/Meteoroid.Aquax.PAL.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Aquax.PAL.a26
-
-Dist/Meteoroid.Aquax.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Aquax.SECAM.a26
-
-Dist/Meteoroid.Airex.NTSC.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Airex.NTSC.a26
-
-Dist/Meteoroid.Airex.PAL.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Airex.PAL.a26
-
-Dist/Meteoroid.Airex.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
-	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.Airex.SECAM.a26
+Dist/Meteoroid.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
+	$(MAKE) -f Source/Generated/Makefile Dist/Meteoroid.SECAM.a26
 
 Source/Generated/Makefile:	bin/write-master-makefile ${SOURCES}
 	mkdir -p Source/Generated
@@ -238,15 +161,6 @@ Dist/Meteoroid.Demo.PAL-book.pdf:	Dist/Meteoroid.Demo.PAL.pdf
 	pdfbook2 --paper=a4 -o 0 -i 0 -t 0 -b 0 $<
 
 Dist/Meteoroid.Demo.SECAM-book.pdf:	Dist/Meteoroid.Demo.SECAM.pdf
-	pdfbook2 --paper=a4 -o 0 -i 0 -t 0 -b 0 $<
-
-Dist/Meteoroid.NoSave.NTSC-book.pdf:	Dist/Meteoroid.NoSave.NTSC.pdf
-	pdfbook2 --paper=letterpaper -o 0 -i 0 -t 0 -b 0 $<
-
-Dist/Meteoroid.NoSave.PAL-book.pdf:	Dist/Meteoroid.NoSave.PAL.pdf
-	pdfbook2 --paper=a4 -o 0 -i 0 -t 0 -b 0 $<
-
-Dist/Meteoroid.NoSave.SECAM-book.pdf:	Dist/Meteoroid.NoSave.SECAM.pdf
 	pdfbook2 --paper=a4 -o 0 -i 0 -t 0 -b 0 $<
 
 Dist/Meteoroid.Unerase.pdf:	Manual/Unerase.tex
@@ -319,36 +233,6 @@ Dist/Meteoroid.Demo.SECAM.pdf: Manual/Meteoroid.tex
 	mkdir -p Dist
 	mv Object/Demo.SECAM.pdf/Meteoroid.pdf Dist/Meteoroid.Demo.SECAM.pdf
 
-Dist/Meteoroid.NoSave.NTSC.pdf: Manual/Meteoroid.tex
-	mkdir -p Object/NoSave.NTSC.pdf
-	cp $< Object/NoSave.NTSC.pdf/
-	ln -sf ../Manual Object/
-	-cd Object/NoSave.NTSC.pdf ; xelatex -interaction=batchmode "\def\TVNTSC{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	-cd Object/NoSave.NTSC.pdf ; xelatex -interaction=batchmode "\def\TVNTSC{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	-cd Object/NoSave.NTSC.pdf ; xelatex -interaction=batchmode "\def\TVNTSC{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	mkdir -p Dist
-	mv Object/NoSave.NTSC.pdf/Meteoroid.pdf Dist/Meteoroid.NoSave.NTSC.pdf
-
-Dist/Meteoroid.NoSave.PAL.pdf: Manual/Meteoroid.tex
-	mkdir -p Object/NoSave.PAL.pdf
-	cp $< Object/NoSave.PAL.pdf/
-	ln -sf ../Manual Object/
-	-cd Object/NoSave.PAL.pdf ; xelatex -interaction=batchmode "\def\TVPAL{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	-cd Object/NoSave.PAL.pdf ; xelatex -interaction=batchmode "\def\TVPAL{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	-cd Object/NoSave.PAL.pdf ; xelatex -interaction=batchmode "\def\TVPAL{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	mkdir -p Dist
-	mv Object/NoSave.PAL.pdf/Meteoroid.pdf Dist/Meteoroid.NoSave.PAL.pdf
-
-Dist/Meteoroid.NoSave.SECAM.pdf: Manual/Meteoroid.tex
-	mkdir -p Object/NoSave.SECAM.pdf
-	cp $< Object/NoSave.SECAM.pdf/
-	ln -sf ../Manual Object/
-	-cd Object/NoSave.SECAM.pdf ; xelatex -interaction=batchmode "\def\TVSECAM{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	-cd Object/NoSave.SECAM.pdf ; xelatex -interaction=batchmode "\def\TVSECAM{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	-cd Object/NoSave.SECAM.pdf ; xelatex -interaction=batchmode "\def\TVSECAM{}\def\DEMO{}\def\NOSAVE{}\input{Meteoroid}"
-	mkdir -p Dist
-	mv Object/NoSave.SECAM.pdf/Meteoroid.pdf Dist/Meteoroid.NoSave.SECAM.pdf
-
 # If Make tries to second-guess us, let the default assembler be “error,”
 # because the default assembler (probably GNU gas) almost certainly
 # neither understands 65xx mnemonics nor 64tass macros and things.
@@ -366,56 +250,18 @@ Dist/Meteoroid.Demo.SECAM.sym:	\
 	$(shell bin/banks Object Demo.SECAM.sym)
 	cat $^ > $@
 
-Dist/Meteoroid.NoSave.NTSC.sym:	\
-	$(shell bin/banks Object NoSave.NTSC.sym)
+Dist/Meteoroid.NTSC.sym:	\
+	$(shell bin/banks Object NTSC.sym)
 	cat $^ > $@
 
-Dist/Meteoroid.NoSave.PAL.sym:	\
-	$(shell bin/banks Object NoSave.PAL.sym)
+Dist/Meteoroid.PAL.sym:	\
+	$(shell bin/banks Object PAL.sym)
 	cat $^ > $@
 
-Dist/Meteoroid.NoSave.SECAM.sym:	\
-	$(shell bin/banks Object NoSave.SECAM.sym)
+Dist/Meteoroid.SECAM.sym:	\
+	$(shell bin/banks Object SECAM.sym)
 	cat $^ > $@
 
-
-Dist/Meteoroid.Dirtex.NTSC.sym:	\
-	$(shell bin/banks Object Dirtex.NTSC.sym)
-	cat $^ > $@
-
-Dist/Meteoroid.Dirtex.PAL.sym:	\
-	$(shell bin/banks Object Dirtex.PAL.sym)
-	cat $^ > $@
-
-Dist/Meteoroid.Dirtex.SECAM.sym:	\
-	$(shell bin/banks Object Dirtex.SECAM.sym)
-	cat $^ > $@
-
-
-Dist/Meteoroid.Aquax.NTSC.sym:	\
-	$(shell bin/banks Object Aquax.NTSC.sym)
-	cat $^ > $@
-
-Dist/Meteoroid.Aquax.PAL.sym:	\
-	$(shell bin/banks Object Aquax.PAL.sym)
-	cat $^ > $@
-
-Dist/Meteoroid.Aquax.SECAM.sym:	\
-	$(shell bin/banks Object Aquax.SECAM.sym)
-	cat $^ > $@
-
-
-Dist/Meteoroid.Airex.NTSC.sym:	\
-	$(shell bin/banks Object Airex.NTSC.sym)
-	cat $^ > $@
-
-Dist/Meteoroid.Airex.PAL.sym:	\
-	$(shell bin/banks Object Airex.PAL.sym)
-	cat $^ > $@
-
-Dist/Meteoroid.Airex.SECAM.sym:	\
-	$(shell bin/banks Object Airex.SECAM.sym)
-	cat $^ > $@
 
 Dist/Meteoroid.Demo.NTSC.pro:	Source/Meteoroid.Demo.pro Dist/Meteoroid.Demo.NTSC.a26
 	sed $< -e s/@@TV@@/NTSC/g \
@@ -429,53 +275,17 @@ Dist/Meteoroid.Demo.SECAM.pro:	Source/Meteoroid.Demo.pro Dist/Meteoroid.Demo.SEC
 	sed $< -e s/@@TV@@/SECAM/g \
 		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Demo.SECAM.a26 | cut -d\  -f1)/g > $@
 
-Dist/Meteoroid.NoSave.NTSC.pro:	Source/Meteoroid.NoSave.pro Dist/Meteoroid.NoSave.NTSC.a26
+Dist/Meteoroid.NTSC.pro:	Source/Meteoroid.pro Dist/Meteoroid.NTSC.a26
 	sed $< -e s/@@TV@@/NTSC/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.NoSave.NTSC.a26 | cut -d\  -f1)/g > $@
+		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.NTSC.a26 | cut -d\  -f1)/g > $@
 
-Dist/Meteoroid.NoSave.PAL.pro:	Source/Meteoroid.NoSave.pro Dist/Meteoroid.NoSave.PAL.a26
+Dist/Meteoroid.PAL.pro:	Source/Meteoroid.pro Dist/Meteoroid.PAL.a26
 	sed $< -e s/@@TV@@/PAL/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.NoSave.PAL.a26 | cut -d\  -f1)/g > $@
+		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.PAL.a26 | cut -d\  -f1)/g > $@
 
-Dist/Meteoroid.NoSave.SECAM.pro:	Source/Meteoroid.NoSave.pro Dist/Meteoroid.NoSave.SECAM.a26
+Dist/Meteoroid.SECAM.pro:	Source/Meteoroid.pro Dist/Meteoroid.SECAM.a26
 	sed $< -e s/@@TV@@/SECAM/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.NoSave.SECAM.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Dirtex.NTSC.pro:	Source/Meteoroid.pro Dist/Meteoroid.Dirtex.NTSC.a26
-	sed $< -e s/@@TV@@/NTSC/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Dirtex.NTSC.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Dirtex.PAL.pro:	Source/Meteoroid.pro Dist/Meteoroid.Dirtex.PAL.a26
-	sed $< -e s/@@TV@@/PAL/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Dirtex.PAL.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Dirtex.SECAM.pro:	Source/Meteoroid.pro Dist/Meteoroid.Dirtex.SECAM.a26
-	sed $< -e s/@@TV@@/SECAM/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Dirtex.SECAM.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Aquax.NTSC.pro:	Source/Meteoroid.pro Dist/Meteoroid.Aquax.NTSC.a26
-	sed $< -e s/@@TV@@/NTSC/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Aquax.NTSC.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Aquax.PAL.pro:	Source/Meteoroid.pro Dist/Meteoroid.Aquax.PAL.a26
-	sed $< -e s/@@TV@@/PAL/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Aquax.PAL.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Aquax.SECAM.pro:	Source/Meteoroid.pro Dist/Meteoroid.Aquax.SECAM.a26
-	sed $< -e s/@@TV@@/SECAM/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Aquax.SECAM.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Airex.NTSC.pro:	Source/Meteoroid.pro Dist/Meteoroid.Airex.NTSC.a26
-	sed $< -e s/@@TV@@/NTSC/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Airex.NTSC.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Airex.PAL.pro:	Source/Meteoroid.pro Dist/Meteoroid.Airex.PAL.a26
-	sed $< -e s/@@TV@@/PAL/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Airex.PAL.a26 | cut -d\  -f1)/g > $@
-
-Dist/Meteoroid.Airex.SECAM.pro:	Source/Meteoroid.pro Dist/Meteoroid.Airex.SECAM.a26
-	sed $< -e s/@@TV@@/SECAM/g \
-		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.Airex.SECAM.a26 | cut -d\  -f1)/g > $@
+		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.SECAM.a26 | cut -d\  -f1)/g > $@
 
 dstella:	Dist/Meteoroid.Demo.NTSC.a26 Dist/Meteoroid.Demo.NTSC.sym Dist/Meteoroid.Demo.NTSC.pro
 	stella -tv.filter 3 -grabmouse 0 -bs F4 \
@@ -495,49 +305,19 @@ dstella-secam:	Dist/Meteoroid.Demo.SECAM.a26 Dist/Meteoroid.Demo.SECAM.sym Dist/
 		-format SECAM -pp Yes \
 		-debug $<
 
-nstella:	Dist/Meteoroid.NoSave.NTSC.a26 Dist/Meteoroid.NoSave.NTSC.sym Dist/Meteoroid.NoSave.NTSC.pro
-	stella -tv.filter 3 -grabmouse 0 -bs F4 \
-		-lc Genesis -rc Joystick \
-		-format NTSC -pp Yes \
-		-debug $<
-
-nstella-pal:	Dist/Meteoroid.NoSave.PAL.a26 Dist/Meteoroid.NoSave.PAL.sym Dist/Meteoroid.NoSave.PAL.pro
-	stella -tv.filter 3 -grabmouse 0 -bs F4 \
-		-lc Genesis -rc Joystick \
-		-format PAL -pp Yes \
-		-debug $<
-
-nstella-secam:	Dist/Meteoroid.NoSave.SECAM.a26 Dist/Meteoroid.NoSave.SECAM.sym Dist/Meteoroid.NoSave.SECAM.pro
-	stella -tv.filter 3 -grabmouse 0 -bs F4 \
-		-lc Genesis -rc Joystick \
-		-format SECAM -pp Yes \
-		-debug $<
-
-stella:	Dist/Meteoroid.Aquax.NTSC.a26 Dist/Meteoroid.Aquax.NTSC.sym Dist/Meteoroid.Aquax.NTSC.pro
+stella:	Dist/Meteoroid.NTSC.a26 Dist/Meteoroid.NTSC.sym Dist/Meteoroid.NTSC.pro
 	stella -tv.filter 3 -grabmouse 0 -bs EF \
 		-lc Genesis -rc AtariVox \
 		-format NTSC -pp Yes \
 		-debug $<
 
-stella-airex:	Dist/Meteoroid.Airex.NTSC.a26 Dist/Meteoroid.Airex.NTSC.sym Dist/Meteoroid.Airex.NTSC.pro
-	stella -tv.filter 3 -grabmouse 0 -bs EF \
-		-lc Genesis -rc AtariVox \
-		-format NTSC -pp Yes \
-		-debug $<
-
-stella-dirtex:	Dist/Meteoroid.Dirtex.NTSC.a26 Dist/Meteoroid.Dirtex.NTSC.sym Dist/Meteoroid.Dirtex.NTSC.pro
-	stella -tv.filter 3 -grabmouse 0 -bs EF \
-		-lc Genesis -rc AtariVox \
-		-format NTSC -pp Yes \
-		-debug $<
-
-stella-pal:	Dist/Meteoroid.Aquax.PAL.a26 Dist/Meteoroid.Aquax.PAL.sym Dist/Meteoroid.Aquax.PAL.pro
+stella-pal:	Dist/Meteoroid.PAL.a26 Dist/Meteoroid.PAL.sym Dist/Meteoroid.PAL.pro
 	stella -tv.filter 3 -grabmouse 0 -bs EF \
 		-lc Genesis -rc AtariVox \
 		-format PAL -pp Yes \
 		-debug $<
 
-stella-secam:	Dist/Meteoroid.Aquax.SECAM.a26 Dist/Meteoroid.Aquax.SECAM.sym Dist/Meteoroid.Aquax.SECAM.pro
+stella-secam:	Dist/Meteoroid.SECAM.a26 Dist/Meteoroid.SECAM.sym Dist/Meteoroid.SECAM.pro
 	stella -tv.filter 3 -grabmouse 0 -bs EF \
 		-lc Genesis -rc AtariVox \
 		-format SECAM -pp Yes \
@@ -586,8 +366,8 @@ release:	all
 	@if [ $(RELEASE) = noreleasenamegiven ]; then echo "Usage: make RELEASE=ident release" >&2; exit 1; fi
 	mkdir -p Dist/$(RELEASE)
 	-rm Dist/$(RELEASE)/*
-	-cp -v Dist/Meteoroid.{Demo,Airex,Aquax,Dirtex,NoSave,Unerase}.{NTSC,PAL,SECAM}.{a26,pro} \
-		Dist/Meteoroid.{Demo.{NTSC,PAL,SECAM},NoSave.{NTSC,PAL,SECAM},Unerase}.pdf \
+	-cp -v Dist/Meteoroid.{Demo.,Unerase.}{NTSC,PAL,SECAM}.{a26,pro} \
+		Dist/Meteoroid.{Demo.{NTSC,PAL,SECAM},Unerase}.pdf \
 		Dist/$(RELEASE) 2>/dev/null
 	cp -v Dist/Meteoroid.{NTSC,PAL,SECAM}{,-book}.pdf Dist/$(RELEASE)
 	cp -v Dist/Meteoroid.Manual.txt Dist/$(RELEASE)
@@ -597,13 +377,10 @@ release:	all
 	done
 	@echo "AtariAge Release $(RELEASE) of Meteoroid for the Atari 2600. © 2021 Bruce-Robert Pocock." | \
 		zip -9 Dist/$(RELEASE)/Meteoroid.AtariAge.$(RELEASE).zip \
-		Dist/$(RELEASE)/Meteoroid.{Airex,Aquax,Dirtex}.* Dist/$(RELEASE)/Meteoroid.{NTSC,PAL,SECAM}*pdf
+		Dist/$(RELEASE)/Meteoroid.* Dist/$(RELEASE)/Meteoroid.{NTSC,PAL,SECAM}*pdf
 	@echo "Demo Release $(RELEASE) of Meteoroid for the Atari 2600. © 2021 Bruce-Robert Pocock." | \
 		zip -9 Dist/$(RELEASE)/Meteoroid.Demo.$(RELEASE).zip \
 		Dist/$(RELEASE)/Meteoroid.Demo.*{a26,pdf,pro}
-	@echo "No-Save Demo Release $(RELEASE) of Meteoroid for the Atari 2600. © 2021 Bruce-Robert Pocock." | \
-		zip -9 Dist/$(RELEASE)/Meteoroid.NoSave.$(RELEASE).zip \
-		Dist/$(RELEASE)/Meteoroid.NoSave.*{a26,pdf,pro}
 	@echo "Unerase Tool Release $(RELEASE) of Meteoroid for the Atari 2600. © 2021 Bruce-Robert Pocock." | \
 		zip -9 Dist/$(RELEASE)/Meteoroid.Unerase.$(RELEASE).zip \
 		Dist/$(RELEASE)/Meteoroid.Unerase.*{a26,pdf,pro}
