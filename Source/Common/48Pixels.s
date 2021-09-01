@@ -5,29 +5,29 @@
 
 SetUpFortyEight:	.macro Graphics
 	lda #<(\Graphics + \Graphics.Height * 0 - 1)
-	sta pp0l
+	sta Background + 0 + WRITE
 	lda #>(\Graphics + \Graphics.Height * 0 - 1)
-	sta pp0h
+	sta Background + 1 + WRITE
 	lda #<(\Graphics + \Graphics.Height * 1 - 1)
-	sta pp1l
+	sta Background + 2 + WRITE
 	lda #>(\Graphics + \Graphics.Height * 1 - 1)
-	sta pp1h
+	sta Background + 3 + WRITE
 	lda #<(\Graphics + \Graphics.Height * 2 - 1)
-	sta pp2l
+	sta Background + 4 + WRITE
 	lda #>(\Graphics + \Graphics.Height * 2 - 1)
-	sta pp2h
+	sta Background + 5 + WRITE
 	lda #<(\Graphics + \Graphics.Height * 3 - 1)
-	sta pp3l
+	sta Background + 6 + WRITE
 	lda #>(\Graphics + \Graphics.Height * 3 - 1)
-	sta pp3h
+	sta Background + 7 + WRITE
 	lda #<(\Graphics + \Graphics.Height * 4 - 1)
-	sta pp4l
+	sta Background + 8 + WRITE
 	lda #>(\Graphics + \Graphics.Height * 4 - 1)
-	sta pp4h
+	sta Background + 9 + WRITE
 	lda #<(\Graphics + \Graphics.Height * 5 - 1)
-	sta pp5l
+	sta Background + $a + WRITE
 	lda #>(\Graphics + \Graphics.Height * 5 - 1)
-	sta pp5h
+	sta Background + $b + WRITE
 
 	.endm
 

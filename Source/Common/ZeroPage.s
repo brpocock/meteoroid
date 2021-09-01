@@ -8,8 +8,6 @@
 ;;; ZZZZZ EEEEE R   R  OOO     P     A   A  GGGG EEEEE
 ;;;
 ;;;
-;;; Not only zero page RAM, but, in fact, all of the RAM
-;;; available on the CX-2600 at all.
 
           * = $80
 ZeroPage:
@@ -70,7 +68,6 @@ BlessedX:
 BlessedY:
           .byte ?
 
-;;; How much Energy does the Grizzard actually have?
 CurrentHP:
           .byte ?
 
@@ -138,19 +135,19 @@ NewSWCHB:
           .byte ?
 NewButtons:
           .byte ?
-;;; XXX  these  should be  moved  into  the  overlay section,  but  that
-;;; requires some remediation
 DeltaX:
-CombatMoveSelected:             ; actual Move ID, not relative to creature
           .byte ?
 DeltaY:
-CombatMoveDeltaHP:              ; base value, MoveHP has actual calculated effective value
           .byte ?
-;;; Player current X,Y position on screen
 PlayerX:
           .byte ?
 PlayerY:
           .byte ?
+PlayerXFraction:
+          .byte ?
+PlayerYFraction:
+          .byte ?
+
 ;;; 
 ;;; Variables used in drawing
 
@@ -162,22 +159,6 @@ LineCounter:
 RunLength:
           .byte ?
 
-;;; Pixel pointers used in 48px graphics and text, and sometimes
-;;; used as general-purpose short-term pointers as well.
-PixelPointers:
-
-pp0l:	.byte ?
-pp0h:	.byte ?
-pp1l:	.byte ?
-pp1h:	.byte ?
-pp2l:	.byte ?
-pp2h:	.byte ?
-pp3l:	.byte ?
-pp3h:	.byte ?
-pp4l:	.byte ?
-pp4h:	.byte ?
-pp5l:	.byte ?
-pp5h:	.byte ?
 ;;; 
 ;;; SpeakJet
 
@@ -260,102 +241,7 @@ AttractStoryProgress:
 StartGameWipeBlock:
           .word ?
 ;;; 
-;;; SIgnpost mode scratchpad
-
-          * = Scratchpad
-
-SignpostIndex:
-          .byte ?
-
-SignpostText:
-          .word ?
-
-SignpostWork:
-          .word ?
-
-SignpostAction:
-          .word ?
-
-SignpostFG:
-          .byte ?
-
-SignpostBG:
-          .byte ?
-
-SignpostScanline:
-          .byte ?
-
-SignpostTextLine:
-          .byte ?
-;;; 
-;;; Combat mode scratchpad
-
-          * = Scratchpad
-
-;;; What type (index) of enemy are we battling?
-CurrentCombatEncounter:
-          .byte ?
-
-CurrentCombatIndex:
-          .byte ?
-
-CurrentMonsterPointer:
-          .word ?
-
-;;; Index of monster's art, used to communicate between ROM banks
-CurrentMonsterArt:
-          .byte ?
-          
-;;; Pointer to the enemy's sprite graphics
-CombatSpritePointer:
-          .word ?
-
-;;; Is the Grizzard affected by a Status Effect from combat?
-StatusFX:
-          .byte ?
-
-;;; HP for each enemy (up to six)
-MonsterHP:
-          .byte ?, ?, ?, ?, ?, ?
-
-;;; Status effects for each enemy
-EnemyStatusFX:
-          .byte ?, ?, ?, ?, ?, ?
-
-;;; Which item on the menu did the player (or monster) select?
-MoveSelection:
-          .byte ?
-
-;;; Whose turn is it?
-;;; 0 = Player
-;;; 1-6 = Enemies
-WhoseTurn:
-          .byte ?
-
-;;; Target of the move, if it's the player's turn
-MoveTarget:
-          .byte ?
-
-;;; When presenting the move being executed or its results,
-;;; what part are we currently displaying/speaking?
-MoveAnnouncement:
-          .byte ?
-
-;;; The move's outcome
-MoveHitMiss:
-          .byte ?
-
-;;; The move's change in hit points
-MoveHP:
-          .byte ?
-          
-;;; The move's new status effects
-MoveStatusFX:
-          .byte ?
-
-          CombatEnd = * - 1
-;;; 
-;;; Scratchpad for Map mode
+;;; Scratchpad for Game mode
             * = Scratchpad
 
 ;;; Pointer to the start of the map's RLE display data
@@ -384,21 +270,6 @@ P1LineCounter:
 SpriteIndex:
           .byte ?, ?, ?, ?
 
-;;; X,Y position of virtual sprites
-SpriteX:
-          .byte ?, ?, ?, ?
-
-SpriteY:
-          .byte ?, ?, ?, ?
-
-SpriteMotion:
-          .byte ?, ?, ?, ?
-          
-SpriteAction:
-          .byte ?, ?, ?, ?
-
-SpriteParam:
-          .byte ?, ?, ?, ?
 
 BumpCooldown:
           .byte ?
@@ -406,16 +277,10 @@ BumpCooldown:
 MapFlags:
           .byte ?
 
-PlayerXFraction:
-          .byte ?
-PlayerYFraction:
-          .byte ?
-
-          MapEnd = * - 1
 ;;; 
 ;;; Verify that we don't run over
 
-          LastRAM = CombatEnd > MapEnd ? CombatEnd : MapEnd
+          LastRAM = * - 1
           
           ;; There must be at least $10 stack space (to be fairly safe)
           .if LastRAM >= $f0
