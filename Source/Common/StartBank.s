@@ -38,11 +38,4 @@
 	* = $f000
 	.offs -$f000
 
-          .enc "Unicode"
-RAMRead:
-          .fill 128, "Meteoroid, © 2021 Bruce-Robert Pocock. EFSC RAM goes here."
-RAMWrite:
-          .fill 128, "Meteoroid, © 2021 Bruce-Robert Pocock. EFSC RAM goes here."
-
-          .enc "none"
           
