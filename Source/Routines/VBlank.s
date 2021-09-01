@@ -64,9 +64,16 @@ ButtonsChanged:
           sta DebounceSWCHB
 DoneButtons:
 
-          .if DoVBlankWork != 0
-          jsr DoVBlankWork
-          .fi
+          lda GameMode
+          cmp #ModePlay
+          bne NotPlaying
+
+          jsr CheckSpriteCollision
+          jsr SpriteMovement
+          jsr CheckPlayerCollision
+          jsr UserInput
+
+NotPlaying:
 
           .WaitForTimer
 
