@@ -33,6 +33,7 @@
 	.include "ZeroPage.s"
 	.include "VCS-Consts.s"
 	.include "Macros.s"
+          .include "SCRam.s"
 
 	* = $f000
 	.offs -$f000

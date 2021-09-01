@@ -5,6 +5,17 @@
 
           * = $1000
 
+          .enc "Unicode"
+RAMRead:
+          .fill $80, "Meteoroid, © 2021 Bruce-Robert Pocock. EFSC."
+RAMWrite:
+          .fill $80, "Meteoroid, © 2021 Bruce-Robert Pocock. EFSC."
+
+          .enc "none"
+
+          
+          * = $1000
+
 SCRamRead:
 
 SpriteXRead:
