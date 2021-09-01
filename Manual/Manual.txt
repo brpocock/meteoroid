@@ -1,0 +1,48 @@
+Meteoroid
+
+For full manual:
+
+https://star-hope.org/
+games/Meteoroid/
+
+Program:
+Bruce-Robert Pocock
+
+Music + Add'l Art:
+Zephyr Salz
+Controller:
+
+Joystick or Genesis gamepad in
+left port. Genesis B button is
+FIRE, C button is JUMP.
+
+SaveKey or AtariVox in right
+port, or use PlusCart for save
+to "cloud" function.
+
+
+Press FIRE to leave title screen
+and start.
+
+Select Slot (SaveKey/AtariVox):
+Use left/right to choose a slot,
+FIRE to begin/resume a game.
+
+
+
+
+
+
+Map: Walk or jump with
+joystick. Fire with FIRE.
+Jump with UP or C BUTTON.
+
+
+
+
+
+
+
+
+
+More to come . . .

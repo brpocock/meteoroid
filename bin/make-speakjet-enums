@@ -1,0 +1,61 @@
+#!/usr/bin/perl -W
+
+my $bank = shift @ARGV;
+
+# zero pad the input bank which should be specified in hex anyway
+$bank = sprintf '%02x' => hex("0x$bank");
+
+opendir BANKX, "Source/Banks/Bank$bank" or die;
+
+`mkdir -p Source/Generated/Bank$bank`;
+
+open COMMON, '>', "Source/Generated/Bank$bank/SpeakJetIDs.s" or die;
+open INDEX, '>', "Source/Generated/Bank$bank/SpeakJetIndex.s" or die;
+
+print COMMON <<END;
+;;; Source/Generated/Common/SpeakJetIDs.s
+;;; generated from all Speech includes files
+;;;
+;;; These IDs are used to command various utterances
+;;; to occur from the speech engine in Bank \$$bank
+
+END
+
+print INDEX ';;; Source/Generated/Bank' . $bank . '/SpeakJetIndex.s
+;;; generated from all Speech includes files in this bank
+;;;
+;;; This matches SpeakJetIDs.s in order but
+;;; maps to actual addresses
+
+SpeechIndex = ($0000';
+
+$n = 1; # because $00 means "no speech"
+
+while (my $dirent = readdir BANKX) {
+  next unless $dirent =~ /(.*)Speech.txt$/;
+
+  open INFILE, '<', "Source/Banks/Bank$bank/$dirent";
+  while (my $line = <INFILE>) {
+    next unless $line =~ /^\s*([A-Za-z0-9_]+):/;
+
+    my $label = $1;
+    printf COMMON "\n\tPhrase_%s := \$%02x", $label, $n++;
+    print INDEX ", Speech_$label";
+  };
+};
+
+print COMMON "\n\n;;; End of SpeakJet enums\n";
+print INDEX ")
+
+SpeechIndexH:
+	.byte >SpeechIndex
+SpeechIndexL:
+	.byte <SpeechIndex
+
+	SpeechCount = len(SpeechIndex)
+
+;;; End of SpeakJet index\n";
+
+close INDEX;
+close COMMON;
+closedir BANKX;
