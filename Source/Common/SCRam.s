@@ -41,6 +41,14 @@ Background:
           .byte ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?
           .byte ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?
 
+MapPointer:
+          .word ?
+
+MapColorPointer:
+          .word ?
+
+          .warn "SC-RAM is used up to ", *
+          
           .if * > $1080
           .error "Ran out of SC RAM"
           .fi

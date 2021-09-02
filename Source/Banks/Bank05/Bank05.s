@@ -13,8 +13,9 @@ DoLocal:
           ;; falls through to
           .include "DrawMainScreen.s"
 
-          .include "MapsProvince0.s"
-          .include "Maps0RLE.s"
+MapData:  
+          .include "MapProvince0.s"
+          .include "SpritesProvince0.s"
 
           .include "Province0.s"
 
