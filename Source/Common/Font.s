@@ -7,9 +7,9 @@
 
 ;;; The font character order is:
 ;;; 
-;;; 0123456789ABCDEFGHIJKLMNOPZRSTUVWXYZ.!?-
+;;; 0123456789ABCDEFGHIJKLMNOPZRSTUVWXYZ.!?- +
 ;;; 
-;;; the last character is (blank space) at index 40
+;;; the character at index 40 is (blank space)
 ;;; 
 ;;; Note that this enables decimal or hex echoes very easily
 
@@ -261,5 +261,12 @@ Tack:
 	.byte %0000000
 Blank:    
 	.byte 0, 0, 0, 0, 0
+
+Plus:
+          .byte %00000000
+          .byte %00010000
+          .byte %11111110
+          .byte %00010000
+          .byte %00000000
 
 	.bend
