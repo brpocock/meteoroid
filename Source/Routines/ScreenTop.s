@@ -1,4 +1,4 @@
-;;; Meteoroid Source/Routines/ScreenTopService.s
+;;; Meteoroid Source/Routines/ScreenTop.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 TopOfScreenService: .block
 
@@ -15,7 +15,7 @@ TopOfScreenService: .block
           .ldacolu COLGRAY, $f
           sta COLUP0
           sta COLUP1
-          .ldacolu COLGRAY, 0
+          .ldacolu COLRED, 0
           sta COLUBK
 ;;; 
           lda Pause
@@ -52,7 +52,7 @@ AfterScore:
           sec
           sta WSYNC
 P0HPos:
-          sbc #15
+          sbc # 15
           bcs P0HPos
           sta RESP0
 
@@ -72,7 +72,7 @@ P0HPos:
 
           stx CXCLR
           ldx SpriteFlicker
-          ldy # 5
+          ldy # 9
 NextFlickerCandidate:
           inx
           cpx SpriteCount
@@ -81,16 +81,13 @@ NextFlickerCandidate:
 FlickerOK:
           dey
           beq SetUpSprites
-          lda SpriteMotion, x
-          cmp # SpriteRandomEncounter
-          beq NextFlickerCandidate
           stx SpriteFlicker
 
           lda SpriteX, x
           sec
           sta WSYNC
 P1HPos:
-          sbc #15
+          sbc # 15
           bcs P1HPos
           sta RESP1
 
@@ -127,9 +124,9 @@ SetUpSprites:
           beq +
           ldy AlarmSeconds
           beq +
-          cmp #SpriteCombat
+          cmp #SpriteMonster
           bne +
-          lda #SpriteCombatPuff
+;; TODO          lda #SpriteMonsterPuff
 +
           .rept 4
           asl a
@@ -140,12 +137,9 @@ SetUpSprites:
 +
           sta pp1l
 
+          ;; FIXME use sprite motion to set facing directions
           lda SpriteAction, x
-          cmp #SpriteCombat
-          beq Flippy
-          cmp #SpritePerson
-          beq Flippy
-          cmp #SpriteMajorCombat
+          cmp #SpriteMonster
           bne FindAnimationFrame
 
 Flippy:
@@ -218,6 +212,10 @@ P1Ready:
 
 TheEnd:
           .WaitForTimer
+
+          .ldacolu COLGREEN, 0
+          sta COLUBK
+          
           rts
 
           .bend

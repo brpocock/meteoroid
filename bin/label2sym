@@ -68,7 +68,8 @@ $label_file_name.labels.txt\n";
         next;
       }
       if ($label =~/^[A-Z]/ and $value < 0xf000) {
-	  if (!($value >= 0x80 and $value <= 0xff)) {
+          if (!($value >= 0x1000 and $value <= 0x10ff) and
+              !($value >= 0x80 and $value <= 0xff)) {
 	      # warn "Omitting label $label; appears to be a constant, not a label";
 	      ++$skipped;
 	      next;
@@ -77,6 +78,11 @@ $label_file_name.labels.txt\n";
       if ($line =~ /SpeakJet_/ or $line =~ /Speech_/ or $line =~ /Phrase_/) {
         ++$skipped;
         next;
+      }
+      if ($value >= 0x1080 and $value <= 0x10ff) {
+        printf $sym_file "%-21s %04x ???? ; %s" =>
+          $label . "_WRITE", $value - 0x80, $line;
+        ++$count;
       }
       printf $sym_file "%-21s %04x ???? ; %s" =>
         $label, $value, $line;

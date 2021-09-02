@@ -69,32 +69,26 @@
           LevelUpMaxHP = $04
 ;;; 
 ;;; Sprite types
-          RandomEncounter = $80
           SpriteFixed = $40
           SpriteWander = $20
 
           SpriteMoveNone = $00
           SpriteMoveIdle = $01
-          SpriteRandomEncounter = $02
           SpriteMoveLeft = $10
           SpriteMoveRight = $20
           SpriteMoveUp = $40
           SpriteMoveDown = $80
 ;;; 
 ;;; Sprite actions
-          SpriteCombat = $00
-          SpriteGrizzardDepot = $01
-          SpriteGrizzard = $02
+          SpriteMonster = $00
+          SpriteSavePoint = $01
+          SpriteEquipment = $02
           SpriteDoor = $03
-          SpriteSign = $04
-          SpritePerson = $05
-          SpriteMajorCombat = $06
-          SpriteCombatPuff = $07
           SpriteProvinceDoor = $07
 ;;; 
           ;; Save game slot address.
-          ;; Must be page-aligned
-          ;; Uses the subsequent 12 64-byte blocks
+          ;; Must be $40-aligned
+          ;; Uses the subsequent 3 64-byte blocks
           .if DEMO
           SaveGameSlotPrefix = $3300
           .else
@@ -128,19 +122,9 @@
 ;;; Text bank provides multiple services, selected with .y
 
           ServiceAppendDecimalAndPrint = $0e
-          ServiceCombatOutcome = $14
           ServiceDecodeAndShowText = $01
-          ServiceFetchGrizzardMove = $13
-          ServiceLearntMove = $18
-          ServiceLevelUp = $1a
           ServiceNewGame = $0f
-          ServiceShowGrizzardName = $03
-          ServiceShowGrizzardStats = $04
-          ServiceShowMove = $06
-          ServiceShowMoveDecoded = $17
           ServiceShowText = $02
-          ServiceCombatIntro = $1b
-          ServiceCombatVictory = $1c
 
 ;;; Map services bank, same
 
@@ -151,10 +135,8 @@
 
 ;;; Animations services
 
-          ServiceDrawGrizzard = $05
           ServiceAttractStory = $15
           ServiceDeath = $0d
-          ServiceDrawMonsterGroup = $0b
           ServiceFireworks = $0a
 
 ;;; Also the cold start / save game bank

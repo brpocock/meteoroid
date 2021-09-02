@@ -2,12 +2,6 @@
 ;;; Copyright © 2021 Bruce-Robert Pocock
 
 ValidateMap:        .block
-          ;; Remove any Grizzard who is already a companion.
-          ;; New Meteoroid must be the last sprite on the list for a room.
-          ldx SpriteCount
-          dex
-
-;;; 
           lda GameMode
           cmp #ModePlayNewRoomDoor
           bne DonePlacing
@@ -47,10 +41,6 @@ CheckForRandomSpawns:
           beq Bye
           dex
 CheckSpriteSpawn:
-          lda SpriteMotion, x
-          .BitBit SpriteRandomEncounter
-          bne NextMayBeRandom
-
           lda SpriteX, x
           bne NextMayBeRandom
 

@@ -54,7 +54,7 @@ GoColdStart:
 GoPlay:
           ldx #$ff              ; smash the stack
           txs
-          
+
           ldx CurrentProvince
           cpx #ProvincesCount
           bge Break

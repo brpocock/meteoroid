@@ -1,7 +1,7 @@
 ;;; Meteoroid Source/Banks/Bank04/Bank04.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 	BANK = $05
-          PROVINCE = 2
+          PROVINCE = 0
 
           .include "StartBank.s"
 

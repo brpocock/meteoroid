@@ -25,7 +25,7 @@ BumpSprite:
           ldy BumpCooldown
           bne DonePlayerMove
 
-          cmp #SpriteCombat
+          cmp #SpriteMonster
           beq FightWithSprite
           and #SpriteProvinceDoor
           cmp #SpriteProvinceDoor

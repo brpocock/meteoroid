@@ -11,7 +11,7 @@ SetUpScreen: .block
           sta DeltaY
           sta PlayerXFraction
           sta PlayerYFraction
-          sta MapFlags
+          sta MapFlags + WRITE
           sta CurrentMusic + 1
 
           lda BlessedX
@@ -46,9 +46,9 @@ NewRoomTimerRunning:
 
 SearchForMap:
           lda #>MapData
-          sta MapPointer + WRITE + 1
+          sta MapPointer + 1
           lda #<MapData
-          sta MapPointer + WRITE
+          sta MapPointer
 
           ldx CurrentMap
           beq FoundMapData
@@ -59,9 +59,9 @@ LookForMapData:
           clc
           adc MapPointer
           bcc +
-          inc MapPointer + WRITE + 1
+          inc MapPointer + 1
 +
-          sta MapPointer + WRITE
+          sta MapPointer
 
           dex
           bne LookForMapData
@@ -70,9 +70,9 @@ FoundMapData:
           ldy # 0
 
           lda #>SpriteList
-          sta MapSpritePointer + WRITE
+          sta MapSpritePointer
           lda #<SpriteList
-          sta MapSpritePointer + WRITE + 1
+          sta MapSpritePointer + 1
 
           ldx CurrentMap
           beq FoundSpriteList
@@ -93,136 +93,15 @@ EndOfASpriteList:
           clc
           adc MapSpritePointer
           bcc +
-          inc MapSpritePointer + WRITE + 1
+          inc MapSpritePointer + 1
 +
-          sta MapSpritePointer + WRITE
+          sta MapSpritePointer
 
           ldy # 0
           dex
           bne LookForSpriteList
 
 FoundSpriteList:
-
-
-          ;; Skipping over a room means searching for the end of the list
-SkipRoom:
-          lda (Pointer), y         ; .y = 0
-          ;; End of list? Then one room down, .x more to go
-          beq SkipRoomDone
-          ;; Not end of list, so we have to skip 6 bytes
-          lda Pointer
-          clc
-          adc # 6
-          bcc +
-          inc Pointer + 1
-+
-          sta Pointer
-          ;; Then keep going, look for end of the room's list
-          jmp SkipRoom
-
-SkipRoomDone:
-          ;; We've reached the end of one room
-          dex
-          ;; Are we done? Then the next entry is this room
-          beq FoundSprites
-          ;; Not done yet — skip a/more room[s]
-          lda Pointer
-          clc
-          adc # 1
-          bcc +
-          inc Pointer + 1
-+
-          sta Pointer
-          jmp SkipRoom
-
-          ;; OK, we found "our" sprite list head at (Pointer) + 1
-FoundSprites:
-          lda Pointer
-          clc
-          adc #1
-          bcc +
-          inc Pointer + 1
-+
-          sta Pointer
-
-DoneFinding:
-          ;; Start with 0 sprites
-          ;; There can be up to 4
-          ;;; ldx # 0                ; this is already the case
-          stx SpriteCount
-          stx SpriteFlicker
-
-SetUpSprite:
-          ;; .y varies from 0 to max 25 when all 4 sprites are used
-          lda (Pointer), y         ; .y = .x × 6 + 0
-          ;; End of sprite list?
-          beq SpritesDone
-          iny
-          sty Temp
-          sta SpriteIndex, x
-          jmp SetUpSprite
-
-MoreSprites:
-          sta SpriteMotion, x
-          iny
-          inc SpriteCount
-          inx
-          gne SetUpSprite
-
-SpritePresent:
-          ldy Temp
-SpritePresentAndYSet:
-          lda (Pointer), y
-          cmp #SpriteFixed
-          beq AddFixedSprite
-          cmp #SpriteWander
-          beq AddWanderingSprite
-          ;; fall through
-AddRandomEncounter:
-          iny
-          lda (Pointer), y
-          sta SpriteX, x
-          iny
-          lda (Pointer), y
-          ora #$80              ; ensure position off screen
-          sta SpriteY, x
-          iny
-          lda (Pointer), y
-          sta SpriteAction, x
-          iny
-          lda (Pointer), y         ; .y = .x × 6 + 5
-          sta SpriteParam, x
-          lda # SpriteRandomEncounter
-          gne MoreSprites
-
-AddFixedSprite:
-          jsr AddPlacedSprite
-          lda # 0
-          ;; .y = .x⁺¹ × 6   (start of next entry)
-          ;; Go back looking for more sprites
-          geq MoreSprites
-
-AddWanderingSprite:
-          jsr AddPlacedSprite
-          lda # SpriteMoveIdle
-          ;; .y = .x⁺¹ × 6   (start of next entry)
-          ;; Go back looking for more sprites
-          gne MoreSprites
-
-AddPlacedSprite:
-          iny
-          lda (Pointer), y         ; .y = .x × 6 + 2
-          sta SpriteX, x
-          iny
-          lda (Pointer), y         ; .y = .x × 6 + 3
-          sta SpriteY, x
-          iny
-          lda (Pointer), y         ; .y = .x × 6 + 4
-          sta SpriteAction, x
-          iny
-          lda (Pointer), y         ; .y = .x × 6 + 5
-          sta SpriteParam, x
-          rts
 
 SpritesDone:
 ;;; 

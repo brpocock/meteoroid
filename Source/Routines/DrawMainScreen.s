@@ -19,7 +19,7 @@ ExecuteScroll:
           ldx # 0
 CopyMapToSCRam:
           lda (MapPointer), y
-          sta Background, x
+          sta Background + WRITE, x
           iny
           inx
           cpx # 30
@@ -35,8 +35,9 @@ DrawMap:
 
 ;;; 
 FillBottomScreen:
-          lda # 0
+          .ldacolu COLBLUE, 0
           sta COLUBK
+          lda # 0
           sta PF0
           sta PF1
           sta PF2
@@ -109,7 +110,7 @@ GoScreen:
           sta DeltaX
           sta DeltaY
 
-          ;; FIXME. FInd new screen to which to jump.
+          ;; FIXME. Find new screen to which to jump.
 
           lda #ModePlayNewRoom
           sta GameMode

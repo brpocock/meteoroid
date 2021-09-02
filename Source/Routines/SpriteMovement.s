@@ -27,16 +27,6 @@ MoveSprites:
 +
           lda SpriteMotion, x
           beq NextSprite
-          cmp #SpriteRandomEncounter
-          bne SpriteXMove
-          jsr Random            ; Is there a random encounter?
-          bne NoRandom
-          jsr Random
-          and #1
-          bne NoRandom
-          jmp CheckPlayerCollision.FightWithSpriteX
-
-NoRandom:
           dex
           bne MoveSprites
           rts

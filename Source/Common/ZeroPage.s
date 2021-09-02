@@ -81,7 +81,6 @@ MovementStyle:
 Equipment:
           .byte ?
 
-;;; Grizzard currently with the player
 CurrentProvince:
           .byte ?
 

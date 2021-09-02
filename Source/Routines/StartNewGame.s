@@ -53,7 +53,6 @@ InitGameVars:
           stx WSYNC
           .fi
 
-Loop:
           .WaitScreenTopMinus 1, -1
 
           jsr i2cStartWrite
@@ -83,16 +82,7 @@ LetsStart:
 
           jsr i2cStopWrite
 
-WaitForScreenEnd:
-          lda GameMode
-          cmp #ModeStartGame
-          beq Leave
           .WaitScreenBottom
-          .if TV != NTSC
-          stx WSYNC
-          .fi
-          jmp Loop
-
 Leave:
           .FarJSR SaveKeyBank, ServiceSaveToSlot
 
