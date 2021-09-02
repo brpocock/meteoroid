@@ -44,26 +44,65 @@ NewRoomTimerRunning:
           lda NextMap
           sta CurrentMap
 
-          ;; Got to figure out the sprites
-          ;; Start at the head of the sprite list
-          lda #<SpriteList
-          sta Pointer
+SearchForMap:
+          lda #>MapData
+          sta MapPointer + WRITE + 1
+          lda #<MapData
+          sta MapPointer + WRITE
+
+          ldx CurrentMap
+          beq FoundMapData
+
+          ldy # 2
+LookForMapData:
+          lda (MapPointer), y
+          clc
+          adc MapPointer
+          bcc +
+          inc MapPointer + WRITE + 1
++
+          sta MapPointer + WRITE
+
+          dex
+          bne LookForMapData
+
+FoundMapData:
+          ldy # 0
+
           lda #>SpriteList
-          sta Pointer + 1
+          sta MapSpritePointer + WRITE
+          lda #<SpriteList
+          sta MapSpritePointer + WRITE + 1
+
+          ldx CurrentMap
+          beq FoundSpriteList
+
+LookForSpriteList:
+          lda (MapSpritePointer), y
+          beq EndOfASpriteList
+
+          lda y
+          clc
+          adc # 8
+          ldy a
+
+          gne LookForSpriteList
+
+EndOfASpriteList:
+          lda y
+          clc
+          adc MapSpritePointer
+          bcc +
+          inc MapSpritePointer + WRITE + 1
++
+          sta MapSpritePointer + WRITE
 
           ldy # 0
-FindSprites:
-          ;; Get the map index
-          ldx CurrentMap
+          dex
+          bne LookForSpriteList
 
-          ;; If it was zero, our work here is done.
-          beq DoneFinding
+FoundSpriteList:
 
-          ;; Crash early if the map ID is out of range for this province (bank)
-          cpx #MapCount + 1
-          blt SkipRoom
-BadMap:
-          brk
 
           ;; Skipping over a room means searching for the end of the list
 SkipRoom:

@@ -31,29 +31,13 @@ LoopMusic:
           lda #<SongTheme
           sta CurrentMusic
 
-          .case 3
-
-          lda #>SongProvince1
-          sta CurrentMusic + 1
-          lda #<SongProvince1
-          sta CurrentMusic
-
-          .case 4
-
-          lda #>SongProvince0
-          sta CurrentMusic + 1
-          lda #<SongProvince0
-          sta CurrentMusic
-
-          .case 5
-
-          lda #>SongProvince2
-          sta CurrentMusic + 1
-          lda #<SongProvince2
-          sta CurrentMusic
-
           .default
-          .error "Not expecting to be in bank ", BANK
+
+          lda #>BackgroundMusic
+          sta CurrentMusic + 1
+          lda #<BackgroundMusic
+          sta CurrentMusic
+
           .endswitch
 
           jmp ReallyPlayMusic

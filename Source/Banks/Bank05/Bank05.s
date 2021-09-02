@@ -17,6 +17,7 @@ MapData:
           .include "MapProvince0.s"
           .include "SpritesProvince0.s"
 
+BackgroundMusic:
           .include "Province0.s"
 
           .include "VSync.s"

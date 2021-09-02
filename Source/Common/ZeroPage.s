@@ -289,14 +289,11 @@ M1LineCounter:
 BallLineCounter:
           .byte ?
 
-ScrollLeft:
-          .byte ?
-          
-BumpCooldown:
-          .byte ?
+MapPointer:
+          .word ?
 
-MapFlags:
-          .byte ?
+MapSpritePointer:
+          .word ?
 
 ;;; 
 ;;; Verify that we don't run over

@@ -41,13 +41,16 @@ Background:
           .byte ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?
           .byte ?, ?, ?, ?, ?,  ?, ?, ?, ?, ?
 
-MapPointer:
-          .word ?
+MapFlags:
+          .byte ?
 
-MapColorPointer:
-          .word ?
+ScrollLeft:
+          .byte ?
+          
+BumpCooldown:
+          .byte ?
 
-          .warn "SC-RAM is used up to ", *
+          .warn "SC-RAM is used up to ", * - 1, " leaving ", ($1080 - *), " bytes free"
           
           .if * > $1080
           .error "Ran out of SC RAM"
