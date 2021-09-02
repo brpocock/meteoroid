@@ -5,29 +5,29 @@
 
 SetUpFortyEight:	.macro Graphics
 	lda #<(\Graphics + \Graphics.Height * 0 - 1)
-	sta Background + 0 + WRITE
+	sta PixelPointers + 0 
 	lda #>(\Graphics + \Graphics.Height * 0 - 1)
-	sta Background + 1 + WRITE
+	sta PixelPointers + 1 
 	lda #<(\Graphics + \Graphics.Height * 1 - 1)
-	sta Background + 2 + WRITE
+	sta PixelPointers + 2 
 	lda #>(\Graphics + \Graphics.Height * 1 - 1)
-	sta Background + 3 + WRITE
+	sta PixelPointers + 3 
 	lda #<(\Graphics + \Graphics.Height * 2 - 1)
-	sta Background + 4 + WRITE
+	sta PixelPointers + 4 
 	lda #>(\Graphics + \Graphics.Height * 2 - 1)
-	sta Background + 5 + WRITE
+	sta PixelPointers + 5 
 	lda #<(\Graphics + \Graphics.Height * 3 - 1)
-	sta Background + 6 + WRITE
+	sta PixelPointers + 6 
 	lda #>(\Graphics + \Graphics.Height * 3 - 1)
-	sta Background + 7 + WRITE
+	sta PixelPointers + 7 
 	lda #<(\Graphics + \Graphics.Height * 4 - 1)
-	sta Background + 8 + WRITE
+	sta PixelPointers + 8 
 	lda #>(\Graphics + \Graphics.Height * 4 - 1)
-	sta Background + 9 + WRITE
+	sta PixelPointers + 9 
 	lda #<(\Graphics + \Graphics.Height * 5 - 1)
-	sta Background + $a + WRITE
+	sta PixelPointers + $a 
 	lda #>(\Graphics + \Graphics.Height * 5 - 1)
-	sta Background + $b + WRITE
+	sta PixelPointers + $b 
 
 	.endm
 

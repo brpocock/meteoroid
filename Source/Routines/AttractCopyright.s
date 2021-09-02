@@ -14,7 +14,7 @@ CopyrightMode:      .block
 DoneCopyrightSpeech:
           .SkipLines 24
 
-          .ldacolu COLTURQUOISE, $e
+          .ldacolu COLGOLD, $e
           sta COLUP0
           sta COLUP1
 
