@@ -112,10 +112,15 @@ WiredEnd:
 
 BitMask:
           .byte $01, $02, $04, $08, $10, $20, $40, $80
-          
+
           .fill ($fff7 - * + 1), 0        ; 7800 crypto key (designed to fail)
 
+          
           .if DEMO
+
+          * = $fff0
+          .offs -$f000
+          .text "plus"
           
           * = $fff4
           .offs -$f000
@@ -127,12 +132,17 @@ BitMask:
           * = $ffe0
           .offs -$f000
 
-          .text "meteoroid-brp", 0, 0, 0
+          .text "meteoroid-brp-v0plus"
 
           ;; magic cookie for Stella
           nop $1fe0
 
           .fi
+
+          PlusWrite = $1ff0
+          PlusSend = $1ff1
+          PlusRead = $1ff2
+          PlusReadRemaining = $1ff3
 
 ;;; The KnownZeroInEveryBank allows pointer to point to a fixed zero,
 ;;; which has proven to be useful on occassion.
@@ -180,7 +190,7 @@ KnownZeroInEveryBank:
 ;;;
           * = NMIVEC
           .offs -$f000
-          .word GoColdStart
+          .word $1000           ; start of image contains PlusCart URL string
 
           * = RESVEC             ; CPU reset and BRK (IRQ) vectors (no NMI)
           .offs -$f000

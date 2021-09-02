@@ -4,7 +4,7 @@
 
           .include "StartBank.s"
 
-          .include "Source/Generated/Bank07/SpeakJetIDs.s"
+          .include "Source/Generated/Bank04/SpeakJetIDs.s"
 
           .include "AttractStory.s"
           .include "Death.s"

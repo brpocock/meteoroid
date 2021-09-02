@@ -3,18 +3,8 @@
 ;;;
 ;;; Mapped as $1000 (read) and $1080 (write)
 
-          * = $1000
-
-          .enc "Unicode"
-RAMRead:
-          .fill $80, "Meteoroid, © 2021 Bruce-Robert Pocock. EFSC."
-RAMWrite:
-          .fill $80, "Meteoroid, © 2021 Bruce-Robert Pocock. EFSC."
-
-          .enc "none"
-
-          
-          * = $1000
+          * = $1080
+          .offs -$1000
 
 SCRAM:
 
@@ -50,10 +40,43 @@ ScrollLeft:
 BumpCooldown:
           .byte ?
 
-          .warn "SC-RAM is used up to ", * - 1, " leaving ", ($1080 - *), " bytes free"
+          .warn "SC-RAM is used up to ", * - 1, " leaving ", ($1100 - *), " bytes free"
           
-          .if * > $1080
+          .if * > $1100
           .error "Ran out of SC RAM"
           .fi
 
-WRITE = $80
+          WRITE = -$80
+
+          * = $1000
+          .offs -$1000
+
+          ;; Duplicate strings in both read and write sections are there
+	;; so  that Stella  will  correctly  detect this  as  as EFSC  or
+	;; F4SC image.
+
+          ;; URL is there for PlusCart.
+          .enc "Unicode"
+RAMWrite:
+          .text "https://star-hope.org/games/Meteoroid/meteoroid.plx", 0
+          .text "Meteoroid, © 2021 Bruce-Robert Pocock.", 0
+          .if DEMO
+          .text "F4SC"
+          .else
+          .text "EFSC"
+          .fi
+          .align $80, 0
+RAMRead:
+          .text "https://star-hope.org/games/Meteoroid/meteoroid.plx", 0
+          .text "Meteoroid, © 2021 Bruce-Robert Pocock.", 0
+          .if DEMO
+          .text "F4SC"
+          .else
+          .text "EFSC"
+          .fi
+          .align $80, 0
+
+          .enc "none"
+
+          * = $f100
+          .offs -$f000

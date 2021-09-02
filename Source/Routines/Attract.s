@@ -11,7 +11,8 @@ Attract:  .block
           ldx #$80
           lda #0
 ZeroRAM:
-          sta $80, x
+          sta $80 - 1, x
+          sta RAMWrite - 1, x
           dex
           bne ZeroRAM
 
@@ -29,11 +30,6 @@ WarmStart:
             lda #ModeBRPPreamble
           .fi
           sta GameMode
-
-          .if STARTER == 1
-          lda #$80
-          sta PlayerYFraction
-          .fi
 
           lda # CTRLPFREF
           sta CTRLPF
@@ -108,82 +104,7 @@ DoneTitleSpeech:
           sty LineCounter
           jsr ShowPicture
 
-          .switch STARTER
-
-          .case 0               ; Dirtex
-
-          .SkipLines 20
-          .ldacolu COLORANGE, $a
-          sta COLUBK
-          .SkipLines 10
-
-          .case 1               ; Aquax
-
-          .SkipLines 30
-          .ldacolu COLSPRINGGREEN, $4
-          sta COLUBK
-
-          .case 2               ; Airex
-
-          .SkipLines 20
-          .ldacolu COLGREEN, $4
-          sta COLUBK
-          .ldacolu COLTURQUOISE, $e
-          sta COLUPF
-
-          lda #$ff
-          sta PF0
-          lda #$f0
-          sta PF1
-          .SkipLines 2
-
-          lda #$ff
-          sta PF0
-          lda #$d5
-          sta PF1
-          .SkipLines 4
-
-          lda #$aa
-          sta PF0
-          lda #$88
-          sta PF1
-          .SkipLines 6
-
-          lda # 0
-          sta PF0
-          sta PF1
-          sta PF2
-
-          .endswitch
-
-          .SkipLines 12
-
-          .switch STARTER
-          .case 0
-          .ldacolu COLGREEN, $e
-          .case 1
-          .ldacolu COLBROWN, $6
-          .case 2
-          .if TV == SECAM
-          lda #COLBLUE
-          .else
-          .ldacolu COLTEAL, $e
-          .fi
-          .default
-          .error "STARTER ∈ (0 1 2), ¬ ", STARTER
-          .endswitch
-
-          sta COLUP0
-          sta COLUP1
-
-          sta WSYNC             ; just for line count
-
-
-          jmp PrepareFillAttractBottom
-
-
 PrepareFillAttractBottom:
-
 
           lda AlarmSeconds
           bne DoneKernel
@@ -208,12 +129,6 @@ DoneKernel:
           and #PRESSED
           beq Leave
 +
-
-          .if STARTER == 2
-          lda # 0
-          sta GRP0
-          sta GRP1
-          .fi
 
           jmp Loop
 

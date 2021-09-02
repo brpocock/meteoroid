@@ -13,7 +13,7 @@ LoopMusic:
           bne TheEnd
 
           .switch BANK
-          .case 7
+          .case SFXBank
 
           lda GameMode
           .if PUBLISHER
@@ -43,7 +43,7 @@ LoopMusic:
           jmp ReallyPlayMusic
 
 PlayMusic:
-          .if BANK == 7
+          .if BANK == SFXBank
           lda GameMode
           and #$f0
           cmp #ModeAttract

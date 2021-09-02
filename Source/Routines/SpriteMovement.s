@@ -168,7 +168,7 @@ NextSprite:
           bpl MoveSprites
           ;; fall through
 MovementLogicDone:
-          lda # MapFlagSprite0Moved | MapFlagSprite1Moved | MapFlagSprite2Moved | MapFlagSprite3Moved
+          lda # MapFlagSpritesMoved
           ora MapFlags
           sta MapFlags
 

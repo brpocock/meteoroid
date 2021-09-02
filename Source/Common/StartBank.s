@@ -35,7 +35,5 @@
 	.include "Macros.s"
           .include "SCRam.s"
 
-	* = $f000
+	* = $f100
 	.offs -$f000
-
-          

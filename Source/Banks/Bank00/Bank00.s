@@ -9,7 +9,7 @@
           BANK = $00
 
           .include "StartBank.s"
-          .include "Source/Generated/Bank07/SpeakJetIDs.s"
+          .include "Source/Generated/Bank04/SpeakJetIDs.s"
 
 ;;; Start with page-aligned bitmaps
           .include "Title.s"
@@ -44,6 +44,8 @@ Quit:
           .include "DetectConsole.s"
           ;; falls through to
           .include "DetectGenesis.s"
+          ;; falls through to
+          .include "DetectPlusCart.s"
           ;; falls through to
           .include "Attract.s"
 

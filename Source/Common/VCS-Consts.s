@@ -58,7 +58,7 @@
             SWCHBColor = $08
           .fi
           SWCHBP0Genesis = $10
-          SWCHBP1Genesis = $20
+          SWCHBPlusCart = $20
           SWCHBP0Advanced = $40
           SWCHBP1Advanced = $80
 

@@ -5,7 +5,7 @@
           ;; Map Services Bank
 
           .include "StartBank.s"
-          .include "Source/Generated/Bank07/SpeakJetIDs.s"
+          .include "Source/Generated/Bank04/SpeakJetIDs.s"
 
           .include "VSync.s"
           .include "VBlank.s"

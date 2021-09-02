@@ -21,12 +21,12 @@ publish:	demo game doc unerase Dist/Meteoroid.Source.tar.gz
 	do sleep 1; done
 
 plus:	game demo
-	@echo 'put Dist/Meteoroid.NTSC.a26 Meteoroid.NTSC.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.PAL.a26 Meteoroid.PAL.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.SECAM.a26 Meteoroid.SECAM.EF' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Demo.NTSC.a26 Meteoroid.Demo.NTSC.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Demo.PAL.a26 Meteoroid.Demo.PAL.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
-	@echo 'put Dist/Meteoroid.Demo.SECAM.a26 Meteoroid.Demo.SECAM.F4' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.NTSC.a26 Meteoroid.NTSC.EFSC' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.PAL.a26 Meteoroid.PAL.EFSC' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.SECAM.a26 Meteoroid.SECAM.EFSC' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.Demo.NTSC.a26 Meteoroid.Demo.NTSC.F4SC' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.Demo.PAL.a26 Meteoroid.Demo.PAL.F4SC' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
+	@echo 'put Dist/Meteoroid.Demo.SECAM.a26 Meteoroid.Demo.SECAM.F4SC' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Unerase.NTSC.a26 Meteoroid.Unerase.NTSC.a26' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Unerase.PAL.a26 Meteoroid.Unerase.PAL.a26' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
 	@echo 'put Dist/Meteoroid.Unerase.SECAM.a26 Meteoroid.Unerase.SECAM.a26' | cadaver https://plusstore.firmaplus.de/remote.php/dav/files/brpocock/Meteoroid
@@ -70,9 +70,9 @@ uno:	Dist/Meteoroid.NTSC.a26 \
 	Dist/Meteoroid.Unerase.NTSC.a26
 	@if [ $$(uname -s) = 'Linux' ] ; then \
 	  mkdir -p $(UNOCART)/METEOROID/ ;\
-	  cp -v Dist/Meteoroid.NTSC.a26 $(UNOCART)/METEOROID/DIRTEX.NTSC.EF ;\
-	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(UNOCART)/METEOROID/DEMO.NTSC.F4 ;\
-	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(UNOCART)/METEOROID/UNERASE.NTSC.F4 ;\
+	  cp -v Dist/Meteoroid.NTSC.a26 $(UNOCART)/METEOROID/DIRTEX.NTSC.EFSC ;\
+	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(UNOCART)/METEOROID/DEMO.NTSC.F4SC ;\
+	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(UNOCART)/METEOROID/UNERASE.NTSC.F4SC ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi
@@ -288,37 +288,37 @@ Dist/Meteoroid.SECAM.pro:	Source/Meteoroid.pro Dist/Meteoroid.SECAM.a26
 		-e s/@@MD5@@/$$(md5sum Dist/Meteoroid.SECAM.a26 | cut -d\  -f1)/g > $@
 
 dstella:	Dist/Meteoroid.Demo.NTSC.a26 Dist/Meteoroid.Demo.NTSC.sym Dist/Meteoroid.Demo.NTSC.pro
-	stella -tv.filter 3 -grabmouse 0 -bs F4 \
+	stella -tv.filter 3 -grabmouse 0 -bs F4SC \
 		-lc Genesis -rc AtariVox \
 		-format NTSC -pp Yes \
 		-debug $<
 
 dstella-pal:	Dist/Meteoroid.Demo.PAL.a26 Dist/Meteoroid.Demo.PAL.sym Dist/Meteoroid.Demo.PAL.pro
-	stella -tv.filter 3 -grabmouse 0 -bs F4 \
+	stella -tv.filter 3 -grabmouse 0 -bs F4SC \
 		-lc Genesis -rc AtariVox \
 		-format PAL -pp Yes \
 		-debug $<
 
 dstella-secam:	Dist/Meteoroid.Demo.SECAM.a26 Dist/Meteoroid.Demo.SECAM.sym Dist/Meteoroid.Demo.SECAM.pro
-	stella -tv.filter 3 -grabmouse 0 -bs F4 \
+	stella -tv.filter 3 -grabmouse 0 -bs F4SC \
 		-lc Genesis -rc AtariVox \
 		-format SECAM -pp Yes \
 		-debug $<
 
 stella:	Dist/Meteoroid.NTSC.a26 Dist/Meteoroid.NTSC.sym Dist/Meteoroid.NTSC.pro
-	stella -tv.filter 3 -grabmouse 0 -bs EF \
+	stella -tv.filter 3 -grabmouse 0 -bs EFSC \
 		-lc Genesis -rc AtariVox \
 		-format NTSC -pp Yes \
 		-debug $<
 
 stella-pal:	Dist/Meteoroid.PAL.a26 Dist/Meteoroid.PAL.sym Dist/Meteoroid.PAL.pro
-	stella -tv.filter 3 -grabmouse 0 -bs EF \
+	stella -tv.filter 3 -grabmouse 0 -bs EFSC \
 		-lc Genesis -rc AtariVox \
 		-format PAL -pp Yes \
 		-debug $<
 
 stella-secam:	Dist/Meteoroid.SECAM.a26 Dist/Meteoroid.SECAM.sym Dist/Meteoroid.SECAM.pro
-	stella -tv.filter 3 -grabmouse 0 -bs EF \
+	stella -tv.filter 3 -grabmouse 0 -bs EFSC \
 		-lc Genesis -rc AtariVox \
 		-format SECAM -pp Yes \
 		-debug $<

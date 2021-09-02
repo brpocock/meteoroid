@@ -1,7 +1,7 @@
-;;; Meteoroid Source/Banks/Bank04/Bank04.s
+;;; Meteoroid Source/Banks/Bank0b/Bank0b.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 	BANK = $0b
-          PROVINCE = 2
+          PROVINCE = 6
 
           .include "StartBank.s"
 
@@ -13,10 +13,11 @@ DoLocal:
           ;; falls through to
           .include "DrawMainScreen.s"
 
-          .include "MapsProvince0.s"
-          .include "Maps0RLE.s"
-
-          .include "Province0.s"
+MapData:
+          .include "MapProvince6.s"
+          .include "SpritesProvince6.s"
+BackgroundMusic:
+          .include "Province6.s"
 
           .include "VSync.s"
           .include "VBlank.s"

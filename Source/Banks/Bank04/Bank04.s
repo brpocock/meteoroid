@@ -1,6 +1,6 @@
-;;; Meteoroid Source/Banks/Bank07/Bank07.s
+;;; Meteoroid Source/Banks/Bank04/Bank04.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-          BANK = $07
+          BANK = $04
 
           ;;
           ;; Sound and Music services

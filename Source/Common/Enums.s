@@ -178,6 +178,7 @@
 
 ;;; 
 ;;; MapFlags values
+          MapFlagSpritesMoved = $01
           MapFlagRandomSpawn = $04
           MapFlagFacing = $08   ; matches REFP0 REFLECTED bit
 
