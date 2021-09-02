@@ -525,7 +525,7 @@ Shape:~{~{~a~}~2%~}
 
 (defun per-line-colu (pixels)
   (loop for line from 0 below (array-dimension pixels 1)
-        collecting (mapcan #'colu-from-color (most-popular-non-black-color pixels line))))
+        collecting (colu-from-color (most-popular-non-black-color pixels line))))
 
 (defun pixels-subset-copy (pixels x0 x1 y0 y1)
   (let ((output (make-array (list (1+ (- x1 x0)) (1+ (- y1 y0)) 3) :element-type 'number)))
@@ -535,7 +535,8 @@ Shape:~{~{~a~}~2%~}
                    for y-out from 0
                    do (setf (aref output x-out y-out 0) (aref pixels x y 0)
                             (aref output x-out y-out 1) (aref pixels x y 1)
-                            (aref output x-out y-out 2) (aref pixels x y 2))))))
+                            (aref output x-out y-out 2) (aref pixels x y 2))))
+    output))
 
 (defun split-20×20-map-into-rows (pixels)
   (loop for row from 0 below (/ (array-dimension pixels 1) 20)
@@ -584,13 +585,11 @@ Shape:~{~{~a~}~2%~}
                                (/ (array-dimension (cdr (lastcar spans)) 0) 20)
                                0)))
                (let ((new-span (concatenate-pixels (cdr (lastcar spans)) screen)))
-                 (format *trace-output* " (new span is ~d screens wide)"
-                         (/ (array-dimension new-span 0) 20))
                  (setf (lastcar spans) 
                        (cons (car (lastcar spans)) new-span))))
              (start-new-span (offset)
                (format *trace-output* "~&(blank area found)")
-               (appendf spans (cons offset nil))))
+               (appendf spans (list (cons offset nil)))))
       (loop for screen in screens
             for offset from 0
             if (screen-solid-white-p screen) 
