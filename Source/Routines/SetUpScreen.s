@@ -160,31 +160,7 @@ SetUpSprite:
           iny
           sty Temp
           sta SpriteIndex, x
-          cmp #$ff
-          beq SpritePresentAndYSet
-
-          tay                   ; has the combat been conquered?
-          and #$38
-          lsr a
-          lsr a
-          lsr a
-          stx SpriteCount
-          tax
-          tya
-          and #$07
-          tay
-
-          lda ProvinceFlags, x
-          ldx SpriteCount
-          and BitMask, y
-          beq SpritePresent
-          ;; fall through
-SpriteAbsent:
-          lda Temp
-          clc
-          adc # 5               ; already been incremented once
-          tay
-          gne SetUpSprite
+          jmp SetUpSprite
 
 MoreSprites:
           sta SpriteMotion, x

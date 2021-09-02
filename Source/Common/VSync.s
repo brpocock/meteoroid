@@ -27,11 +27,14 @@ VSync: .block
           beq AlarmFZero
 DecAlarm:
           dec AlarmFrames
-          bpl DoClock
+          lda AlarmFrames
+          bne DoClock
 
           ldy AlarmSeconds
           beq DoClock
           dec AlarmSeconds
+          lda # FramesPerSecond
+          sta AlarmFrames
           jmp DoClock
 
 AlarmFZero:

@@ -37,14 +37,19 @@ DiscardSignature:
           cpx # 5
           blt -
 
-          ldx # 0
-ReadGlobalLoop:
-          ;; Read the global game data straight into core
+          ldx # 8
+-
+          jsr i2cRxByte
+          sta ProgressFlags + WRITE, x
+          dex
+          bne -
+
+          ldx # GlobalGameDataLength
+-
           jsr i2cRxByte
           sta GlobalGameData, x
-          inx
-          cpx # GlobalGameDataLength
-          bne ReadGlobalLoop
+          dex
+          bne -
 
           jsr i2cStopRead
 

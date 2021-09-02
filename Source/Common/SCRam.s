@@ -34,11 +34,11 @@ Background:
 MapFlags:
           .byte ?
 
-ScrollLeft:
-          .byte ?
-          
 BumpCooldown:
           .byte ?
+
+ProgressFlags:
+          .byte ?, ?, ?, ?, ?, ?, ?, ?
 
           .warn "SC-RAM is used up to ", * - 1, " leaving ", ($1100 - *), " bytes free"
           

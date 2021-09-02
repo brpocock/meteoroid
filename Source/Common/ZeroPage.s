@@ -85,33 +85,22 @@ Equipment:
 CurrentProvince:
           .byte ?
 
+CountdownSeconds:
+          .byte ?
+CountdownFrames:
+          .byte ?
+
+ScrollLeft:
+          .byte ?
+
 EndGlobalGameData:
 
           GlobalGameDataLength = EndGlobalGameData - GlobalGameData + 1
           
-          .if GlobalGameDataLength > 27
-          .error "Global data exceeds 27 bytes (length is ", GlobalGameDataLength, " bytes)"
+          .if GlobalGameDataLength > ($40 - 5 - 8)
+          .error "Global data exceeds ", ($40 - 5 - 8), " bytes (length is ", GlobalGameDataLength, " bytes)"
           .fi
 ;;; 
-;;; Game play/progress indicators -- local to one province
-;;; (paged in/out as player changes provinces)
-ProvinceFlags:
-          .byte ?, ?, ?, ?,   ?, ?, ?, ?
-;;; 
-;;; How much Energy (HP) can the player's Grizzard have?
-MaxHP:
-          .byte ?
-GrizzardAttack:
-          .byte ?
-GrizzardDefense:
-          .byte ?
-;;; Filler byte, previously used for Grizzard Acuity
-GrizzardZeroPad:
-          .byte ?
-          
-;;; Moves known (8 bits = 8 possible moves)
-MovesKnown:
-          .byte ?
 
 ;;; Temporarily used when switching rooms
 NextMap:
@@ -121,11 +110,6 @@ NextMap:
 AlarmSeconds:
           .byte ?
 AlarmFrames:
-          .byte ?
-
-CountdownSeconds:
-          .byte ?
-CountdownFrames:
           .byte ?
 
 ;;; String Buffer for text displays of composed text,
@@ -249,6 +233,12 @@ Rand:
 AttractHasSpoken:
           .byte ?
 
+AttractTitleScroll:
+          .byte ?
+
+AttractTitleReveal:
+          .byte ?
+          
 ;;; The Story mode has several "panels" to be shown
 
 AttractStoryPanel:

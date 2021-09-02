@@ -42,20 +42,6 @@ InitGameVars:
           sta BlessedY
           sta PlayerY
           
-
-          lda #$0f              ; learn 4 moves to start TODO
-          sta MovesKnown
-
-          ldx # 7
-          lda # 0
--
-          sta ProvinceFlags - 1, x
-          dex
-          bne -
-
-          lda #$ff
-          sta ProvinceFlags + 7
-
           lda # 100
           sta CurrentHP
           lda # 1

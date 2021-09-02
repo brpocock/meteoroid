@@ -41,20 +41,21 @@ WriteSignatureLoop:
 	cpx # 5
 	bne WriteSignatureLoop
 
-          ;; The GlobalGameData block has all the persistent vars
-          ;; that are not ProvinceFlags or Grizzard stats.
-	ldx # 0
-WriteGlobalLoop:
-	lda GlobalGameData, x
-	jsr i2cTxByte
-	inx
-	cpx # GlobalGameDataLength
-	bne WriteGlobalLoop
-          
-          .WaitScreenBottom
-          .WaitScreenTop
+          ldx # 8
+-
+          lda ProgressFlags, x
+          jsr i2cTxByte
+          dex
+          bne -
 
-          ;; Pad out to $20
+          ldx # GlobalGameDataLength
+-
+          lda GlobalGameData, x
+          jsr i2cTxByte
+          dex
+          bne -
+
+          ;; Pad out to $40
           ldx # $40 - 5 - GlobalGameDataLength
 WritePadAfterGlobal:
           lda # $bb             ; totally arbitrary pad value

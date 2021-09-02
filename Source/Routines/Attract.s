@@ -16,6 +16,10 @@ ZeroRAM:
           dex
           bne ZeroRAM
 
+          lda # 1
+          sta AttractTitleScroll
+          sta AttractTitleReveal
+
 WarmStart:
           ldx #$ff
           txs
@@ -35,8 +39,6 @@ WarmStart:
           sta CTRLPF
 
           lda # 4
-          sta DeltaY
-          ;lda # 4
           sta AlarmSeconds
           lda # 0
           sta AlarmFrames
@@ -99,10 +101,31 @@ DoneTitleSpeech:
           sta WSYNC
           sta COLUBK
 
+          ldy AttractTitleScroll
+-
+          stx WSYNC
+          dey
+          bne -
+
           .SetUpFortyEight Title
-          ldy #Title.Height
+          ldy AttractTitleReveal
           sty LineCounter
           jsr ShowPicture
+
+          lda ClockFrame
+          and #$07
+          bne PrepareFillAttractBottom
+          ldy AttractTitleReveal
+          cpy # Title.Height
+          beq +
+          inc AttractTitleReveal
+          gne PrepareFillAttractBottom
+
++
+	ldx AttractTitleScroll
+          cpx # (KernelLines / 2) - Title.Height
+          bge PrepareFillAttractBottom
+          inc AttractTitleScroll
 
 PrepareFillAttractBottom:
 
