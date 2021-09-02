@@ -621,8 +621,8 @@ Shape:~{~{~a~}~2%~}
                 collecting (if (and (zerop (aref pixels x y 0))
                                     (zerop (aref pixels x y 1))
                                     (zerop (aref pixels x y 2)))
-                               "■■"
-                               "□□"))))
+                               "□□"
+                               "■■"))))
 
 (defun map-as-comment (span-pixels)
   (loop for y from 0 below 20
