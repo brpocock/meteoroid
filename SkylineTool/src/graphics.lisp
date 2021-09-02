@@ -616,12 +616,13 @@ Shape:~{~{~a~}~2%~}
     spans))
 
 (defun map-line-as-comment (pixels y)
-  (loop for x from 0 below (array-dimension pixels 0)
-        append (if (and (zerop (aref pixels x y 0))
-                        (zerop (aref pixels x y 1))
-                        (zerop (aref pixels x y 2)))
-                   "■■"
-                   "□□")))
+  (reduce (lambda (a b) (concatenate 'string a b))
+          (loop for x from 0 below (array-dimension pixels 0)
+                collecting (if (and (zerop (aref pixels x y 0))
+                                    (zerop (aref pixels x y 1))
+                                    (zerop (aref pixels x y 2)))
+                               "■■"
+                               "□□"))))
 
 (defun map-as-comment (span-pixels)
   (loop for y from 0 below 20
