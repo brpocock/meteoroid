@@ -5,19 +5,19 @@ SetUpScreen: .block
           .WaitScreenTopMinus 2, -1
 
           lda # 0
-          sta SpriteFlicker
-          sta SpriteCount
-          sta DeltaX
-          sta DeltaY
-          sta PlayerXFraction
-          sta PlayerYFraction
-          sta MapFlags + WRITE
-          sta CurrentMusic + 1
+          sta WRITE + SpriteFlicker
+          sta WRITE + SpriteCount
+          sta WRITE + DeltaX
+          sta WRITE + DeltaY
+          sta WRITE + PlayerXFraction
+          sta WRITE + PlayerYFraction
+          sta WRITE + MapFlags
+          sta WRITE + CurrentMusic + 1
 
           lda BlessedX
-          sta PlayerX
+          sta WRITE + PlayerX
           lda BlessedY
-          sta PlayerY
+          sta WRITE + PlayerY
           jmp NewRoomTimerRunning
 ;;; 
 NewRoom:
@@ -110,12 +110,110 @@ SpritesDone:
           .WaitScreenBottom
 
           lda #ModePlay
-          sta GameMode
+          sta WRITE + GameMode
 
           lda # 1
           sta AlarmSeconds
           lda # 0
           sta AlarmFrames
+
+ExecuteScroll:
+          lda # 15              ; skip row, offset, and run length, and color data
+          clc
+          adc ScrollLeft
+          adc ScrollLeft
+          tay
+
+RotateMapToSCRam:
+          ;; Map data is stored in vertical strips.
+          ;; These have to be rotated into the Background array.
+
+ClearBackgroundArray:
+          ldx # 60
+          lda # 0
+-
+          sta Background - 1, x
+          dex
+          bne -
+
+          ldx # 6
+-
+          sta PixelPointers - 1, x
+          dex
+          bne -
+
+          ;; Y register contains the offset of the vertical span into the MapPointer table.
+
+          ;; Rotate in the first screen 4 pixels at a time
+
+          lda # 10
+          sta LineCounter
+Rot12:
+          ldx # 0
+          lda (MapPointer), y
+Rot8:
+          rol a
+          asl PixelPointers + 0, x
+          asl PixelPointers + 0, x
+          asl PixelPointers + 0, x
+          rol PixelPointers + 0, x
+          rol BackgroundPF1R, x
+          asl BackgroundPF1R, x
+          asl BackgroundPF1R, x
+          asl BackgroundPF1R, x
+          rol BackgroundPF2R, x
+          asl BackgroundPF2R, x
+          asl BackgroundPF2R, x
+          asl BackgroundPF2R, x
+          rol BackgroundPF2L, x
+          asl BackgroundPF2L, x
+          asl BackgroundPF2L, x
+          asl BackgroundPF2L, x
+          rol BackgroundPF1L, x
+          asl BackgroundPF1L, x
+          asl BackgroundPF1L, x
+          asl BackgroundPF1L, x
+          rol BackgroundPF0, x
+          asl BackgroundPF0, x
+          asl BackgroundPF0, x
+          asl BackgroundPF0, x
+          inx
+          cpx # 8
+          blt Rot8
+          iny
+          lda (MapPointer), y
+Rot4:
+          rol a
+          asl PixelPointers + 0, x
+          asl PixelPointers + 0, x
+          asl PixelPointers + 0, x
+          rol PixelPointers + 0, x
+          ror BackgroundPF1R, x
+          lsr BackgroundPF1R, x
+          lsr BackgroundPF1R, x
+          lsr BackgroundPF1R, x
+          rol BackgroundPF2R, x
+          asl BackgroundPF2R, x
+          asl BackgroundPF2R, x
+          asl BackgroundPF2R, x
+          rol BackgroundPF0, x
+          asl BackgroundPF0, x
+          asl BackgroundPF0, x
+          asl BackgroundPF0, x
+          ror BackgroundPF1L, x
+          lsr BackgroundPF1L, x
+          lsr BackgroundPF1L, x
+          lsr BackgroundPF1L, x
+          rol BackgroundPF2L, x
+          asl BackgroundPF2L, x
+          asl BackgroundPF2L, x
+          asl BackgroundPF2L, x
+          inx
+          cpx # 12
+          blt Rot4
+          dec LineCounter
+          ldx LineCounter
+          bne Rot12
 
           ;; fall through to Map
           .bend

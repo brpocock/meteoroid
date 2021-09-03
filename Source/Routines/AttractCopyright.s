@@ -10,7 +10,7 @@ CopyrightMode:      .block
           sta CurrentUtterance + 1
           lda #<Phrase_TitleCopyright
           sta CurrentUtterance
-          sta AttractHasSpoken
+          sta WRITE + AttractHasSpoken
 DoneCopyrightSpeech:
           .SkipLines 24
 
@@ -41,7 +41,7 @@ DoneCopyrightSpeech:
           lda # 0
           sta AlarmFrames
           lda #ModeAttractStory
-          sta GameMode
+          sta WRITE + GameMode
 ;;; 
 StillCopyright:
           lda NewSWCHA
@@ -49,7 +49,7 @@ StillCopyright:
           and #P0StickUp
           bne Done
           lda #ModeCreditSecret
-          sta GameMode
+          sta WRITE + GameMode
 
 Done:
           jmp Attract.DoneKernel

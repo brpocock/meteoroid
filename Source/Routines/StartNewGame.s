@@ -4,7 +4,7 @@ StartNewGame:          .block
           .WaitScreenTopMinus 1, -1
 
           lda #ModeStartGame
-          sta GameMode
+          sta WRITE + GameMode
 
           ldx #$ff              ; destroy stack. We are here to stay.
           txs
@@ -12,15 +12,15 @@ StartNewGame:          .block
 InitGameVars:
           ;; Set up actual game vars for a new game
           lda #ModePlay
-          sta GameMode
+          sta WRITE + GameMode
 
           lda # 0
           sta CurrentProvince
-          sta NextMap
-          sta CurrentMap
-          sta Score
-          sta Score + 1
-          sta Score + 2
+          sta WRITE + NextMap
+          sta WRITE + CurrentMap
+          sta WRITE + Score
+          sta WRITE + Score + 1
+          sta WRITE + Score + 2
           sta ClockFrame
           sta ClockSeconds
           sta ClockMinutes
@@ -29,18 +29,18 @@ InitGameVars:
           sta AlarmFrames
           sta CountdownSeconds
           sta CountdownFrames
-          sta PlayerXFraction
-          sta PlayerYFraction
-          sta DeltaX
-          sta DeltaY
+          sta WRITE + PlayerXFraction
+          sta WRITE + PlayerYFraction
+          sta WRITE + DeltaX
+          sta WRITE + DeltaY
           sta MovementStyle     ; standing
 
           lda # 80              ; Player start position
-          sta BlessedX
-          sta PlayerX
+          sta WRITE + BlessedX
+          sta WRITE + PlayerX
           lda # 25
-          sta BlessedY
-          sta PlayerY
+          sta WRITE + BlessedY
+          sta WRITE + PlayerY
           
           lda # 100
           sta CurrentHP

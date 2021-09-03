@@ -61,15 +61,16 @@ PlaySpeech: .block
 ContinueSpeaking:
 
           ;; check for expected buffer overflow
-          inc SpeakJetCooldown
-          inc SpeakJetCooldown
-          lda SpeakJetCooldown
-          cmp #$20              ; seems to hang after 36 bytes or so
+          ldx SpeakJetCooldown
+          inx
+          inx
+          stx WRITE + SpeakJetCooldown
+          cpx #$20              ; seems to hang after 36 bytes or so
           bmi NotOverheated
-          cmp #$20              ; cooldown value derived experimentally
+          cpx #$20              ; cooldown value derived experimentally
           bmi TheEnd
-          lda #0
-          sta SpeakJetCooldown
+          ldx #0
+          stx WRITE + SpeakJetCooldown
 
 NotOverheated:
           ;; check buffer-full status
@@ -125,9 +126,10 @@ DoneSpeaking:
           sta CurrentUtterance + 1
 
 TheEnd:
-          lda SpeakJetCooldown
+          ldx SpeakJetCooldown
           beq +
-          dec SpeakJetCooldown
+          dex
+          stx WRITE + SpeakJetCooldown
 +
           rts
           .bend

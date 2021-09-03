@@ -9,10 +9,10 @@ SeedRandom:
           
           lda INPT1
           eor INPT3
-          sta Rand
+          sta WRITE + Rand
           lda INPT2
           eor INPT5
-          sta Rand + 1
+          sta WRITE + Rand + 1
           rts
 
 +
@@ -23,10 +23,10 @@ SeedRandom:
           .fi
 
           eor ClockFrame
-          sta Rand
+          sta WRITE + Rand
           lda Rand + 1
           ora ClockFrame
-          sta Rand + 1
+          sta WRITE + Rand + 1
           rts
 
 ;;; Random routine copied from Supercat on AtariAge

@@ -3,7 +3,7 @@
 "Cart.ModelNo" "Metr0.Demo.@@TV@@"
 "Cart.Name" "Meteoroid Demo"
 "Cart.Rarity" "Homebrew"
-"Cart.Type" "F4"
+"Cart.Type" "F4SC"
 "Controller.Left" "GENESIS"
 "Controller.Right" "ATARIVOX"
 "Display.Format" "@@TV@@"

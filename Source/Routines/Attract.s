@@ -8,17 +8,9 @@ Attract:  .block
 
           .WaitScreenTop
 
-          ldx #$80
-          lda #0
-ZeroRAM:
-          sta $80 - 1, x
-          sta RAMWrite - 1, x
-          dex
-          bne ZeroRAM
-
           lda # 1
-          sta AttractTitleScroll
-          sta AttractTitleReveal
+          sta WRITE + AttractTitleScroll
+          sta WRITE + AttractTitleReveal
 
 WarmStart:
           ldx #$ff
@@ -26,14 +18,14 @@ WarmStart:
           jsr SeedRandom
 
           lda # SoundAtariToday
-          sta NextSound
+          sta WRITE + NextSound
 
           .if PUBLISHER
             lda #ModePublisherPresents
           .else
             lda #ModeBRPPreamble
           .fi
-          sta GameMode
+          sta WRITE + GameMode
 
           lda # CTRLPFREF
           sta CTRLPF
@@ -42,7 +34,7 @@ WarmStart:
           sta AlarmSeconds
           lda # 0
           sta AlarmFrames
-          
+
 ;;; 
 Loop:
           .WaitScreenBottom
@@ -91,7 +83,7 @@ TitleMode:
           sta CurrentUtterance + 1
           lda #<Phrase_TitleIntro
           sta CurrentUtterance
-          sta AttractHasSpoken
+          sta WRITE + AttractHasSpoken
 DoneTitleSpeech:
           .ldacolu COLRED, $6
           sta COLUP0
@@ -118,14 +110,17 @@ DoneTitleSpeech:
           ldy AttractTitleReveal
           cpy # Title.Height
           beq +
-          inc AttractTitleReveal
+          ldx AttractTitleReveal
+          inx
+          stx WRITE + AttractTitleReveal
           gne PrepareFillAttractBottom
 
 +
 	ldx AttractTitleScroll
           cpx # (KernelLines / 2) - Title.Height
           bge PrepareFillAttractBottom
-          inc AttractTitleScroll
+          inx
+          stx WRITE + AttractTitleScroll
 
 PrepareFillAttractBottom:
 
@@ -138,7 +133,7 @@ PrepareFillAttractBottom:
           lda # 8
           sta AlarmSeconds
           lda #ModeAttractCopyright
-          sta GameMode
+          sta WRITE + GameMode
           ;; fall through
 ;;; 
 DoneKernel:
@@ -157,7 +152,7 @@ DoneKernel:
 
 Leave:
           lda #ModeSelectSlot
-          sta GameMode
+          sta WRITE + GameMode
           .WaitScreenBottom
           .if NOSAVE
           jmp BeginOrResume

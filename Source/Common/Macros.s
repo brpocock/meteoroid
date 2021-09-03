@@ -225,7 +225,7 @@ KillMusic:          .macro
           sta AUDC1
           sta AUDV1
           sta AUDF1
-          sta NoteTimer
+          sta WRITE + NoteTimer
           .endm
 ;;; 
 FarJSR:   .macro bank, service

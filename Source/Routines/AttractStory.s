@@ -8,7 +8,7 @@ AttractStory:       .block
           and # PRESSED | PRESSED>>1
           beq +
           lda #ModeSelectSlot
-          sta GameMode
+          sta WRITE + GameMode
 +
 
           lda AlarmSeconds
@@ -17,14 +17,14 @@ AttractStory:       .block
           bne +
 
           lda #ModeAttractTitle
-          sta GameMode
+          sta WRITE + GameMode
           lda # 20
           sta AlarmSeconds
           lda # 0
           sta AlarmFrames
-          sta AttractTitleScroll
+          sta WRITE + AttractTitleScroll
           lda # 1
-          sta AttractTitleReveal
+          sta WRITE + AttractTitleReveal
 
 +
           rts

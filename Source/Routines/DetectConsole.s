@@ -53,5 +53,18 @@ is7800:
           ora #SWCHB7800
 End:
           sta SWCHB
+
+          ;; Now it's safe to clear RAM
+
+          ldx #$80
+          lda #0
+ZeroRAM:
+          sta $80 - 1, x
+          sta RAMWrite - 1, x
+          dex
+          bne ZeroRAM
+          
+
+
           ;; fall through to DetectGenesis
           .bend

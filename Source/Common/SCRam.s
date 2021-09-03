@@ -8,6 +8,15 @@
 
 SCRAM:
 
+PlayerX:
+          .byte ?
+PlayerY:
+          .byte ?
+PlayerXFraction:
+          .byte ?
+PlayerYFraction:
+          .byte ?
+
 SpriteX:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
 SpriteY:
@@ -31,22 +40,6 @@ MonsterMissileX:
 MonsterMissileY:
           .byte ?, ?, ?, ?
           
-Background:
-BackgroundPF0:
-          .byte ?, ?, ?, ?, ?, ?
-          .byte ?, ?, ?, ?, ?, ?
-BackgroundPF1L:
-          .byte ?, ?, ?, ?, ?, ?
-          .byte ?, ?, ?, ?, ?, ?
-BackgroundPF2L:
-          .byte ?, ?, ?, ?, ?, ?
-          .byte ?, ?, ?, ?, ?, ?
-BackgroundPF2R:
-          .byte ?, ?, ?, ?, ?, ?
-          .byte ?, ?, ?, ?, ?, ?
-BackgroundPF1R:
-          .byte ?, ?, ?, ?, ?, ?
-          .byte ?, ?, ?, ?, ?, ?
 
 CurrentDrawRow:
           .byte ?
@@ -54,9 +47,155 @@ CurrentDrawRow:
 MapFlags:
           .byte ?
 
+SaveSCRam:
+
 ProgressFlags:
           .byte ?, ?, ?, ?, ?, ?, ?, ?
 
+;;; It's an Atari game, of course we have a score.
+Score:
+          .byte ?, ?, ?
+
+;;;  Where was the player last known to be safe?
+BlessedX:
+          .byte ?
+BlessedY:
+          .byte ?
+
+          EndSaveSCRam = * - 1
+          SaveSCRamLength = EndSaveSCRam - SaveSCRam + 1
+          
+;;; Temporarily used when switching rooms
+NextMap:
+          .byte ?
+
+DebounceSWCHA:
+          .byte ?
+DebounceSWCHB:
+          .byte ?
+DebounceButtons:
+          .byte ?
+NewSWCHA:
+          .byte ?
+NewSWCHB:
+          .byte ?
+NewButtons:
+          .byte ?
+DeltaX:
+          .byte ?
+DeltaY:
+          .byte ?
+
+;;; String Buffer for text displays of composed text,
+StringBuffer:
+          .byte ?, ?, ?, ?, ?, ?
+          
+
+;;; 
+;;; SpeakJet
+
+;;; What part of a sentence has been sent to the AtariVox/SpeakJet?
+SpeechSegment:
+          .byte ?
+
+
+SpeakJetCooldown:
+          .byte ?
+;;; 
+;;; EEPROM
+
+;;; The active game slot, 0-2 (1-3)
+SaveGameSlot:
+          .byte ?
+;;; 
+;;; Music and Sound FX
+
+;;; Timer until the current music note is done
+NoteTimer:
+          .byte ?
+
+;;; Timer until the current sound effects note is done
+SFXNoteTimer:
+          .byte ?
+
+;;; When the current sound finishes, play this one next
+;;; (index into list of sounds)
+NextSound:
+          .byte ?
+
+
+;;; Random number generator workspace
+Rand:
+          .word ?
+
+;;; 
+;;; Transient work space for one game mode
+;;;
+;;; The scratchpad pages are "overlaid," each game mode uses them differently.
+;;; Upon entering a game mode, some care must be taken to re-initialize this
+;;; area of memory appropriately.
+
+            Scratchpad = *
+;;; 
+;;; Attract mode flags
+
+;;; Attract mode flag for whether the speech associated with a certain mode
+;;; has been started yet. (It's delayed on the title to avoid a conflict
+;;; with the title screen jingle or the AtariVox start-up sound)
+
+AttractHasSpoken:
+          .byte ?
+
+AttractTitleScroll:
+          .byte ?
+
+AttractTitleReveal:
+          .byte ?
+          
+;;; The Story mode has several "panels" to be shown
+
+AttractStoryPanel:
+          .byte ?
+AttractStoryProgress:
+          .byte ?
+;;; 
+;;; Start Game phase
+
+          * = Scratchpad
+
+;;; 
+;;; Scratchpad for Game Play mode
+            * = Scratchpad
+
+;;; How many non-player sprites are on screen now?
+;;; These virtual sprites are multiplexed onto Player Graphic 1
+;;;
+;;; pp0 is pointer to player graphics.
+;;; pp1-pp4 are pointers to the other sprites, if any.
+SpriteCount:
+          .byte ?
+
+;;; Which non-player sprite should be drawn on this frame?
+SpriteFlicker:
+          .byte ?
+
+BumpCooldown:
+          .byte ?
+
+;;; 
+;;; Main "Traffic Cop" Switching
+;;;
+
+;;; The overall game mode.
+;;; Used to select which "kernel" is in use.
+GameMode:
+          .byte ?
+
+Pause:
+          .byte ?
+
+;;; 
+          
           .warn "SC-RAM is used up to ", * - 1, " leaving ", ($1100 - *), " bytes free"
           
           .if * > $1100

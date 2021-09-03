@@ -394,7 +394,7 @@ DoneDrawing:
 
           ldy # (9 * 5)
           lda (SignpostText), y
-          sta GameMode
+          sta WRITE + GameMode
 
 NoButton:
           lda GameMode

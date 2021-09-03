@@ -21,12 +21,14 @@ PlayNewSoundReally:
           lda SoundIndexH - 1, x
           sta CurrentSound + 1
           lda #0
-          sta NextSound
+          sta WRITE + NextSound
 
           jmp PlayNextSFXNote
 
 PlaySound:
-          dec SFXNoteTimer
+          ldx SFXNoteTimer
+          dex
+          stx WRITE + SFXNoteTimer
           bne DoMusic
 
 PlayNextSFXNote:
@@ -50,7 +52,7 @@ PlayNextSFXNote:
           iny
 
           lda (CurrentSound), y
-          sta SFXNoteTimer
+          sta WRITE + SFXNoteTimer
 
           dey
           lda (CurrentSound), y
@@ -73,7 +75,7 @@ EndOfSound:
           sta AUDC0
           sta AUDF0
           sta AUDV0
-          sta SFXNoteTimer
+          sta WRITE + SFXNoteTimer
 
           ;; fall through to DoMusic
 

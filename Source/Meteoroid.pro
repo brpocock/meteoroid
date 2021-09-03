@@ -3,7 +3,7 @@
 "Cart.ModelNo" "Metr0.@@TV@@"
 "Cart.Name" "Meteoroid"
 "Cart.Rarity" "Homebrew"
-"Cart.Type" "EF"
+"Cart.Type" "EFSC"
 "Controller.Left" "GENESIS"
 "Controller.Right" "ATARIVOX"
 "Display.Format" "@@TV@@"

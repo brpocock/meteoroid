@@ -22,10 +22,10 @@ Loop:
           .TimeLines KernelLines / 2 - 1
           .fi
 
-          .ldacolu COLCYAN, $e
+          .ldacolu COLGOLD, $e
           sta COLUP0
           sta COLUP1
-          .ldacolu COLBLUE, $4
+          .ldacolu COLRED, $4
           sta COLUBK
 
           .SkipLines 16
@@ -123,7 +123,7 @@ ActuallyUnErase:
           lda #<SaveGameSlotPrefix
           jsr i2cTxByte
 
-          lda #"g"[0]
+          lda #"m"[0]
           jsr i2cTxByte
           jsr i2cStopWrite
 

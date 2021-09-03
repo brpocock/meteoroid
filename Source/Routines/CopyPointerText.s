@@ -4,7 +4,7 @@ CopyPointerText:
           ldy # 5
 -
           lda (Pointer), y
-          sta StringBuffer, y
+          sta WRITE + StringBuffer, y
           dey
           bpl -
           

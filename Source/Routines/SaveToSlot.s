@@ -41,27 +41,19 @@ WriteSignatureLoop:
 	cpx # 5
 	bne WriteSignatureLoop
 
-          ldx # 8
+          ldx #SaveSCRamLength
 -
-          lda ProgressFlags, x
+          lda SaveSCRam, x
           jsr i2cTxByte
           dex
           bne -
 
-          ldx # GlobalGameDataLength
+          ldx #GlobalGameDataLength
 -
           lda GlobalGameData, x
           jsr i2cTxByte
           dex
           bne -
-
-          ;; Pad out to $40
-          ldx # $40 - 5 - GlobalGameDataLength
-WritePadAfterGlobal:
-          lda # $bb             ; totally arbitrary pad value
-          jsr i2cTxByte
-          dex
-          bne WritePadAfterGlobal
 
           jsr i2cStopWrite
 

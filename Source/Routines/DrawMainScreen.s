@@ -6,92 +6,38 @@ DrawMainScreen:    .block
 Loop:
           .FarJSR MapServicesBank, ServiceTopOfScreen
 
-          .TimeLines KernelLines - 34
+          .TimeLines KernelLines - 38
 
-ExecuteScroll:
-          lda # 15              ; skip row, offset, and run length, and color data
-          clc
-          adc ScrollLeft
-          adc ScrollLeft
-          tay
-
-RotateMapToSCRam:
-          ;; Map data is stored in vertical strips.
-          ;; These have to be rotated into the Background array.
-
-ClearBackgroundArray:
-          ldx # 60
-          lda # 0
--
-          sta Background + WRITE - 1, x
-          dex
-          bne -
-
-          ldx # 6
--
-          sta PixelPointers - 1, x
-          dex
-          bne -
-
-          ;; Y register contains the offset of the vertical span into the MapPointer table.
-
-
-          ;; TODO this is where the magic is supposed to happen. 
 ;;; 
 BeforeKernel:
 
 ;;; 
 MainDrawLoop:
           lda # 0
-          sta CurrentDrawRow + WRITE
+          sta LineCounter
+
+          .ldacolu COLGOLD, $f
+          sta CTRLPF
 
           .ldacolu COLGOLD, $0
           sta COLUBK
-          
-DrawOneRow:
 
-UnpackRowData:
+DrawOneRow:
+          ldy LineCounter
+
           lda # ENABLED
           sta VBLANK
-          ldx CurrentDrawRow
-
-          lda BackgroundPF0, x
-          sta PixelPointers + 4
-          lsr a
-          lsr a
-          lsr a
-          lsr a
-          sta PixelPointers + 9
-          lda BackgroundPF1L, x
-          sta PixelPointers + 5
-          lda BackgroundPF2L, x
-          sta PixelPointers + 6
-          lda BackgroundPF2R, x
-          sta PixelPointers + 7
-          lda BackgroundPF1R, x
-          sta PixelPointers + 8
-
-          txa
-          clc
-          adc # 3
-          tay
-          lda (MapPointer), y
-          sta COLUPF
-
+          stx WSYNC
           lda # 0
           sta VBLANK
 
 DrawSomeLines:
-          .if TV == NTSC
-          ldx # 7
-          .else
-          ldx # 8
-          .fi
+          ldx # 5
 
 DrawOneLine:        .macro    playerNumber
           stx WSYNC
 
-          lda PixelPointers + 4
+          lda BackgroundPF0, y
           sta PF0
           dcp P0LineCounter + \playerNumber
           bcc NoPlayer
@@ -104,17 +50,21 @@ NoPlayer:
           sta GRP0 + \playerNumber
           .Sleep 5
 PlayerDone:
-          lda PixelPointers + 5
+          ldy LineCounter
+          lda BackgroundPF1L, y
           sta PF1
-          lda PixelPointers + 6
+          lda BackgroundPF2L, y
           sta PF2
-          .Sleep 4
-          lda PixelPointers + 7
-          sta PF2
-          lda PixelPointers + 8
-          sta PF1
-          lda PixelPointers + 9
+          lda BackgroundPF0, y
+          lsr a
+          lsr a
+          lsr a
+          lsr a
           sta PF0
+          lda BackgroundPF1R, y
+          sta PF1
+          lda BackgroundPF2R, y
+          sta PF2
 
           .endm
 
@@ -125,11 +75,9 @@ DrawLinePair:
           dex
           bne DrawLinePair
 
-          lda CurrentDrawRow
-          clc
-          adc # 1
-          cmp # 10
-          sta CurrentDrawRow + WRITE
+          iny
+          sty LineCounter
+          cpy # 10
           blt DrawOneRow
 ;;; 
 FillBottomScreen:
@@ -170,7 +118,7 @@ ScrollScreenLeft:
           clc
           adc # 4
           sta BlessedX
-          jmp ExecuteScroll
+          jmp SetUpScreen.ExecuteScroll
 
 ScrollScreenRight:
           ldy # 2
@@ -188,7 +136,7 @@ ScrollScreenRight:
           sec
           sbc # 4
           sta BlessedX
-          jmp ExecuteScroll
+          jmp SetUpScreen.ExecuteScroll
 
 GoScreenUp:
           lda #ScreenBottomEdge - 1
@@ -211,7 +159,7 @@ GoScreen:
           ;; FIXME. Find new screen to which to jump.
 
           lda #ModePlayNewRoom
-          sta GameMode
+          sta WRITE + GameMode
           gne ShouldIStayOrShouldIGo
 
 ScreenBounce:

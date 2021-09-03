@@ -10,23 +10,23 @@ VBlank: .block
           .TimeLines VBlankLines
 
           lda # 0
-          sta NewSWCHA
-          sta NewSWCHB
-          sta NewButtons
+          sta WRITE + NewSWCHA
+          sta WRITE + NewSWCHB
+          sta WRITE + NewButtons
 
           lda SWCHA
           and #$f0
           cmp DebounceSWCHA
           beq +
-          sta DebounceSWCHA
-          sta NewSWCHA          ; at least two directions will be "1" bits
+          sta WRITE + DebounceSWCHA
+          sta WRITE + NewSWCHA          ; at least two directions will be "1" bits
 +
           lda SWCHB
           cmp DebounceSWCHB
           beq +
-          sta DebounceSWCHB
+          sta WRITE + DebounceSWCHB
           ora #$40              ; guarantee at least one "1" bit
-          sta NewSWCHB
+          sta WRITE + NewSWCHB
 +
 
           lda SWCHB
@@ -35,11 +35,11 @@ VBlank: .block
           lda INPT1
           and #PRESSED
           lsr a
-          sta NewButtons
+          sta WRITE + NewButtons
           jmp FireButton
 NotGenesis:
           lda #$40
-          sta NewButtons
+          sta WRITE + NewButtons
 FireButton:
           lda INPT4
           and #PRESSED
@@ -48,20 +48,20 @@ FireButton:
           cmp DebounceButtons
           bne ButtonsChanged
           lda # 0
-          sta NewButtons
+          sta WRITE + NewButtons
           geq DoneButtons
 
 ButtonsChanged:
-          sta DebounceButtons
+          sta WRITE + DebounceButtons
           ora #$01              ; guarantee non-zero if it changed
-          sta NewButtons
+          sta WRITE + NewButtons
 
           and #$40              ; C button pressed?
           bne DoneButtons
           lda NewSWCHB
           ora #~SWCHBSelect     ; zero = Select button pressed
-          sta NewSWCHB
-          sta DebounceSWCHB
+          sta WRITE + NewSWCHB
+          sta WRITE + DebounceSWCHB
 DoneButtons:
 
           .weak

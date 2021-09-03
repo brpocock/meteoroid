@@ -22,7 +22,7 @@ NoReset:
           and # SWCHBSelect
           bne NoSelect
           lda #ModeSubscreen
-          sta GameMode
+          sta WRITE + GameMode
 NoSelect:
           .if TV == SECAM
 

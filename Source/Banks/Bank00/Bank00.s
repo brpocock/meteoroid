@@ -37,7 +37,6 @@ DoLocal:
           brk
 
 Quit:
-          ldy #ServiceColdStart
           ;; falls through to
 	.include "ColdStart.s"
           ;; falls through to

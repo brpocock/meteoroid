@@ -12,12 +12,12 @@ SelectSlot:        .block
           jsr Prepare48pxMobBlob
 
           lda #SoundChirp
-          sta NextSound
+          sta WRITE + NextSound
 
           lda #>Phrase_SelectSlot
-          sta CurrentUtterance + 1
+          sta WRITE + CurrentUtterance + 1
           lda #<Phrase_SelectSlot
-          sta CurrentUtterance
+          sta WRITE + CurrentUtterance
 
           .if TV == NTSC
           .TimeLines KernelLines * 2/3 - 4
@@ -71,7 +71,7 @@ Slot:
           bne DoNotDestroy
           jsr EraseSlotSignature
           lda #ModeSelectSlot
-          sta GameMode
+          sta WRITE + GameMode
           gne MidScreen
 
 DoNotDestroy:
@@ -127,7 +127,7 @@ ShowSaveSlot:
 
           ldx SaveGameSlot
           inx
-          stx StringBuffer + 5
+          stx WRITE + StringBuffer + 5
 
 ShowSlot:
           .FarJSR TextBank, ServiceDecodeAndShowText
@@ -177,7 +177,7 @@ SkipStick:
           sta CurrentUtterance
 
           lda #ModeEraseSlot
-          sta GameMode
+          sta WRITE + GameMode
           jmp Loop
 ;;; 
 EliminationMode:
@@ -197,12 +197,12 @@ EraseSlotNow:
           sta NextSound
 
           lda #ModeErasing
-          sta GameMode
+          sta WRITE + GameMode
           jmp Loop
 
 ThisIsNotAStickUp:
           lda #ModeSelectSlot
-          sta GameMode
+          sta WRITE + GameMode
 
           lda NewButtons
           beq SkipButton
@@ -213,22 +213,25 @@ SkipButton:
           jmp Loop
 ;;; 
 SwitchMinusSlot:
-          dec SaveGameSlot
+          ldx SaveGameSlot
+          dex
+          stx WRITE + SaveGameSlot
           bpl GoBack
           lda # 2
-          sta SaveGameSlot
+          sta WRITE + SaveGameSlot
           gne GoBack
 
 SwitchSelectSlot:
-          inc SaveGameSlot
-          lda SaveGameSlot
-          cmp # 3
+          ldx SaveGameSlot
+          inx
+          stx WRITE + SaveGameSlot
+          cpx # 3
           blt GoBack
-          lda #0
-          sta SaveGameSlot
+          ldx #0
+          stx WRITE + SaveGameSlot
 GoBack:
           lda #SoundChirp
-          sta NextSound
+          sta WRITE + NextSound
 
           jmp Loop
 ;;; 
@@ -236,7 +239,7 @@ SlotOK:
           sta WSYNC
           .WaitScreenTopMinus 2, 0
           lda #SoundHappy
-          sta NextSound
+          sta WRITE + NextSound
 
           jsr CheckSaveSlot
           ;; carry is SET if the slot is EMPTY

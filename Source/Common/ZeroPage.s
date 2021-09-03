@@ -14,23 +14,30 @@ ZeroPage:
 ;;; 
 ;;; General-purpose short-term variable
 ;;;
-;;; Use this as a temp var only within a block (non-reentrant)
 Temp:
           .byte ?
 
 Pointer:
           .word ?
 ;;; 
-;;; Main "Traffic Cop" Switching
-;;;
 
-;;; The overall game mode.
-;;; Used to select which "kernel" is in use.
-GameMode:
-          .byte ?
+Background:
+BackgroundPF0:
+          .byte ?, ?, ?, ?, ?, ?
+          .byte ?, ?, ?, ?, ?, ?
+BackgroundPF1L:
+          .byte ?, ?, ?, ?, ?, ?
+          .byte ?, ?, ?, ?, ?, ?
+BackgroundPF2L:
+          .byte ?, ?, ?, ?, ?, ?
+          .byte ?, ?, ?, ?, ?, ?
+BackgroundPF2R:
+          .byte ?, ?, ?, ?, ?, ?
+          .byte ?, ?, ?, ?, ?, ?
+BackgroundPF1R:
+          .byte ?, ?, ?, ?, ?, ?
+          .byte ?, ?, ?, ?, ?, ?
 
-Pause:
-          .byte ?
 ;;; 
 ;;; Game play/progress indicators -- global
 
@@ -58,16 +65,6 @@ ClockSeconds:
 ClockFrame:
           .byte ?
 
-;;; It's an Atari game, of course we have a score.
-Score:
-          .byte ?, ?, ?
-
-;;;  Where was the player last known to be safe?
-BlessedX:
-          .byte ?
-BlessedY:
-          .byte ?
-
 CurrentHP:
           .byte ?
 CurrentTanks:
@@ -92,18 +89,23 @@ CountdownFrames:
 ScrollLeft:
           .byte ?
 
-EndGlobalGameData:
-
-          GlobalGameDataLength = EndGlobalGameData - GlobalGameData + 1
+          EndGlobalGameData = * - 1
           
-          .if GlobalGameDataLength > ($40 - 5 - 8)
-          .error "Global data exceeds ", ($40 - 5 - 8), " bytes (length is ", GlobalGameDataLength, " bytes)"
-          .fi
+          GlobalGameDataLength = EndGlobalGameData - GlobalGameData + 1
 ;;; 
 
-;;; Temporarily used when switching rooms
-NextMap:
+;;; Counters for drawing P0 and P1 on this frame
+P0LineCounter:
           .byte ?
+P1LineCounter:
+          .byte ?
+M0LineCounter:
+          .byte ?
+M1LineCounter:
+          .byte ?
+BallLineCounter:
+          .byte ?
+
 ;;; An alarm can be set for various in-game special events.
 ;;; This happens in real time.
 AlarmSeconds:
@@ -111,46 +113,18 @@ AlarmSeconds:
 AlarmFrames:
           .byte ?
 
-;;; String Buffer for text displays of composed text,
-;;; e.g.  monster names.
-StringBuffer:
-          .byte ?, ?, ?, ?, ?, ?
-          
-DebounceSWCHA:
-          .byte ?
-DebounceSWCHB:
-          .byte ?
-DebounceButtons:
-          .byte ?
-NewSWCHA:
-          .byte ?
-NewSWCHB:
-          .byte ?
-NewButtons:
-          .byte ?
-DeltaX:
-          .byte ?
-DeltaY:
-          .byte ?
-PlayerX:
-          .byte ?
-PlayerY:
-          .byte ?
-PlayerXFraction:
-          .byte ?
-PlayerYFraction:
-          .byte ?
+;;; 
 
+LineCounter:
+          .byte ?
 ;;; 
 ;;; Variables used in drawing
 
-;;; Line counter for various sorts of "kernels"
-LineCounter:
-          .byte ?
+MapPointer:
+          .word ?
 
-;;; Run length counter used by map screens
-RunLength:
-          .byte ?
+MapSpritePointer:
+          .word ?
 
 PixelPointers:
 pp0l:     .byte ?               ; 0
@@ -165,125 +139,18 @@ pp4l:     .byte ?               ; 8
 pp4h:     .byte ?               ; 9
 pp5l:     .byte ?               ; 10
 pp5h:     .byte ?               ; 11
-          
-;;; 
-;;; SpeakJet
-
-;;; What part of a sentence has been sent to the AtariVox/SpeakJet?
-SpeechSegment:
-          .byte ?
-
-;;; Pointer to the next phoneme to be spoken, or $0000
-;;; When commanding new speech, set to utterance ID with $00 high byte
-CurrentUtterance:
-          .word ?
-
-SpeakJetCooldown:
-          .byte ?
-;;; 
-;;; EEPROM
-
-;;; The active game slot, 0-2 (1-3)
-SaveGameSlot:
-          .byte ?
-;;; 
-;;; Music and Sound FX
 
 ;;; Pointer to the next note of music to be played
 CurrentMusic:
           .word ?
 
-;;; Timer until the current music note is done
-NoteTimer:
-          .byte ?
-
-;;; Timer until the current sound effects note is done
-SFXNoteTimer:
-          .byte ?
-
-;;; When the current sound finishes, play this one next
-;;; (index into list of sounds)
-NextSound:
-          .byte ?
-
 ;;; Pointer to the "note" of the sound being played
 CurrentSound:
           .word ?
 
-
-;;; Random number generator workspace
-Rand:
-          .word ?
-;;; 
-;;; Transient work space for one game mode
-;;;
-;;; The scratchpad pages are "overlaid," each game mode uses them differently.
-;;; Upon entering a game mode, some care must be taken to re-initialize this
-;;; area of memory appropriately.
-
-            Scratchpad = *
-;;; 
-;;; Attract mode flags
-
-;;; Attract mode flag for whether the speech associated with a certain mode
-;;; has been started yet. (It's delayed on the title to avoid a conflict
-;;; with the title screen jingle or the AtariVox start-up sound)
-
-AttractHasSpoken:
-          .byte ?
-
-AttractTitleScroll:
-          .byte ?
-
-AttractTitleReveal:
-          .byte ?
-          
-;;; The Story mode has several "panels" to be shown
-
-AttractStoryPanel:
-          .byte ?
-AttractStoryProgress:
-          .byte ?
-;;; 
-;;; Start Game phase
-
-          * = Scratchpad
-
-;;; 
-;;; Scratchpad for Game Play mode
-            * = Scratchpad
-
-;;; How many non-player sprites are on screen now?
-;;; These virtual sprites are multiplexed onto Player Graphic 1
-;;;
-;;; pp0 is pointer to player graphics.
-;;; pp1-pp4 are pointers to the other sprites, if any.
-SpriteCount:
-          .byte ?
-
-;;; Which non-player sprite should be drawn on this frame?
-SpriteFlicker:
-          .byte ?
-
-BumpCooldown:
-          .byte ?
-
-;;; Counters for drawing P0 and P1 on this frame
-P0LineCounter:
-          .byte ?
-P1LineCounter:
-          .byte ?
-M0LineCounter:
-          .byte ?
-M1LineCounter:
-          .byte ?
-BallLineCounter:
-          .byte ?
-
-MapPointer:
-          .word ?
-
-MapSpritePointer:
+;;; Pointer to the next phoneme to be spoken, or $0000
+;;; When commanding new speech, set to utterance ID with $00 high byte
+CurrentUtterance:
           .word ?
 
 ;;; 

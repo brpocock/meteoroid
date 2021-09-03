@@ -36,7 +36,7 @@ BRPPreambleMode:
           lda # 0
           sta AlarmFrames
           lda #ModeAttractTitle
-          sta GameMode
+          sta WRITE + GameMode
           
 StillPresenting:
 SingleGraphicAttract:

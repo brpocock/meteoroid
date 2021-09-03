@@ -27,16 +27,16 @@ LoopMusic:
           bne TheEnd
 
           lda #>SongTheme
-          sta CurrentMusic + 1
+          sta WRITE + CurrentMusic + 1
           lda #<SongTheme
-          sta CurrentMusic
+          sta WRITE + CurrentMusic
 
           .default
 
           lda #>BackgroundMusic
-          sta CurrentMusic + 1
+          sta WRITE + CurrentMusic + 1
           lda #<BackgroundMusic
-          sta CurrentMusic
+          sta WRITE + CurrentMusic
 
           .endswitch
 
@@ -50,7 +50,9 @@ PlayMusic:
           bne TheEnd
           .fi
 
-          dec NoteTimer
+          ldx NoteTimer
+          dex
+          stx WRITE + NoteTimer
           bne TheEnd
 
           ;; make the notes slightly more staccatto
@@ -80,7 +82,7 @@ ReallyPlayMusic:
 
           iny                   ; 2
           lda (CurrentMusic), y
-          sta NoteTimer
+          sta WRITE + NoteTimer
 
           dey                   ; 1
           lda (CurrentMusic), y
@@ -90,9 +92,11 @@ ReallyPlayMusic:
           clc
           adc CurrentMusic
           bcc +
-          inc CurrentMusic + 1
+          ldx CurrentMusic + 1
+          inx
+          stx WRITE + CurrentMusic + 1
 +
-          sta CurrentMusic
+          sta WRITE + CurrentMusic
 
           jmp TheEnd
 

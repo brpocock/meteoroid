@@ -33,7 +33,7 @@ Loop:
 
 Bye:
           lda #ModeAttractCopyright
-          sta GameMode
+          sta WRITE + GameMode
           jmp Attract.DoneKernel
 
 StayCredits:
