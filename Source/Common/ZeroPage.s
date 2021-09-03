@@ -153,18 +153,18 @@ RunLength:
           .byte ?
 
 PixelPointers:
-pp0l:     .byte ?
-pp0h:     .byte ?
-pp1l:     .byte ?
-pp1h:     .byte ?
-pp2l:     .byte ?
-pp2h:     .byte ?
-pp3l:     .byte ?
-pp3h:     .byte ?
-pp4l:     .byte ?
-pp4h:     .byte ?
-pp5l:     .byte ?
-pp5h:     .byte ?
+pp0l:     .byte ?               ; 0
+pp0h:     .byte ?               ; 1
+pp1l:     .byte ?               ; 2
+pp1h:     .byte ?               ; 3
+pp2l:     .byte ?               ; 4
+pp2h:     .byte ?               ; 5
+pp3l:     .byte ?               ; 6
+pp3h:     .byte ?               ; 7
+pp4l:     .byte ?               ; 8
+pp4h:     .byte ?               ; 9
+pp5l:     .byte ?               ; 10
+pp5h:     .byte ?               ; 11
           
 ;;; 
 ;;; SpeakJet
@@ -265,6 +265,8 @@ SpriteCount:
 SpriteFlicker:
           .byte ?
 
+BumpCooldown:
+          .byte ?
 
 ;;; Counters for drawing P0 and P1 on this frame
 P0LineCounter:

@@ -142,7 +142,7 @@ Dist/Meteoroid.SECAM.a26:	${SOURCES} Source/Generated/Makefile bin/skyline-tool
 
 Source/Generated/Makefile:	bin/write-master-makefile ${SOURCES}
 	mkdir -p Source/Generated
-	for bank in 5 7 8 9 a b c d e; do bin/make-speakjet-enums $$bank; done
+	bin/make-speakjet-enums 4
 	$< > Source/Generated/Makefile
 
 Dist/Meteoroid.NTSC-book.pdf:	Dist/Meteoroid.NTSC.pdf

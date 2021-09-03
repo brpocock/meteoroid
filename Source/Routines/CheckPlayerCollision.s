@@ -36,7 +36,7 @@ FightWithSprite:
           ldx SpriteFlicker     ; ? Seems unnecessary XXX
 FightWithSpriteX:
           lda CurrentHP
-          sbc SpriteParam, x
+          sbc SpriteHP, x       ; TODO
           bpl +
           lda # 0
 +
@@ -47,7 +47,7 @@ FightWithSpriteX:
           rts
 
 DoorWithSprite:
-          lda SpriteParam, x
+          lda SpriteAction, x   ; TODO
           sta NextMap
           ldy #ModePlayNewRoomDoor
           sty GameMode
@@ -94,7 +94,7 @@ ProvinceChange:
           lsr a
           lsr a
           sta CurrentProvince
-          lda SpriteParam, x
+          lda SpriteAction, x   ; TODO
           sta NextMap
           ldy #ModePlayNewRoomDoor
           sty GameMode

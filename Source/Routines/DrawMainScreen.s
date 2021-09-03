@@ -9,33 +9,131 @@ Loop:
           .TimeLines KernelLines - 34
 
 ExecuteScroll:
-          lda # 23              ; skip row, offset, and run length, and color data
+          lda # 15              ; skip row, offset, and run length, and color data
           clc
-          adc ScrollLeft
           adc ScrollLeft
           adc ScrollLeft
           tay
 
-          ldx # 0
-CopyMapToSCRam:
-          lda (MapPointer), y
-          sta Background + WRITE, x
-          iny
-          inx
-          cpx # 30
-          blt CopyMapToSCRam
+RotateMapToSCRam:
+          ;; Map data is stored in vertical strips.
+          ;; These have to be rotated into the Background array.
 
+ClearBackgroundArray:
+          ldx # 60
+          lda # 0
+-
+          sta Background + WRITE - 1, x
+          dex
+          bne -
+
+          ldx # 6
+-
+          sta PixelPointers - 1, x
+          dex
+          bne -
+
+          ;; Y register contains the offset of the vertical span into the MapPointer table.
+
+
+          ;; TODO this is where the magic is supposed to happen. 
 ;;; 
 BeforeKernel:
-          ldy # 20
-          sty LineCounter
 
 ;;; 
-DrawMap:
+MainDrawLoop:
+          lda # 0
+          sta CurrentDrawRow + WRITE
 
+          .ldacolu COLGOLD, $0
+          sta COLUBK
+          
+DrawOneRow:
+
+UnpackRowData:
+          lda # ENABLED
+          sta VBLANK
+          ldx CurrentDrawRow
+
+          lda BackgroundPF0, x
+          sta PixelPointers + 4
+          lsr a
+          lsr a
+          lsr a
+          lsr a
+          sta PixelPointers + 9
+          lda BackgroundPF1L, x
+          sta PixelPointers + 5
+          lda BackgroundPF2L, x
+          sta PixelPointers + 6
+          lda BackgroundPF2R, x
+          sta PixelPointers + 7
+          lda BackgroundPF1R, x
+          sta PixelPointers + 8
+
+          txa
+          clc
+          adc # 3
+          tay
+          lda (MapPointer), y
+          sta COLUPF
+
+          lda # 0
+          sta VBLANK
+
+DrawSomeLines:
+          .if TV == NTSC
+          ldx # 7
+          .else
+          ldx # 8
+          .fi
+
+DrawOneLine:        .macro    playerNumber
+          stx WSYNC
+
+          lda PixelPointers + 4
+          sta PF0
+          dcp P0LineCounter + \playerNumber
+          bcc NoPlayer
+          ldy P0LineCounter + \playerNumber
+          lda (PixelPointers + \playerNumber), y
+          sta GRP0 + \playerNumber
+          jmp PlayerDone
+NoPlayer:
+          lda # 0
+          sta GRP0 + \playerNumber
+          .Sleep 5
+PlayerDone:
+          lda PixelPointers + 5
+          sta PF1
+          lda PixelPointers + 6
+          sta PF2
+          .Sleep 4
+          lda PixelPointers + 7
+          sta PF2
+          lda PixelPointers + 8
+          sta PF1
+          lda PixelPointers + 9
+          sta PF0
+
+          .endm
+
+DrawLinePair:
+          .DrawOneLine 0
+          .DrawOneLine 1
+
+          dex
+          bne DrawLinePair
+
+          lda CurrentDrawRow
+          clc
+          adc # 1
+          cmp # 10
+          sta CurrentDrawRow + WRITE
+          blt DrawOneRow
 ;;; 
 FillBottomScreen:
-          .ldacolu COLBLUE, 0
+          .ldacolu COLBLUE, $6
           sta COLUBK
           lda # 0
           sta PF0

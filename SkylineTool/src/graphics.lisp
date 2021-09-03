@@ -317,30 +317,30 @@ PNG image in an unsuitable format:
 (defun gather-mobs (image-nybbles height width)
   (let (mobs index)
     (loop
-       for y-mob from 0 below (/ height 21)
-       for y₀ = (* y-mob 21)
-       do (loop for x-mob from 0 below (/ width 24)
-             for x₀ = (* x-mob 24)
-             for mob-data = (extract-region image-nybbles x₀ y₀ (+ x₀ 23) (+ y₀ 20))
-             do
-               (cond
-                 ((mob-empty mob-data)
-                  (format *trace-output*
-                          "~% • Found empty MOB (relative ~D,~D)"
-                          x-mob y-mob))
-                 ((mob-hires mob-data)
-                  (appendf mobs (append (mob->mono-bits mob-data)
-                                        (cons (ensure-monochrome mob-data) nil)))
-                  (appendf index (cons (cons x₀ y₀) nil))
-                  (format *trace-output*
-                          "~% • Found a hi-res MOB (relative ~D,~D)"
-                          x-mob y-mob))
-                 (t (appendf mobs (append (mob->multi-bits mob-data)
-                                          (cons (ensure-1+chrome mob-data) nil)))
-                    (appendf index (cons (cons x₀ y₀) nil))
-                    (format *trace-output*
-                            "~% • Found a multicolor MOB (relative ~D,~D)"
-                            x-mob y-mob)))))
+      for y-mob from 0 below (/ height 21)
+      for y₀ = (* y-mob 21)
+      do (loop for x-mob from 0 below (/ width 24)
+               for x₀ = (* x-mob 24)
+               for mob-data = (extract-region image-nybbles x₀ y₀ (+ x₀ 23) (+ y₀ 20))
+               do
+                  (cond
+                    ((mob-empty mob-data)
+                     (format *trace-output*
+                             "~% • Found empty MOB (relative ~D,~D)"
+                             x-mob y-mob))
+                    ((mob-hires mob-data)
+                     (appendf mobs (append (mob->mono-bits mob-data)
+                                           (cons (ensure-monochrome mob-data) nil)))
+                     (appendf index (cons (cons x₀ y₀) nil))
+                     (format *trace-output*
+                             "~% • Found a hi-res MOB (relative ~D,~D)"
+                             x-mob y-mob))
+                    (t (appendf mobs (append (mob->multi-bits mob-data)
+                                             (cons (ensure-1+chrome mob-data) nil)))
+                       (appendf index (cons (cons x₀ y₀) nil))
+                       (format *trace-output*
+                               "~% • Found a multicolor MOB (relative ~D,~D)"
+                               x-mob y-mob)))))
     (values mobs index)))
 
 (defun tia-player-interpret/strip (pixels)
@@ -543,8 +543,7 @@ Shape:~{~{~a~}~2%~}
 
 (defun vertical-span-to-bytes (pixels x)
   (list (pixels-to-byte pixels x 0 7)
-        (pixels-to-byte pixels x 8 15)
-        (pixels-to-byte pixels x 16 19)))
+        (pixels-to-byte pixels x 8 11)))
 
 (defun map-spans-to-bytes (pixels)
   (flatten (loop for x from 0 below (array-dimension pixels 0)
@@ -561,29 +560,29 @@ Shape:~{~{~a~}~2%~}
                             (aref output x-out y-out 2) (aref pixels x y 2))))
     output))
 
-(defun split-10×20-map-into-rows (pixels)
-  (loop for row from 0 below (/ (array-dimension pixels 1) 20)
+(defun split-10×12-map-into-rows (pixels)
+  (loop for row from 0 below (/ (array-dimension pixels 1) 12)
         collecting (pixels-subset-copy pixels 0 (1- (array-dimension pixels 0))
-                                       (* row 20) (+ (* row 20) 19))))
+                                       (* row 12) (+ (* row 12) 11))))
 
-(defun split-10×20-map-row-into-screens (pixels)
+(defun split-10×12-map-row-into-screens (pixels)
   (loop for screen from 0 below (/ (array-dimension pixels 0) 10)
         collecting (pixels-subset-copy pixels (* screen 10) (+ (* screen 10) 9)
-                                       0 19)))
+                                       0 11)))
 
 (defun concatenate-pixels (pixels screen)
   (unless screen (error "Concatenate nothing?"))
   (if 
    pixels
    (let* ((width (array-dimension pixels 0))
-          (output (make-array (list (+ width 10) 20 3))))
+          (output (make-array (list (+ width 10) 12 3))))
      (dotimes (x (array-dimension pixels 0))
-       (dotimes (y 20) 
+       (dotimes (y 12) 
          (setf (aref output x y 0) (aref pixels x y 0)
                (aref output x y 1) (aref pixels x y 1)
                (aref output x y 2) (aref pixels x y 2))))
      (dotimes (x 10)
-       (dotimes (y 20)
+       (dotimes (y 12)
          (setf (aref output (+ width x) y 0) (aref screen x y 0)
                (aref output (+ width x) y 1) (aref screen x y 1)
                (aref output (+ width x) y 2) (aref screen x y 2))))
@@ -593,14 +592,14 @@ Shape:~{~{~a~}~2%~}
 (defun screen-solid-white-p (screen)
   (when screen
     (dotimes (x 10)
-      (dotimes (y 20)
+      (dotimes (y 12)
         (dotimes (ch 3)
           (unless (= #xff (aref screen x y ch))
             (return-from screen-solid-white-p nil)))))
     t))
 
-(defun split-10×20-map-row-into-spans (pixels)
-  (let ((screens (split-10×20-map-row-into-screens pixels))
+(defun split-10×12-map-row-into-spans (pixels)
+  (let ((screens (split-10×12-map-row-into-screens pixels))
         (spans (list (cons 0 nil))))
     (labels ((append-span (screen)
                (let ((new-span (concatenate-pixels (cdr (lastcar spans)) screen)))
@@ -625,10 +624,10 @@ Shape:~{~{~a~}~2%~}
                                "■■"))))
 
 (defun map-as-comment (span-pixels)
-  (loop for y from 0 below 20
+  (loop for y from 0 below 12
         collecting (map-line-as-comment span-pixels y)))
 
-(defun compile-map-10×20 (png-file out-dir height width pixels)
+(defun compile-map-10×12 (png-file out-dir height width pixels)
   (let ((out-file (merge-pathnames
                    (make-pathname :name (pathname-name png-file)
                                   :type "s")
@@ -644,10 +643,10 @@ Shape:~{~{~a~}~2%~}
               (pathname-name png-file)
               (assembler-label-name (pathname-base-name png-file))
               height width)
-      (loop for row in (split-10×20-map-into-rows pixels)
+      (loop for row in (split-10×12-map-into-rows pixels)
             for row-index from 0
             do
-               (dolist (span (split-10×20-map-row-into-spans row))
+               (dolist (span (split-10×12-map-row-into-spans row))
                  (destructuring-bind (span-offset . span-pixels) span
                    (when (and span-offset span-pixels)
                      (format *trace-output* "~& — Span at row ~d offset ~d (width ~d block~:p)"
@@ -665,7 +664,7 @@ Shape:~{~{~a~}~2%~}
                              (map-as-comment span-pixels))
                      (format src-file "
 ;;; Vertical span data
-~{~&	.byte %~8,'0b, %~8,'0b, %~4,'0b~}"
+~{~&	.byte %~8,'0b, %~4,'0b~}"
                              (map-spans-to-bytes span-pixels))))))
       (format src-file "~2&	.bend~%"))))
 
@@ -1010,10 +1009,10 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
                           png height width α palette-pixels)
   (let ((monochrome-lines-p (monochrome-lines-p palette-pixels height width)))
     (cond
-      ((and (zerop (mod height 20))
+      ((and (zerop (mod height 12))
             (zerop (mod width 10)))
-       (format *trace-output* "~% Image ~A seems to be a 10×20 map" png-file)
-       (compile-map-10×20 png-file target-dir height width (png-read:image-data png)))
+       (format *trace-output* "~% Image ~A seems to be a 10×12 map" png-file)
+       (compile-map-10×12 png-file target-dir height width (png-read:image-data png)))
       ((and (zerop (mod height 5))
             (zerop (mod width 4))
             (= 48 (* (/ height 5) (/ width 4)))

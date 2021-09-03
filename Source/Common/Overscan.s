@@ -11,7 +11,7 @@ Overscan: .block
           DoMusic = 0
           .endweak
 
-          .if DoMusic
+          .if DoMusic > 0
           jsr DoMusic
           .fi
 
