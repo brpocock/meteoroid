@@ -35,13 +35,16 @@ InitGameVars:
           sta WRITE + DeltaY
           sta MovementStyle     ; standing
 
-          lda # 80              ; Player start position
+          lda # 160              ; Player start position
           sta WRITE + BlessedX
           sta WRITE + PlayerX
-          lda # 25
+          lda # 16
           sta WRITE + BlessedY
           sta WRITE + PlayerY
-          
+
+          lda # 0
+          sta ScrollLeft
+
           lda # 100
           sta CurrentHP
           lda # 1

@@ -8,43 +8,23 @@ TopOfScreenService: .block
           PlayerSprites = $f100
           MapSprites = PlayerSprites + 16
 
-          jsr VSync
-          .TimeLines 32
-          jsr Prepare48pxMobBlob
-
-          .ldacolu COLGRAY, $f
-          sta COLUP0
-          sta COLUP1
-          .ldacolu COLRED, 0
-          sta COLUBK
+          .WaitScreenTopMinus 1, 1
 ;;; 
-          lda Pause
-          beq DrawScore
-          .LoadString "PAUSED"
-          jmp ScoreDone
-
-DrawScore:
-          jsr DecodeScore
-
-ScoreDone:
-          .FarJSR TextBank, ServiceDecodeAndShowText
-;;; 
-AfterScore:
-          lda #CTRLPFREF | CTRLPFBALLSZ8 | CTRLPFPFP
+          lda # ENABLED
+          sta VBLANK
+          lda # 0
           sta CTRLPF
-
-          lda #0
           sta VDELP0
           sta VDELP1
+          lda # NUSIZMissile2
           sta NUSIZ0
           sta NUSIZ1
 
-          ldx CurrentMap
-
-          .ldacolu COLGOLD, $8
-          ora BumpCooldown
-
+          .ldacolu COLBLUE, $e
           sta COLUP0
+
+          .ldacolu COLMAGENTA, $e
+          sta COLUP1
 
           sta HMCLR
 
@@ -188,17 +168,28 @@ P1Ready:
 +
           sta P0LineCounter
           lda #0
+          sta PF0
           sta PF1
           sta PF2
 
+          lda PlayerY
+          clc
+          adc # 8
+          sta M0LineCounter
+
+          lda #$ff
+          sta M1LineCounter
+
           lda #>PlayerSprites
           sta pp0h
+          lda #<PlayerSprites
+          sta pp0l
 
           lda DeltaX
           ora DeltaY
           beq +        ; always show frame 0 unless moving
           lda ClockFrame
-          and #$08
+          and #$10
           bne +
           ldx #SoundFootstep
           stx NextSound
@@ -211,11 +202,15 @@ P1Ready:
           sta pp0l
 
 TheEnd:
-          .WaitForTimer
 
-          .ldacolu COLGREEN, 0
-          sta COLUBK
-          
+          ldx # ( KernelLines - ( 12 * 13 ) ) / 3
+-
+          stx WSYNC
+          dex
+          bne -
+
+          lda # 0
+          sta VBLANK
           rts
 
           .bend

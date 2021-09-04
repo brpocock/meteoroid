@@ -213,15 +213,15 @@ colors:   .macro co1, co2
           CTRLPFREF = $01
           CTRLPFSCORE = $02
           CTRLPFPFP = $04
-          CTRLPFBALLSZ1 = $00
-          CTRLPFBALLSZ2 = $10
-          CTRLPFBALLSZ4 = $20
-          CTRLPFBALLSZ8 = $30
+          CTRLPFBallSz1 = $00
+          CTRLPFBallSz2 = $10
+          CTRLPFBallSz4 = $20
+          CTRLPFBallSz8 = $30
 
-          NUSIZMISSILE1 = $00
-          NUSIZMISSILE2 = $08
-          NUSIZMISSILE4 = $10
-          NUSIZMISSILE8 = $18
+          NUSIZMissile1 = $00
+          NUSIZMissile2 = $08
+          NUSIZMissile4 = $10
+          NUSIZMissile8 = $18
 
           NUSIZNorm = $00
           NUSIZ2CopiesClose = $01
