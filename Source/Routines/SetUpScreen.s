@@ -146,74 +146,63 @@ ClearBackgroundArray:
 
           ;; Rotate in the first screen 4 pixels at a time
 
+RotatePixels:       .macro
+          rol a
+          ror BackgroundPF2R, x
+          rol BackgroundPF1R, x
+          bcc +
+          lda PixelPointers, x
+          ora #$10
+          sta PixelPointers, x
++
+          ror BackgroundPF2L, x
+          rol BackgroundPF1L, x
+          bcc +
+          lda BackgroundPF0, x
+          ora #$10
+          sta BackgroundPF0, x
++
+          inx
+          .endm
+          
           lda # 10
           sta LineCounter
+RotateTimes4:
+          lda # 4
+          sta Temp
 Rot12:
           ldx # 0
           lda (MapPointer), y
 Rot8:
-          rol a
-          asl PixelPointers + 0, x
-          asl PixelPointers + 0, x
-          asl PixelPointers + 0, x
-          rol PixelPointers + 0, x
-          rol BackgroundPF1R, x
-          asl BackgroundPF1R, x
-          asl BackgroundPF1R, x
-          asl BackgroundPF1R, x
-          rol BackgroundPF2R, x
-          asl BackgroundPF2R, x
-          asl BackgroundPF2R, x
-          asl BackgroundPF2R, x
-          rol BackgroundPF2L, x
-          asl BackgroundPF2L, x
-          asl BackgroundPF2L, x
-          asl BackgroundPF2L, x
-          rol BackgroundPF1L, x
-          asl BackgroundPF1L, x
-          asl BackgroundPF1L, x
-          asl BackgroundPF1L, x
-          rol BackgroundPF0, x
-          asl BackgroundPF0, x
-          asl BackgroundPF0, x
-          asl BackgroundPF0, x
-          inx
+          .RotatePixels
           cpx # 8
           blt Rot8
           iny
           lda (MapPointer), y
 Rot4:
-          rol a
-          asl PixelPointers + 0, x
-          asl PixelPointers + 0, x
-          asl PixelPointers + 0, x
-          rol PixelPointers + 0, x
-          ror BackgroundPF1R, x
-          lsr BackgroundPF1R, x
-          lsr BackgroundPF1R, x
-          lsr BackgroundPF1R, x
-          rol BackgroundPF2R, x
-          asl BackgroundPF2R, x
-          asl BackgroundPF2R, x
-          asl BackgroundPF2R, x
-          rol BackgroundPF0, x
-          asl BackgroundPF0, x
-          asl BackgroundPF0, x
-          asl BackgroundPF0, x
-          ror BackgroundPF1L, x
-          lsr BackgroundPF1L, x
-          lsr BackgroundPF1L, x
-          lsr BackgroundPF1L, x
-          rol BackgroundPF2L, x
-          asl BackgroundPF2L, x
-          asl BackgroundPF2L, x
-          asl BackgroundPF2L, x
-          inx
+          .RotatePixels
           cpx # 12
           blt Rot4
+
+          dec Temp
+          ldx Temp
+          bne Rot12
+
           dec LineCounter
           ldx LineCounter
-          bne Rot12
+          bne RotateTimes4
+
+          ldx # 12
+CombinePF0:
+          lda PixelPointers, x
+          lsr
+          lsr
+          lsr
+          lsr
+          ora BackgroundPF0, x
+          sta BackgroundPF0, x
+          dex
+          bne CombinePF0
 
           ;; fall through to Map
           .bend

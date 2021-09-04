@@ -31,11 +31,6 @@
 
           ModeSubscreen = $70
 
-          ModeSignpost = $80
-          ModeSignpostDone = $81
-          ModeSignpostSetFlag = $82
-          ModeSignpostClearFlag = $83
-
           ModeDeath = $90
 ;;; 
 ;;; Sounds in the library (index values)

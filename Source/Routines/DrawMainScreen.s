@@ -17,8 +17,11 @@ MainDrawLoop:
           sta LineCounter
 
           .ldacolu COLGOLD, $f
-          sta CTRLPF
+          sta COLUPF
 
+          lda # 0
+          sta CTRLPF
+          
           .ldacolu COLGOLD, $0
           sta COLUBK
 
@@ -39,27 +42,25 @@ DrawOneLine:        .macro    playerNumber
 
           lda BackgroundPF0, y
           sta PF0
-          dcp P0LineCounter + \playerNumber
-          bcc NoPlayer
-          ldy P0LineCounter + \playerNumber
-          lda (PixelPointers + \playerNumber), y
-          sta GRP0 + \playerNumber
-          jmp PlayerDone
-NoPlayer:
-          lda # 0
-          sta GRP0 + \playerNumber
-          .Sleep 5
-PlayerDone:
-          ldy LineCounter
           lda BackgroundPF1L, y
           sta PF1
+;;           dcp P0LineCounter + \playerNumber
+;;           bcc NoPlayer
+;;           ldy P0LineCounter + \playerNumber
+;;           lda (PixelPointers + \playerNumber), y
+;;           sta GRP0 + \playerNumber
+;;           jmp PlayerDone
+;; NoPlayer:
+;;           lda # 0
+;;           sta GRP0 + \playerNumber
+;; PlayerDone:
+          ldy LineCounter
           lda BackgroundPF2L, y
           sta PF2
           lda BackgroundPF0, y
-          lsr a
-          lsr a
-          lsr a
-          lsr a
+          tay
+          lda PF0Shift, y
+          ldy LineCounter
           sta PF0
           lda BackgroundPF1R, y
           sta PF1
@@ -200,5 +201,10 @@ UnknownMode:
 ShowSubscreen:
           .FarJSR MapServicesBank, ServiceSubscreen
           jmp SetUpScreen
+
+
+PF0Shift:
+          .byte $00, $10, $20, $30, $40, $50, $60, $70
+          .byte $80, $90, $a0, $b0, $c0, $d0, $e0, $f0
 
           .bend
