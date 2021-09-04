@@ -57,51 +57,53 @@ DrawSomeLines:
 ;;; 
           
 DrawOneLine:        .macro    playerNumber
-          stx WSYNC
+          stx WSYNC             ; 3 / 3
 
-          lda PixelPointers + 4
-          sta PF0
-          lda PixelPointers + 5
-          sta PF1
+          lda PixelPointers + 4 ; 3 / 6
+          sta PF0               ; 3 / 9
+          lda PixelPointers + 5 ; 3 / 12
+          sta PF1               ; 3 / 15
+          lda PixelPointers + 6 ; 3 / 18
+          sta PF2               ; 3 / 21
 
           .if \playerNumber == 2 ; missiles
 
-          lda # 0
-          sta ENAM0
-          sta ENAM1
-          lda # ENABLED
-          dcp M0LineCounter
-          bcc NoM0
-          sta ENAM0
+          lda # 0               ; 2 / 23
+          sta ENAM0             ; 3 / 26
+          sta ENAM1             ; 3 / 29
+          lda # ENABLED         ; 2 / 31
+          dcp M0LineCounter     ; 5 / 36
+          bcc NoM0              ; 2 (3) / 38 (39)
+          sta ENAM0             ; 3 / 41
 NoM0:
-          dcp M1LineCounter
-          bcc NoM1
-          sta ENAM1
-NoM1:
+;;           dcp M1LineCounter     ; 5 / 46 (44)
+;;           bcc NoM1              ; 2 (3) / 48 (49), (41 (42))
+;;           sta ENAM1             ; 3 / 51 (52)
+;; NoM1:
 
           .else                 ; player 0 or 1
 
-          dcp P0LineCounter + \playerNumber
-          bcc NoPlayer
-          ldy P0LineCounter + \playerNumber
-          lda (PixelPointers + \playerNumber * 2), y
-          sta GRP0 + \playerNumber
-          jmp PlayerDone
+          dcp P0LineCounter + \playerNumber ; 5 / 26
+          bcc NoPlayer                      ; 2 (3) / 28 (29)
+          ldy P0LineCounter + \playerNumber ; 3 / 31
+          lda (PixelPointers + \playerNumber * 2), y ; 5 / 36
+          sta GRP0 + \playerNumber                   ; 3 / 39
+          jmp PlayerDone                             ; 3 / 42
 NoPlayer:
-          lda # 0
-          sta GRP0 + \playerNumber
+          lda # 0               ; 2 / 31
+          sta GRP0 + \playerNumber ; 3 / 34
+          .Sleep 8                 ; 8 / 42
+          
 PlayerDone:
 
           .fi                   ; end of sprite §
 
-          lda PixelPointers + 6
-          sta PF2
-          lda PixelPointers + 7
-          sta PF0
-          lda PixelPointers + 8
-          sta PF1
-          lda PixelPointers + 9
-          sta PF2
+          lda PixelPointers + 7 ; 3 / 45
+          sta PF0               ; 3 / 48
+          lda PixelPointers + 8 ; 3 / 51
+          sta PF1               ; 3 / 54
+          lda PixelPointers + 9 ; 3 / 57
+          sta PF2               ; 3 / 60
 
           .endm
 
