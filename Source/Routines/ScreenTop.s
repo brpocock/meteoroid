@@ -203,14 +203,75 @@ P1Ready:
 
 TheEnd:
 
-          ldx # ( KernelLines - ( 12 * 13 ) ) / 3
+PrepareTanksToDraw:
+          ldx # 6
+          lda # 0
 -
-          stx WSYNC
+          sta PixelPointers - 1, x
           dex
           bne -
+          lda #%10101010
+          ldy # 0
+          ldx CurrentTanks
+
+TanksByte:          .macro i
+          cpx # \i * 4
+          blt EndTanks
+          sta PixelPointers + \i - 1
+          iny
+          .endm
+
+          .TanksByte 1
+          .TanksByte 2
+          .TanksByte 3
+          .TanksByte 4
+          .TanksByte 5
+
+EndTanks:
+          txa
+          and #$03
+          tax
+          beq DoneTanks
+          lda TanksBits, x
+          sta PixelPointers, y
+DoneTanks:
+
+          stx WSYNC
+          ldy # 4
+DrawTanks:
+          stx WSYNC
+          lda TanksColors, y
+          sta COLUPF
+          lda PixelPointers
+          sta PF0
+          lda PixelPointers + 1
+          sta PF1
+          lda PixelPointers + 2
+          sta PF2
+          .Sleep 30
+          lda PixelPointers + 3
+          sta PF0
+          lda PixelPointers + 4
+          sta PF1
+          lda PixelPointers + 5
+          sta PF2
+          dey
+          bne DrawTanks
+
+          .SkipLines 3
 
           lda # 0
           sta VBLANK
           rts
 
+TanksBits:
+          .byte %00000000, %10000000, %10100000, %10101000
+
+TanksColors:
+          .colu COLGOLD, $4
+          .colu COLRED, $0
+          .colu COLRED, $6
+          .colu COLRED, $6
+          .colu COLGOLD, $a
+          
           .bend

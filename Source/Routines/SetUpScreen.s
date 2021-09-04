@@ -154,16 +154,17 @@ RotatePixels:       .macro
           lda PixelPointers, x
           ora #$08
           sta PixelPointers, x
-+
           clc
++
           rol PixelPointers, x
           ror BackgroundPF2L, x
           rol BackgroundPF1L, x
           bcc +
           lda BackgroundPF0, x
-          ora #$10
+          ora #$08
           sta BackgroundPF0, x
 +
+          rol BackgroundPF0, x
           inx
           .endm
 ;;;
@@ -209,11 +210,15 @@ Rot4:
           ;; For each row, combine the PF0 values into one RAM byte
           ldx # 12
 CombinePF0:
+          lda BackgroundPF0, x
+          and #$f0
+          sta BackgroundPF0, x
           lda PixelPointers, x
-          lsr
-          lsr
-          lsr
-          lsr
+          lsr a
+          lsr a
+          lsr a
+          lsr a
+          and #$0f              ; XXX unnecessary?
           ora BackgroundPF0, x
           sta BackgroundPF0, x
           dex
