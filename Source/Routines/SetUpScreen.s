@@ -144,17 +144,19 @@ ClearBackgroundArray:
 
           ;; Y register contains the offset of the vertical span into the MapPointer table.
 
-          ;; Rotate in the first screen 4 pixels at a time
-
+;;; 
 RotatePixels:       .macro
-          rol a
+          ;; Rotate in one pixel at the right of a row, shifting everything else left.
+          rol Temp
           ror BackgroundPF2R, x
           rol BackgroundPF1R, x
           bcc +
           lda PixelPointers, x
-          ora #$10
+          ora #$08
           sta PixelPointers, x
 +
+          clc
+          rol PixelPointers, x
           ror BackgroundPF2L, x
           rol BackgroundPF1L, x
           bcc +
@@ -164,34 +166,47 @@ RotatePixels:       .macro
 +
           inx
           .endm
-          
+;;;
+
+          ;; Rotate in 10 vertical columns
           lda # 10
           sta LineCounter
 RotateTimes4:
+          ;; For each column, rotate it in 4 times
           lda # 4
-          sta Temp
+          sta P0LineCounter
 Rot12:
+          ;; Rotate in 12 pixels at the right of the screen
           ldx # 0
+          ;; Rotate in the 8 pixels from the first map data byte
           lda (MapPointer), y
+          sta Temp
 Rot8:
           .RotatePixels
           cpx # 8
           blt Rot8
+          ;; Rotate in the 4 pixels from the second map data byte
           iny
           lda (MapPointer), y
+          sta Temp
 Rot4:
           .RotatePixels
           cpx # 12
           blt Rot4
-
-          dec Temp
-          ldx Temp
+          ;; return to the upper byte, and
+          dey
+          ;; repeat each column of 12 pixels, 4 times
+          dec P0LineCounter
+          ldx P0LineCounter
           bne Rot12
-
+          ;; then move to the next column
           dec LineCounter
+          iny
+          iny
           ldx LineCounter
           bne RotateTimes4
-
+;;; 
+          ;; For each row, combine the PF0 values into one RAM byte
           ldx # 12
 CombinePF0:
           lda PixelPointers, x

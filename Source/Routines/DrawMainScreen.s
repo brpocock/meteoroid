@@ -30,6 +30,22 @@ DrawOneRow:
 
           lda # ENABLED
           sta VBLANK
+
+          ldy LineCounter
+          lda BackgroundPF0, y
+          sta PixelPointers + 2
+          and #$0f
+          tax
+          lda PF0Shift, x
+          sta PixelPointers + 5
+          lda BackgroundPF1L, y
+          sta PixelPointers + 3
+          lda BackgroundPF2L, y
+          sta PixelPointers + 4
+          lda BackgroundPF1R, y
+          sta PixelPointers + 6
+          lda BackgroundPF2R, y
+          sta PixelPointers + 7
           stx WSYNC
           lda # 0
           sta VBLANK
@@ -40,31 +56,27 @@ DrawSomeLines:
 DrawOneLine:        .macro    playerNumber
           stx WSYNC
 
-          lda BackgroundPF0, y
+          lda PixelPointers + 2
           sta PF0
-          lda BackgroundPF1L, y
+          lda PixelPointers + 3
           sta PF1
-;;           dcp P0LineCounter + \playerNumber
-;;           bcc NoPlayer
-;;           ldy P0LineCounter + \playerNumber
-;;           lda (PixelPointers + \playerNumber), y
-;;           sta GRP0 + \playerNumber
-;;           jmp PlayerDone
-;; NoPlayer:
-;;           lda # 0
-;;           sta GRP0 + \playerNumber
-;; PlayerDone:
-          ldy LineCounter
-          lda BackgroundPF2L, y
+          dcp P0LineCounter + \playerNumber
+          bcc NoPlayer
+          ldy P0LineCounter + \playerNumber
+          lda (PixelPointers + \playerNumber), y
+          sta GRP0 + \playerNumber
+          jmp PlayerDone
+NoPlayer:
+          lda # 0
+          sta GRP0 + \playerNumber
+PlayerDone:
+          lda PixelPointers + 4
           sta PF2
-          lda BackgroundPF0, y
-          tay
-          lda PF0Shift, y
-          ldy LineCounter
+          lda PixelPointers + 5
           sta PF0
-          lda BackgroundPF1R, y
+          lda PixelPointers + 6
           sta PF1
-          lda BackgroundPF2R, y
+          lda PixelPointers + 7
           sta PF2
 
           .endm
@@ -76,8 +88,8 @@ DrawLinePair:
           dex
           bne DrawLinePair
 
-          iny
-          sty LineCounter
+          inc LineCounter
+          ldy LineCounter
           cpy # 10
           blt DrawOneRow
 ;;; 
