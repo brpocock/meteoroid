@@ -483,9 +483,9 @@ Shape:~{~{~a~}~2%~}
                 colors))
       (format *trace-output* "~% Done writing to ~A" out-file-name))))
 
-(defun reverse-7-or-8 (shape)
+(defun reverse-16 (shape)
   (let* ((height (length shape))
-         (group-height (if (zerop (mod height 7)) 7 8)))
+         (group-height 16))
     (loop for group from 0 below height by group-height
           append (loop for line from (1- group-height) downto 0
                        collecting (elt shape (+ group line))))))
@@ -664,7 +664,7 @@ Shape:~{~{~a~}~2%~}
                              (map-as-comment span-pixels))
                      (format src-file "
 ;;; Vertical span data
-~{~&	.byte %~8,'0b, %~4,'0b~}"
+~{~&	.byte %~8,'0b, %~4,'0b0000~}"
                              (map-spans-to-bytes span-pixels))))))
       (format src-file "~2&	.bend~%"))))
 
@@ -696,7 +696,7 @@ CoLu:~{~%	;.byte $~2,'0x~}
                 (pathname-name png-file)
                 (assembler-label-name (pathname-base-name png-file))
                 height width
-                (mapcar #'byte-and-art (reverse-7-or-8 shape))
+                (mapcar #'byte-and-art (reverse-16 shape))
                 colors))
       (format *trace-output* "~% Done writing to ~A" out-file-name))))
 
@@ -924,12 +924,12 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
                                   :type "s")
                    target-dir)))
     (with-output-to-file (src-file out-file :if-exists :supersede)
-      (format src-file ";;; This is a generated file. Editing is futile.~2%")
+      (format src-file ";;; This is a generated file. Editing it is futile.~2%")
       (loop for x1 from 0 below width by 8
             for y1 from 0 below height by 8
             for i from 0
             do (loop for y0 from 7 downto 0
-                     do (format src-file "~t.byte %~0,8b" 0))))))
+                     do (format src-file "~&~t.byte %~0,8b" 0))))))
 
 (defun compile-tileset-64 (png-file out-dir height width image-nybbles)
   (declare (ignore height))
@@ -1034,8 +1034,7 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
        (compile-tileset png-file target-dir height width palette-pixels))
       
       ((and (zerop (mod width 8))
-            (or (zerop (mod height 7))
-                (zerop (mod height 8))))
+            (zerop (mod height 16)))
        (format *trace-output* "~% Image ~A seems to be sprite (player) data"
                png-file)
        (compile-tia-player png-file target-dir height width palette-pixels))
