@@ -28,7 +28,7 @@ NoSelect:
 
           lda DebounceSWCHB
           and # SWCHBP0Advanced
-          sta Pause
+          sta WRITE + Pause
 
           .else
 
@@ -40,12 +40,12 @@ NoSelect:
           lda Pause
           eor #$ff
 +
-          sta Pause
+          sta WRITE + Pause
           jmp SkipSwitches
 
 NoPause:
           lda # 0
-          sta Pause
+          sta WRITE + Pause
 
           .fi
 SkipSwitches:
@@ -53,8 +53,8 @@ SkipSwitches:
 
 HandleStick:
           lda #0
-          sta DeltaX
-          sta DeltaY
+          sta WRITE + DeltaX
+          sta WRITE + DeltaY
 
           lda Pause
           beq +
@@ -65,14 +65,14 @@ HandleStick:
           bne DoneStickUp
 
           ldx #-1
-          stx DeltaY
+          stx WRITE + DeltaY
 
 DoneStickUp:
           .BitBit P0StickDown
           bne DoneStickDown
 
           ldx #1
-          stx DeltaY
+          stx WRITE + DeltaY
 
 DoneStickDown:
           .BitBit P0StickLeft
@@ -80,11 +80,13 @@ DoneStickDown:
 
           lda MapFlags
           and # ~MapFlagFacing
-          sta MapFlags
+          sta WRITE + MapFlags
+          lda #MoveWalk
+          sta WRITE + MovementStyle
           lda SWCHA
 
           ldx #-1
-          stx DeltaX
+          stx WRITE + DeltaX
 
 DoneStickLeft:
           .BitBit P0StickRight
@@ -93,10 +95,12 @@ DoneStickLeft:
           tax
           lda MapFlags
           ora #MapFlagFacing
-          sta MapFlags
+          sta WRITE + MapFlags
+          lda #MoveWalk
+          sta WRITE + MovementStyle
 
           ldx #1
-          stx DeltaX
+          stx WRITE + DeltaX
 
 DoneStickRight:
 
@@ -112,21 +116,27 @@ FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
 MoveMinus:
           sec
           sbc #ceil(\pxPerSecond * $80)
-          sta \fractionVar
+          sta WRITE + \fractionVar
           bcs DoneMovement
           adc #$80
-          sta \fractionVar
-          dec \positionVar
+          sta WRITE + \fractionVar
+          lda \positionVar
+          sec
+          sbc # 1
+          sta WRITE + \positionVar
           jmp DoneMovement
 
 MovePlus:
           clc
           adc #ceil(\pxPerSecond * $80)
-          sta \fractionVar
+          sta WRITE + \fractionVar
           bcc DoneMovement
           sbc #$80
-          sta \fractionVar
-          inc \positionVar
+          sta WRITE + \fractionVar
+          lda \positionVar
+          clc
+          adc # 1
+          sta WRITE + \positionVar
 DoneMovement:
           .bend
           .endm

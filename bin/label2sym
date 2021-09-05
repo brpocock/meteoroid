@@ -74,19 +74,23 @@ $label_file_name.labels.txt\n";
 	      ++$skipped;
 	      next;
 	  }
-          }
+        }
       if ($line =~ /SpeakJet_/ or $line =~ /Speech_/ or $line =~ /Phrase_/) {
         ++$skipped;
         next;
       }
       if ($value >= 0x1080 and $value <= 0x10ff) {
         printf $sym_file "%-21s %04x ???? ; %s" =>
-          $label . "_WRITE", $value - 0x80, $line;
+          $label, $value + 0xe000, $line;
+        ++$count;
+        printf $sym_file "%-21s %04x ???? ; %s" =>
+          $label . "_WRITE", $value + 0xe000 - 0x80, $line;
+        ++$count;
+      } else {
+        printf $sym_file "%-21s %04x ???? ; %s" =>
+          $label, $value, $line;
         ++$count;
       }
-      printf $sym_file "%-21s %04x ???? ; %s" =>
-        $label, $value, $line;
-      ++$count;
     }
     close $sym_file;
     close $label_file;

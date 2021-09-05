@@ -37,14 +37,14 @@ DiscardSignature:
           cpx # 5
           blt -
 
-          ldx # 8
+          ldx #SaveSCRamLength
 -
           jsr i2cRxByte
-          sta ProgressFlags + WRITE, x
+          sta WRITE + SaveSCRam, x
           dex
           bne -
 
-          ldx # GlobalGameDataLength
+          ldx #GlobalGameDataLength
 -
           jsr i2cRxByte
           sta GlobalGameData, x
@@ -54,7 +54,7 @@ DiscardSignature:
           jsr i2cStopRead
 
           lda CurrentMap
-          sta NextMap
+          sta WRITE + NextMap
 
           .WaitScreenBottom
           jmp GoPlay

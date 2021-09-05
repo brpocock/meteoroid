@@ -1,6 +1,6 @@
 ;;; Meteoroid Source/Routines/CheckPlayerCollision.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-          
+
 CheckPlayerCollision:         .block
           lda CXP0FB
           and #$c0              ; hit playfield or ball
@@ -30,7 +30,7 @@ BumpSprite:
           and #SpriteProvinceDoor
           cmp #SpriteProvinceDoor
           bne PlayerMoveOK      ; No action
-          geq ProvinceChange    
+          geq ProvinceChange
 
 FightWithSprite:
           ldx SpriteFlicker     ; ? Seems unnecessary XXX
@@ -63,9 +63,9 @@ PlayerMoveOK:
           and #$03
           bne DonePlayerMove
           lda PlayerX
-          sta BlessedX
+          sta WRITE + BlessedX
           lda PlayerY
-          sta BlessedY
+          sta WRITE + BlessedY
 DonePlayerMove:
           rts
 
@@ -108,7 +108,7 @@ BumpWall:
           lda BlessedX
           cmp PlayerX
           beq +
-          sta PlayerX
+          sta WRITE + PlayerX
           jmp BumpY
 +
           lda DeltaX
@@ -118,16 +118,16 @@ BumpWall:
           bne ShoveX
           lda #-1
 ShoveX:
-          sta DeltaX
+          sta WRITE + DeltaX
           clc
           adc PlayerX
-          sta PlayerX
+          sta WRITE + PlayerX
 
 BumpY:
           lda BlessedY
           cmp PlayerY
           beq +
-          sta PlayerY
+          sta WRITE + PlayerY
           jmp DoneBump
 +
           lda DeltaY
@@ -137,17 +137,17 @@ BumpY:
           bne ShoveY
           lda #-1
 ShoveY:
-          sta DeltaY
+          sta WRITE + DeltaY
           clc
           adc PlayerY
-          sta PlayerY
+          sta WRITE + PlayerY
 
           lda # 0
-          sta PlayerXFraction
-          sta PlayerYFraction
+          sta WRITE + PlayerXFraction
+          sta WRITE + PlayerYFraction
 DoneBump:
           lda #SoundBump
-          sta NextSound
+          sta WRITE + NextSound
 
           rts
           .bend

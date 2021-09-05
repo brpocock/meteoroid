@@ -17,6 +17,11 @@ PlayerXFraction:
 PlayerYFraction:
           .byte ?
 
+PlayerMissileX:
+          .byte ?
+PlayerMissileY:
+          .byte ?
+
 SpriteX:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
 SpriteY:
@@ -30,20 +35,11 @@ SpriteAction:
 SpriteHP:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
 
-PlayerMissileX:
-          .byte ?
-PlayerMissileY:
-          .byte ?
-
 MonsterMissileX:
           .byte ?, ?, ?, ?
 MonsterMissileY:
           .byte ?, ?, ?, ?
           
-
-CurrentDrawRow:
-          .byte ?
-
 MapFlags:
           .byte ?
 
@@ -123,11 +119,6 @@ SFXNoteTimer:
 NextSound:
           .byte ?
 
-
-;;; Random number generator workspace
-Rand:
-          .word ?
-
 ;;; 
 ;;; Transient work space for one game mode
 ;;;
@@ -179,6 +170,9 @@ SpriteCount:
 SpriteFlicker:
           .byte ?
 
+MissileCount:
+          .byte ?
+          
 MissileFlicker:
           .byte ?
 

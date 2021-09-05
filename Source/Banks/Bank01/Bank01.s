@@ -7,8 +7,6 @@
           .include "StartBank.s"
           .include "Source/Generated/Bank04/SpeakJetIDs.s"
 
-          .include "VSync.s"
-          .include "Overscan.s"
           .include "48Pixels.s"
           .include "Prepare48pxMobBlob.s"
           .include "Failure.s"
@@ -36,7 +34,9 @@ DoLocal:
           .include "BulletMovement.s"
           .include "UserInput.s"
 
+          .include "VSync.s"
           .include "VBlank.s"
+          .include "Overscan.s"
 
           .include "AtariVox-EEPROM-Driver.s"
 

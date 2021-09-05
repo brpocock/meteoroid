@@ -194,7 +194,7 @@ EliminationMode:
 
 EraseSlotNow:
           lda #SoundDeleted
-          sta NextSound
+          sta WRITE + NextSound
 
           lda #ModeErasing
           sta WRITE + GameMode

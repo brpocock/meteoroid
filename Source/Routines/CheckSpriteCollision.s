@@ -16,7 +16,7 @@ CheckSpriteCollision:         .block
           lda AlarmSeconds
           bne NoRePosition
           lda # 0
-          sta SpriteX, x
+          sta WRITE + SpriteX, x
           jsr ValidateMap.CheckSpriteSpawn
           jmp Bye
 
@@ -36,8 +36,10 @@ CheckLeft:
           .BitBit SpriteMoveLeft
           beq CheckRight
 
-          inc SpriteX, x
-          inc SpriteX, x
+          lda SpriteX, x
+          clc
+          adc # 2
+          sta WRITE + SpriteX, x
           eor # SpriteMoveLeft | SpriteMoveRight
           gne CheckUp
 
@@ -45,16 +47,20 @@ CheckRight:
           .BitBit SpriteMoveRight
           beq CheckUp
 
-          dec SpriteX, x
-          dec SpriteX, x
+          lda SpriteX, x
+          sec
+          sbc # 2
+          sta WRITE + SpriteX, x
           eor # SpriteMoveLeft | SpriteMoveRight
           ;; fall through
 CheckUp:
           .BitBit SpriteMoveUp
           beq CheckDown
 
-          inc SpriteY, x
-          inc SpriteY, x
+          lda SpriteY, x
+          clc
+          adc # 2
+          sta WRITE + SpriteY, x
           eor # SpriteMoveUp | SpriteMoveDown
           gne Done
 
@@ -62,8 +68,10 @@ CheckDown:
           .BitBit SpriteMoveDown
           beq Done
 
-          dec SpriteY, x
-          dec SpriteY, x
+          lda SpriteY, x
+          sec
+          sbc # 2
+          sta WRITE + SpriteY, x
           eor # SpriteMoveUp | SpriteMoveDown
           ;; fall through
 Done:

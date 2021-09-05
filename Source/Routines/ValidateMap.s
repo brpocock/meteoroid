@@ -19,8 +19,8 @@ CheckNextSpriteForDoor:
           bne NotADoor
 +
           lda SpriteX, x
-          sta PlayerX
-          sta BlessedX
+          sta WRITE + PlayerX
+          sta WRITE + BlessedX
 
           lda SpriteY, x
           clc
@@ -50,17 +50,12 @@ RandomX:
           blt RandomX
           cmp #ScreenRightEdge
           bge RandomX
-          sta SpriteX, x
+          sta WRITE + SpriteX, x
 
 RandomY:
           jsr Random
           and #$3f
-          adc #ScreenTopEdge    ; who cares what Carry says, it'll fit either way
-          sta SpriteY, x
-
-          lda MapFlags
-          ora #MapFlagRandomSpawn
-          sta MapFlags
+          sta WRITE + SpriteY, x
 
 NextMayBeRandom:
           dex

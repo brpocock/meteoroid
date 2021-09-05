@@ -60,8 +60,7 @@ ButtonsChanged:
           sta WRITE + DebounceSWCHB
 DoneButtons:
 
-          UserInput :?= 0
-          .if UserInput > 0
+          .if BANK == MapServicesBank
           
           lda GameMode
           cmp #ModePlay

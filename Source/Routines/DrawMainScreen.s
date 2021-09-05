@@ -41,9 +41,7 @@ DrawOneRow:
           iny                   ; 2 / 51
           iny                   ; 2 / 53
           iny                   ; 2 / 55
-          ;; lda (MapPointer), y   ; 5 / 60
-          lda # COLGREEN | $e
-          .Sleep 3
+          lda (MapPointer), y   ; 5 / 60
           sta COLUPF            ; 3 / 63
 
 DrawSomeLines:
@@ -146,32 +144,116 @@ FillBottomScreen:
 ;;; 
 ScreenJumpLogic:
           lda PlayerY
-          cmp #ScreenTopEdge
-          blt GoScreenUp
+          bmi GoScreenUp
           cmp #ScreenBottomEdge
           bge GoScreenDown
 
           lda PlayerX
           cmp #ScreenLeftEdge
-          blt ScrollScreenLeft
+          blt ScrollScreenRight
           cmp #ScreenRightEdge
-          bge ScrollScreenRight
+          bge ScrollScreenLeft
 
           gne ShouldIStayOrShouldIGo
 
 ScrollScreenLeft:
+          inc ScrollLeft
+
           lda ScrollLeft
-          beq ShouldIStayOrShouldIGo
-          dec ScrollLeft
+          lsr a
+          lsr a
+          sta Temp
+          lda # 10 + 15
+          clc
+          adc Temp
+          adc Temp
+          tay
+
+          ;; NB same as in SetUpScreen. Copied and pasted :(
+
+          ldx # 12
+UncombinePF0:
+          lda BackgroundPF0, x
+          tay
+          and #$f0
+          sta BackgroundPF0, x
+          tya
+          and #$0f
+          asl a
+          asl a
+          asl a
+          asl a
+          sta PixelPointers, x
+          dex
+          bne UncombinePF0
+          
+          
+Rot12Left:
+          ldx # 0
+          lda (MapPointer), y
+          sta Temp
+Rot8Left: 
+          .SetUpScreen.RotatePixels
+          cpx # 8
+          blt Rot8Left
+          iny
+          lda (MapPointer), y
+          sta Temp
+Rot4Left:
+          .SetUpScreen.RotatePixels
+          cpx # 12
+          blt Rot4Left
+
           lda PlayerX
-          clc
-          adc # 4
-          sta PlayerX
+          sec
+          sbc # 4
+          sta WRITE + PlayerX
+
+          lda PlayerMissileX
+          sec
+          sbc # 4
+          sta WRITE + PlayerMissileX
+
           lda BlessedX
-          clc
-          adc # 4
-          sta BlessedX
-          jmp SetUpScreen.ExecuteScroll
+          sec
+          sbc # 4
+          sta WRITE + BlessedX
+
+          ldx # 8
+-
+          lda SpriteX - 1, x
+          sec
+          sbc # 4
+          sta WRITE + SpriteX, x
+          dex
+          bne -
+
+          ldx # 4
+-
+          lda MonsterMissileX - 1, x
+          sec
+          sbc # 4
+          sta WRITE + MonsterMissileX, x
+          dex
+          bne -
+
+          ;; For each row, combine the PF0 values into one RAM byte
+          ldx # 12
+CombinePF0:
+          lda BackgroundPF0, x
+          and #$f0
+          sta BackgroundPF0, x
+          lda PixelPointers, x
+          lsr a
+          lsr a
+          lsr a
+          lsr a
+          ora BackgroundPF0, x
+          sta BackgroundPF0, x
+          dex
+          bne CombinePF0
+
+          jmp ShouldIStayOrShouldIGo
 
 ScrollScreenRight:
           ldy # 2
@@ -180,34 +262,28 @@ ScrollScreenRight:
           sbc # 10
           cmp ScrollLeft
           bge ShouldIStayOrShouldIGo
-          inc ScrollLeft
-          lda PlayerX
-          sec
-          sbc # 4
-          sta PlayerX
-          lda BlessedX
-          sec
-          sbc # 4
-          sta BlessedX
+          dec ScrollLeft
+          
+
           jmp SetUpScreen.ExecuteScroll
 
 GoScreenUp:
           lda #ScreenBottomEdge - 1
-          sta BlessedY
-          sta PlayerY
+          sta WRITE + BlessedY
+          sta WRITE + PlayerY
           ldy #0
           geq GoScreen
 
 GoScreenDown:
-          lda #ScreenTopEdge + 1
-          sta BlessedY
-          sta PlayerY
+          lda #1
+          sta WRITE + BlessedY
+          sta WRITE + PlayerY
           ldy #1
           ;; fall through
 GoScreen:
           lda #0
-          sta DeltaX
-          sta DeltaY
+          sta WRITE + DeltaX
+          sta WRITE + DeltaY
 
           ;; FIXME. Find new screen to which to jump.
 
@@ -226,7 +302,6 @@ ShouldIStayOrShouldIGo:
           lda GameMode
           cmp #ModePlay
           bne Leave
-          .WaitScreenBottom
           jmp Loop
 ;;; 
 Leave:

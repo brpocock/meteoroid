@@ -1,41 +1,22 @@
 ;;; Meteoroid Source/Routines/ScreenTop.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
-TopOfScreenService: .block
 
           ;; MAGIC — these addresses must be  known and must be the same
 	;; in every map bank.
 
           PlayerSprites = $f100
           MonsterSprites = $f200
+TopOfScreenService: .block
 
-          .WaitScreenTop
-;;; 
-
-          ;; TODO REMOVE BELOW
+          jsr Overscan
+          .SkipLines 7
           lda ClockFrame
-          and #$03
-          bne NoZoomHP
-
-          lda CurrentHP
-          adc # 1
-          cmp # 16
-          blt +
-          lda CurrentTanks
-          clc
-          adc # 1
-          cmp # 9
-          blt NX1
-          lda # 0
-NX1:      
-          sta CurrentTanks
-          lda # 0
+          and #$01
+          bne +
+          stx WSYNC
 +
-          sta CurrentHP
-
-NoZoomHP: 
-          ;; TODO REMOVE ABOVE
-
-          
+          jsr VSync
+;;; 
           lda # 0
           sta VBLANK
 PrepareTanksToDraw:
@@ -95,12 +76,14 @@ DrawTanks:
 
           .SkipLines 3
 
+PrepareForHPBar:
           lda # 0
           sta PF0
           sta PixelPointers
           sta PixelPointers + 1
 
           lda CurrentHP
+          lsr a
           cmp # 15
           blt +
           lda #$ff
@@ -119,6 +102,7 @@ DrawTanks:
 ZeroPF2:
 PF1ForHP:
           lda CurrentHP
+          lsr a
           cmp # 8
           bge FullPF1
           tax
@@ -342,11 +326,6 @@ P1Ready:
           sta PF2
 
           lda PlayerMissileY
-          ;; XXX TEMP
-          lda PlayerY
-          clc
-          adc # 8
-          ;; XXX
           sta M0LineCounter
 
           lda #$ff
@@ -357,15 +336,22 @@ P1Ready:
           lda #<PlayerSprites
           sta pp0l
 
-          lda DeltaX
+          lda # 0
+          sta Temp
+          lda MovementStyle
           beq +        ; always show frame 0 unless moving
+          asl a
+          asl a
+          asl a
+          sta Temp
           lda ClockFrame
           and #$10
           bne +
           ldx #SoundFootstep
-          stx NextSound
+          stx WRITE + NextSound
 +
           clc
+          adc Temp
           adc #<PlayerSprites
           bcc +
           inc pp0h

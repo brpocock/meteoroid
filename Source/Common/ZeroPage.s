@@ -153,6 +153,10 @@ CurrentSound:
 CurrentUtterance:
           .word ?
 
+;;; Random number generator workspace
+Rand:
+          .word ?
+          
 ;;; 
 ;;; Verify that we don't run over
 

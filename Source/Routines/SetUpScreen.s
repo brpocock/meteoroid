@@ -2,7 +2,7 @@
 ;;; Copyright © 2021 Bruce-Robert Pocock
 
 SetUpScreen: .block
-          .WaitScreenTopMinus 2, -1
+          .WaitScreenTop
 
           lda # 0
           sta WRITE + SpriteFlicker
@@ -118,10 +118,14 @@ SpritesDone:
           sta AlarmFrames
 
 ExecuteScroll:
+          lda ScrollLeft
+          lsr a
+          lsr a
+          sta Temp
           lda # 15              ; skip row, offset, and run length, and color data
           clc
-          adc ScrollLeft
-          adc ScrollLeft
+          adc Temp
+          adc Temp
           tay
 
 RotateMapToSCRam:
@@ -218,11 +222,12 @@ CombinePF0:
           lsr a
           lsr a
           lsr a
-          and #$0f              ; XXX unnecessary?
           ora BackgroundPF0, x
           sta BackgroundPF0, x
           dex
           bne CombinePF0
+
+          .WaitScreenBottom
 
           ;; fall through to Map
           .bend

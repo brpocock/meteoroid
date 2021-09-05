@@ -138,8 +138,7 @@ LeftOK:
           dec SpriteX, x
 RightOK:
           lda SpriteY, x
-          cmp #ScreenTopEdge
-          bge TopOK
+          bne TopOK
           lda SpriteMotion, x
           eor # SpriteMoveUp | SpriteMoveDown
           sta SpriteMotion, x
@@ -158,9 +157,6 @@ NextSprite:
           bpl MoveSprites
           ;; fall through
 MovementLogicDone:
-          lda # MapFlagSpritesMoved
-          ora MapFlags
-          sta MapFlags
 
           rts
 
