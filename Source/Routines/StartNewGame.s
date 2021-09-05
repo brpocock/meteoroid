@@ -35,17 +35,17 @@ InitGameVars:
           sta WRITE + DeltaY
           sta MovementStyle     ; standing
 
-          lda # 160              ; Player start position
+          lda # 90              ; Player start position
           sta WRITE + BlessedX
           sta WRITE + PlayerX
-          lda # 16
+          lda # 27
           sta WRITE + BlessedY
           sta WRITE + PlayerY
 
           lda # 0
           sta ScrollLeft
 
-          lda # 100
+          lda # 16
           sta CurrentHP
           lda # 1
           sta CurrentTanks

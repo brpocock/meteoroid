@@ -6,9 +6,148 @@ TopOfScreenService: .block
 	;; in every map bank.
 
           PlayerSprites = $f100
-          MapSprites = PlayerSprites + 16
+          MonsterSprites = $f200
 
-          .WaitScreenTopMinus 1, 1
+          .WaitScreenTop
+;;; 
+
+          ;; TODO REMOVE BELOW
+          lda ClockFrame
+          and #$03
+          bne NoZoomHP
+
+          lda CurrentHP
+          adc # 1
+          cmp # 16
+          blt +
+          lda CurrentTanks
+          clc
+          adc # 1
+          cmp # 9
+          blt NX1
+          lda # 0
+NX1:      
+          sta CurrentTanks
+          lda # 0
++
+          sta CurrentHP
+
+NoZoomHP: 
+          ;; TODO REMOVE ABOVE
+
+          
+          lda # 0
+          sta VBLANK
+PrepareTanksToDraw:
+          ldx # 6
+          lda # 0
+-
+          sta PixelPointers - 1, x
+          dex
+          bne -
+
+SetUpTanksBitmap:
+          lda CurrentTanks
+          cmp # 4
+          bge +
+          tax
+          lda TanksBits, x
+          sta PixelPointers + 0
+          jmp EndTanks
++
+          ldx TanksBits + 4
+          stx PixelPointers + 0
+          sec
+          sbc # 4
+          cmp # 4
+          bge +
+          tax
+          lda TanksBitsReversed, x
+          sta PixelPointers + 1
+          jmp EndTanks
++
+          ldx TanksBitsReversed + 4
+          stx PixelPointers + 1
+
+          ;; TODO: More than 8 tanks?
+
+EndTanks:
+
+          stx WSYNC
+          ldy # 4
+DrawTanks:
+          stx WSYNC
+          lda TanksColors, y
+          sta COLUPF
+          lda PixelPointers + 0
+          sta PF1
+          lda PixelPointers + 1
+          sta PF2
+          .Sleep 20
+          lda PixelPointers + 2
+          sta PF0
+          lda PixelPointers + 3
+          sta PF1
+          lda PixelPointers + 4
+          sta PF2
+          dey
+          bne DrawTanks
+
+          .SkipLines 3
+
+          lda # 0
+          sta PF0
+          sta PixelPointers
+          sta PixelPointers + 1
+
+          lda CurrentHP
+          cmp # 15
+          blt +
+          lda #$ff
+          sta PixelPointers + 1
+          sta PixelPointers + 0
+          jmp DrawHP
++
+          cmp # 8
+          blt ZeroPF2
+          sec
+          sbc # 8
+          tax
+          lda HPBitsReversed, x
+          sta PixelPointers + 1
+          jmp PF1ForHP
+ZeroPF2:
+PF1ForHP:
+          lda CurrentHP
+          cmp # 8
+          bge FullPF1
+          tax
+          lda HPBits, x
+          sta PixelPointers
+          jmp DrawHP
+
+FullPF1:
+          lda #$ff
+          sta PixelPointers
+
+DrawHP:
+          ldy # 4
+DrawHPLoop:
+          stx WSYNC
+          lda PixelPointers
+          sta PF1
+          lda PixelPointers + 1
+          sta PF2
+          .SleepX 35
+
+          lda # 0
+          sta PF1
+          sta PF2
+          
+          dey
+          bne DrawHPLoop
+
+          .SkipLines 3
 ;;; 
           lda # ENABLED
           sta VBLANK
@@ -28,6 +167,7 @@ TopOfScreenService: .block
 
           sta HMCLR
 
+PrepareP0:
           lda PlayerX
           sec
           sta WSYNC
@@ -47,6 +187,22 @@ P0HPos:
           and #MapFlagFacing
           sta REFP0
 
+PrepareMissile0:
+          lda PlayerMissileX
+          sec
+          sta WSYNC
+M0HPos:
+          sbc # 15
+          bcs M0HPos
+          sta RESM0
+
+          eor #$07
+          asl a
+          asl a
+          asl a
+          asl a
+          sta HMM0
+
           ldx SpriteCount
           beq NoSprites
 
@@ -61,8 +217,9 @@ NextFlickerCandidate:
 FlickerOK:
           dey
           beq SetUpSprites
-          stx SpriteFlicker
+          stx WRITE + SpriteFlicker
 
+PreparePlayer1:
           lda SpriteX, x
           sec
           sta WSYNC
@@ -78,6 +235,30 @@ P1HPos:
           asl a
           sta HMP1
 
+FindMissileFlicker:
+          lda MissileFlicker
+          clc
+          adc # 1
+          and #$03
+          sta WRITE + MissileFlicker
+          tax
+
+PrepareMissile1:
+          lda MonsterMissileX, x
+          sec
+          sta WSYNC
+M1HPos:
+          sbc # 15
+          bcs M1HPos
+          sta RESM1
+
+          eor #$07
+          asl a
+          asl a
+          asl a
+          asl a
+          sta HMM1
+
 SetUpSprites:
           ldx SpriteCount
           beq NoSprites
@@ -91,27 +272,15 @@ SetUpSprites:
 +
 
           ldx SpriteFlicker
-          lda #>MapSprites
+          lda #>MonsterSprites
           sta pp1h
           clc
-          lda SpriteAction, x
+          lda SpriteIndex, x
           and #$07
-          cmp # SpriteProvinceDoor
-          bne +
-          lda # SpriteDoor
-+
-          ldy AlarmFrames
-          beq +
-          ldy AlarmSeconds
-          beq +
-          cmp #SpriteMonster
-          bne +
-;; TODO          lda #SpriteMonsterPuff
-+
           .rept 4
           asl a
           .next
-          adc #<MapSprites
+          adc #<MonsterSprites
           bcc +
           inc pp1h
 +
@@ -172,9 +341,12 @@ P1Ready:
           sta PF1
           sta PF2
 
+          lda PlayerMissileY
+          ;; XXX TEMP
           lda PlayerY
           clc
           adc # 8
+          ;; XXX
           sta M0LineCounter
 
           lda #$ff
@@ -186,7 +358,6 @@ P1Ready:
           sta pp0l
 
           lda DeltaX
-          ora DeltaY
           beq +        ; always show frame 0 unless moving
           lda ClockFrame
           and #$10
@@ -202,118 +373,17 @@ P1Ready:
           sta pp0l
 
 TheEnd:
-          lda # 0
-          sta VBLANK
-
-PrepareTanksToDraw:
-          ldx # 6
-          lda # 0
--
-          sta PixelPointers - 1, x
-          dex
-          bne -
-          lda #%10101010
-          ldy # 0
-          ldx CurrentTanks
-
-TanksByte:          .macro i, width, offset
-          cpx # \offset + \width
-          blt EndTanks
-          sta PixelPointers + \i - 1
-          iny
-          .endm
-
-          .TanksByte 1, 2, 0
-          .TanksByte 2, 4, 2
-          .TanksByte 3, 4, 6
-          .TanksByte 4, 2, 10
-          .TanksByte 5, 4, 12
-
-EndTanks:
-          txa
-          and #$03
-          tax
-          beq DoneTanks
-          lda TanksBits, x
-          sta PixelPointers, y
-DoneTanks:
-
           stx WSYNC
-          ldy # 4
-DrawTanks:
-          stx WSYNC
-          lda TanksColors, y
-          sta COLUPF
-          lda PixelPointers
-          sta PF0
-          lda PixelPointers + 1
-          sta PF1
-          lda PixelPointers + 2
-          sta PF2
-          .Sleep 20
-          lda PixelPointers + 3
-          sta PF0
-          lda PixelPointers + 4
-          sta PF1
-          lda PixelPointers + 5
-          sta PF2
-          dey
-          bne DrawTanks
-
-          .SkipLines 3
-
-          lda # 0
-          sta PF0
-          sta PixelPointers
-          sta PixelPointers + 1
-
-          lda CurrentHP
-          cmp # 48
-          blt ZeroPF2
-          sec
-          sbc # 48
-          .Div 6, Temp
-          tax
-          lda HPBits, x
-          sta PixelPointers + 1
-ZeroPF2:
-
-          lda CurrentHP
-          cmp # 48
-          bge FullPF1
-          .Div 6, Temp
-          tax
-          lda HPBitsReversed, x
-          sta PixelPointers
-          jmp DrawHP
-
-FullPF1:
-          lda #$ff
-          sta PixelPointers
-
-DrawHP:
-          ldy # 4
-DrawHPLoop:
-          stx WSYNC
-          lda PixelPointers
-          sta PF1
-          lda PixelPointers + 1
-          sta PF2
-          .SleepX 30
-
-          lda # 0
-          sta PF1
-          sta PF2
-          
-          dey
-          bne DrawHPLoop
-
-          .SkipLines 3
+          .SleepX 71
+          stx HMOVE
 
           rts
 
 TanksBits:
-          .byte %00000000, %10000000, %10100000, %10101000
+          .byte %00000000, %10000000, %10100000, %10101000, %10101010
+
+TanksBitsReversed:
+          .byte %00000000, %00000001, %00000101, %00010101, %01010101
 
 TanksColors:
           .colu COLGOLD, $4

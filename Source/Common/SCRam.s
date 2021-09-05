@@ -179,6 +179,9 @@ SpriteCount:
 SpriteFlicker:
           .byte ?
 
+MissileFlicker:
+          .byte ?
+
 BumpCooldown:
           .byte ?
 

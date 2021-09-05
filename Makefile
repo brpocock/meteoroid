@@ -52,12 +52,12 @@ cart-secam:	Dist/Meteoroid.Demo.SECAM.a26
 # Basic Harmony cart only can handle 32k images
 HARMONY=/run/media/${USER}/HARMONY/
 harmony:	Dist/Meteoroid.Demo.NTSC.a26 \
-		Dist/Meteoroid.Demo.PAL.a26 \
-		Dist/Meteoroid.Demo.SECAM.a26 \
-	if [ $$(uname -s) = 'Linux' ] ; then \
-	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(HARMONY)/Meteoroid.D.NTSC.F4 ;\
-	  cp -v Dist/Meteoroid.Demo.PAL.a26 $(HARMONY)/Meteoroid.D.PAL.F4 ;\
-	  cp -v Dist/Meteoroid.Demo.SECAM.a26 $(HARMONY)/Meteoroid.D.SECAM.F4 ;\
+		Dist/Meteoroid.NTSC.a26 \
+		Dist/Meteoroid.Unerase.NTSC.a26
+	@if [ $$(uname -s) = 'Linux' ] ; then \
+	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(HARMONY)/Meteoroid/Demo.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.NTSC.a26 $(HARMONY)/Meteoroid/Meteoroid.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(HARMONY)/Meteoroid/Unerase.NTSC.a26 ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi
@@ -70,9 +70,9 @@ uno:	Dist/Meteoroid.NTSC.a26 \
 	Dist/Meteoroid.Unerase.NTSC.a26
 	@if [ $$(uname -s) = 'Linux' ] ; then \
 	  mkdir -p $(UNOCART)/METEOROID/ ;\
-	  cp -v Dist/Meteoroid.NTSC.a26 $(UNOCART)/METEOROID/DIRTEX.NTSC.EFSC ;\
-	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(UNOCART)/METEOROID/DEMO.NTSC.F4SC ;\
-	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(UNOCART)/METEOROID/UNERASE.NTSC.F4SC ;\
+	  cp -v Dist/Meteoroid.NTSC.a26 $(UNOCART)/METEOROID/METEOROID.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(UNOCART)/METEOROID/DEMO.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(UNOCART)/METEOROID/UNERASE.NTSC.a26 ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi

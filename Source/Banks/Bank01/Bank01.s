@@ -8,7 +8,6 @@
           .include "Source/Generated/Bank04/SpeakJetIDs.s"
 
           .include "VSync.s"
-          .include "VBlank.s"
           .include "Overscan.s"
           .include "48Pixels.s"
           .include "Prepare48pxMobBlob.s"
@@ -34,12 +33,12 @@ DoLocal:
           .include "CheckSpriteCollision.s"
           .include "CheckPlayerCollision.s"
           .include "SpriteMovement.s"
+          .include "BulletMovement.s"
           .include "UserInput.s"
 
-          .if NOSAVE
-          .else
+          .include "VBlank.s"
+
           .include "AtariVox-EEPROM-Driver.s"
-          .fi
 
           .include "WaitScreenBottom.s"
 

@@ -1,10 +1,6 @@
 ;;; Meteoroid Source/Common/VBlank.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 
-          .weak
-          DoVBlankWork = 0
-          .endweak
-
 VBlank: .block
           sta WSYNC
           .TimeLines VBlankLines
@@ -64,9 +60,7 @@ ButtonsChanged:
           sta WRITE + DebounceSWCHB
 DoneButtons:
 
-          .weak
-          UserInput = 0
-          .endweak
+          UserInput :?= 0
           .if UserInput > 0
           
           lda GameMode
@@ -75,6 +69,7 @@ DoneButtons:
 
           jsr CheckSpriteCollision
           jsr SpriteMovement
+          jsr BulletMovement
           jsr CheckPlayerCollision
           jsr UserInput
 

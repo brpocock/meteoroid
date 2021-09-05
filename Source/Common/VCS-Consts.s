@@ -219,9 +219,9 @@ colors:   .macro co1, co2
           CTRLPFBallSz8 = $30
 
           NUSIZMissile1 = $00
-          NUSIZMissile2 = $08
-          NUSIZMissile4 = $10
-          NUSIZMissile8 = $18
+          NUSIZMissile2 = $10
+          NUSIZMissile4 = $20
+          NUSIZMissile8 = $30
 
           NUSIZNorm = $00
           NUSIZ2CopiesClose = $01
