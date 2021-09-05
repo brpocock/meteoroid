@@ -202,6 +202,8 @@ P1Ready:
           sta pp0l
 
 TheEnd:
+          lda # 0
+          sta VBLANK
 
 PrepareTanksToDraw:
           ldx # 6
@@ -214,18 +216,18 @@ PrepareTanksToDraw:
           ldy # 0
           ldx CurrentTanks
 
-TanksByte:          .macro i
-          cpx # \i * 4
+TanksByte:          .macro i, width, offset
+          cpx # \offset + \width
           blt EndTanks
           sta PixelPointers + \i - 1
           iny
           .endm
 
-          .TanksByte 1
-          .TanksByte 2
-          .TanksByte 3
-          .TanksByte 4
-          .TanksByte 5
+          .TanksByte 1, 2, 0
+          .TanksByte 2, 4, 2
+          .TanksByte 3, 4, 6
+          .TanksByte 4, 2, 10
+          .TanksByte 5, 4, 12
 
 EndTanks:
           txa
@@ -248,7 +250,7 @@ DrawTanks:
           sta PF1
           lda PixelPointers + 2
           sta PF2
-          .Sleep 30
+          .Sleep 20
           lda PixelPointers + 3
           sta PF0
           lda PixelPointers + 4
@@ -261,7 +263,53 @@ DrawTanks:
           .SkipLines 3
 
           lda # 0
-          sta VBLANK
+          sta PF0
+          sta PixelPointers
+          sta PixelPointers + 1
+
+          lda CurrentHP
+          cmp # 48
+          blt ZeroPF2
+          sec
+          sbc # 48
+          .Div 6, Temp
+          tax
+          lda HPBits, x
+          sta PixelPointers + 1
+ZeroPF2:
+
+          lda CurrentHP
+          cmp # 48
+          bge FullPF1
+          .Div 6, Temp
+          tax
+          lda HPBitsReversed, x
+          sta PixelPointers
+          jmp DrawHP
+
+FullPF1:
+          lda #$ff
+          sta PixelPointers
+
+DrawHP:
+          ldy # 4
+DrawHPLoop:
+          stx WSYNC
+          lda PixelPointers
+          sta PF1
+          lda PixelPointers + 1
+          sta PF2
+          .SleepX 30
+
+          lda # 0
+          sta PF1
+          sta PF2
+          
+          dey
+          bne DrawHPLoop
+
+          .SkipLines 3
+
           rts
 
 TanksBits:
@@ -273,5 +321,13 @@ TanksColors:
           .colu COLRED, $6
           .colu COLRED, $6
           .colu COLGOLD, $a
-          
+
+HPBits:
+          .byte %10000000, %11000000, %11100000, %11110000
+          .byte %11111000, %11111100, %11111110, %11111111
+
+HPBitsReversed:
+          .byte %00000001, %00000011, %00000111, %00001111
+          .byte %00011111, %00111111, %01111111, %11111111
+
           .bend

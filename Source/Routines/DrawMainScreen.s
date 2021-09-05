@@ -11,7 +11,7 @@ MainDrawLoop:
           lda # 0
           sta LineCounter
 
-          .ldacolu COLGOLD, $0
+          .ldacolu COLINDIGO, $0
           sta COLUBK
 
           ;; Shift the screen slightly on odd/even frames to blur the VBLANK lines
@@ -23,84 +23,93 @@ MainDrawLoop:
           stx WSYNC
 
 DrawOneRow:
-          ldy LineCounter
-
-          lda # ENABLED
-          sta VBLANK
-          ldy LineCounter
-          lda BackgroundPF0, y
-          sta PixelPointers + 4
-          and #$0f
-          tax
-          lda PF0Shift, x
-          sta PixelPointers + 7
-          lda BackgroundPF1L, y
-          sta PixelPointers + 5
-          lda BackgroundPF2L, y
-          sta PixelPointers + 6
-          lda BackgroundPF1R, y
-          sta PixelPointers + 8
-          lda BackgroundPF2R, y
-          sta PixelPointers + 9
-          iny
-          iny
-          iny
-          lda (MapPointer), y
-          sta COLUPF
-          stx WSYNC
-          lda # 0
-          sta VBLANK
+          lda # ENABLED         ; 2
+          sta VBLANK            ; 3
+          stx WSYNC             ; 3
+          ldy LineCounter       ; 3
+          lda BackgroundPF0, y  ; 4
+          sta PixelPointers + 4 ; 3
+          and #$0f              ; 2
+          tax                   ; 2
+          lda PF0Shift, x       ; 4
+          sta PixelPointers + 7 ; 3
+          lda BackgroundPF1L, y ; 4
+          sta PixelPointers + 5 ; 3
+          lda BackgroundPF2L, y ; 4
+          sta PixelPointers + 6 ; 3
+          lda BackgroundPF1R, y ; 4
+          sta PixelPointers + 8 ; 3
+          lda BackgroundPF2R, y ; 4
+          sta PixelPointers + 9 ; 3
+          iny                   ; 2
+          iny                   ; 2
+          iny                   ; 2
+          lda (MapPointer), y   ; 5
+          sta COLUPF            ; 3
+          lda # 0               ; 2
+          sta VBLANK            ; 3
 
 DrawSomeLines:
-          ldx # 3
+          ldx # 4               ; 2
 
 ;;; 
-          
-DrawOneLine:        .macro    playerNumber
-          stx WSYNC             ; 3 / 3
 
-          lda PixelPointers + 4 ; 3 / 6
-          sta PF0               ; 3 / 9
-          lda PixelPointers + 5 ; 3 / 12
-          sta PF1               ; 3 / 15
-          lda PixelPointers + 6 ; 3 / 18
-          sta PF2               ; 3 / 21
+DrawOneLine:        .macro    playerNumber
+          stx WSYNC             ; 3
+
+          lda PixelPointers + 4 ; 3
+          sta PF0               ; 3
+          lda PixelPointers + 5 ; 3
+          sta PF1               ; 3
+          lda PixelPointers + 6 ; 3
+          sta PF2               ; 3
+          lda # 0               ; 2
 
           .if \playerNumber == 2 ; missile
 
-          lda # 0               ; 2 / 23
-          sta ENAM0             ; 3 / 26
-          sta ENAM1             ; 3 / 29
-          lda # 1               ; 2 / 31
-          dcp M0LineCounter     ; 5 / 36
-          blt NoM0              ; 2 (3) / 38 (39)
-          lda # ENABLED         ; 2 / 40
-          sta ENAM0             ; 3 / 43
+          sta ENAM0             ; 3
+          sta ENAM1             ; 3
+
+          .else
+
+          sta GRP0 + \playerNumber ; 3
+
+          .fi
+          
+
+          .if \playerNumber == 2 ; missile
+
+          lda # 1               ; 2
+          dcp M0LineCounter     ; 5
+          blt NoM0              ; 2 (3)
+          lda # ENABLED         ; 2
+          sta ENAM0             ; 3
 NoM0:
+          lda PixelPointers + 7 ; 3
+          sta PF0               ; 3
+          lda # 1               ; 2
+          dcp M1LineCounter     ; 5
+          blt NoM1              ; 2 (3)
+NoM1:
 
           .else                 ; player 0 or 1
 
-          lda # 16                                   ; 2 / 23
-          dcp P0LineCounter + \playerNumber ; 5 / 28
-          blt NoPlayer                      ; 2 (3) / 30 (31)
-          ldy P0LineCounter + \playerNumber ; 3 / 33
-          lda (PixelPointers + \playerNumber * 2), y ; 5 / 38
-          sta GRP0 + \playerNumber                   ; 3 / 41
-          jmp PlayerDone                             ; 3 / 44
+          lda # 15                                   ; 2
+          dcp P0LineCounter + \playerNumber ; 5
+          blt NoPlayer                      ; 2 (3)
+          ldy P0LineCounter + \playerNumber ; 3
+          lda (PixelPointers + \playerNumber * 2), y ; 5
+          sta GRP0 + \playerNumber                   ; 3
 NoPlayer:
-          lda # 0               ; 2 / 33
-          sta GRP0 + \playerNumber ; 3 / 36
-          .Sleep 8                 ; 8 / 44
-PlayerDone:
+          lda PixelPointers + 7 ; 3
+          sta PF0               ; 3
 
           .fi                   ; end of sprite §
 
-          lda PixelPointers + 7 ; 3 / 45
-          sta PF0               ; 3 / 48
-          lda PixelPointers + 8 ; 3 / 51
-          sta PF1               ; 3 / 54
-          lda PixelPointers + 9 ; 3 / 57
-          sta PF2               ; 3 / 60
+          lda PixelPointers + 8 ; 3
+          sta PF1               ; 3
+          lda PixelPointers + 9 ; 3
+          sta PF2               ; 3
 
           .endm
 
@@ -247,5 +256,5 @@ PF0Shift:
           .byte $00, $10, $20, $30, $40, $50, $60, $70
           .byte $80, $90, $a0, $b0, $c0, $d0, $e0, $f0
 
-          
+
           .bend
