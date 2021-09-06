@@ -70,7 +70,7 @@ DrawPlayerLine:        .macro    playerNumber
           lda PixelPointers + 9 ; 3
           sta PF2               ; 3
 
-          lda # 15                          ; 2
+          lda # 11                          ; 2
           dcp P0LineCounter + \playerNumber ; 5
           blt NoPlayer                      ; 2 (3)
           ldy P0LineCounter + \playerNumber ; 3
@@ -153,7 +153,6 @@ ScreenJumpLogic:
           blt ScrollScreenRight
           cmp #ScreenRightEdge
           bge ScrollScreenLeft
-
           gne ShouldIStayOrShouldIGo
 
 ScrollScreenLeft:
@@ -161,48 +160,30 @@ ScrollScreenLeft:
 
           lda ScrollLeft
           lsr a
-          lsr a
-          sta Temp
-          lda # 10 + 15
+          and #$7e
           clc
-          adc Temp
-          adc Temp
+          adc # 20 + 15
           tay
 
           ;; NB same as in SetUpScreen. Copied and pasted :(
 
           ldx # 12
 UncombinePF0:
-          lda BackgroundPF0, x
+          lda BackgroundPF0 - 1, x
           tay
           and #$f0
-          sta BackgroundPF0, x
+          sta BackgroundPF0 - 1, x
           tya
           and #$0f
           asl a
           asl a
           asl a
           asl a
-          sta PixelPointers, x
+          sta PixelPointers - 1, x
           dex
           bne UncombinePF0
-          
-          
-Rot12Left:
-          ldx # 0
-          lda (MapPointer), y
-          sta Temp
-Rot8Left: 
-          .SetUpScreen.RotatePixels
-          cpx # 8
-          blt Rot8Left
-          iny
-          lda (MapPointer), y
-          sta Temp
-Rot4Left:
-          .SetUpScreen.RotatePixels
-          cpx # 12
-          blt Rot4Left
+
+          jsr ScrollRight
 
           lda PlayerX
           sec
@@ -240,16 +221,16 @@ Rot4Left:
           ;; For each row, combine the PF0 values into one RAM byte
           ldx # 12
 CombinePF0:
-          lda BackgroundPF0, x
+          lda BackgroundPF0 - 1, x
           and #$f0
-          sta BackgroundPF0, x
-          lda PixelPointers, x
+          sta BackgroundPF0 - 1, x
+          lda PixelPointers - 1, x
           lsr a
           lsr a
           lsr a
           lsr a
-          ora BackgroundPF0, x
-          sta BackgroundPF0, x
+          ora BackgroundPF0 - 1, x
+          sta BackgroundPF0 - 1, x
           dex
           bne CombinePF0
 

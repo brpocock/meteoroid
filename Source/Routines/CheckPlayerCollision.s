@@ -22,9 +22,6 @@ BumpSprite:
           cmp #SpriteDoor       ; Doors ignore cooldown timer
           beq DoorWithSprite
 
-          ldy BumpCooldown
-          bne DonePlayerMove
-
           cmp #SpriteMonster
           beq FightWithSprite
           and #SpriteProvinceDoor
@@ -41,8 +38,6 @@ FightWithSpriteX:
           lda # 0
 +
           sta CurrentHP
-          lda # 6               ; Cooldown time after a hit
-          sta BumpCooldown
           ;; TODO: knock back?
           rts
 
@@ -54,11 +49,6 @@ DoorWithSprite:
           rts
 
 PlayerMoveOK:
-          lda BumpCooldown
-          beq +
-          dec BumpCooldown
-          rts
-+
           lda ClockFrame
           and #$03
           bne DonePlayerMove

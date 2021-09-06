@@ -176,9 +176,6 @@ MissileCount:
 MissileFlicker:
           .byte ?
 
-BumpCooldown:
-          .byte ?
-
 ;;; 
 ;;; Main "Traffic Cop" Switching
 ;;;

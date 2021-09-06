@@ -12,6 +12,7 @@ DoLocal:
           .include "SetUpScreen.s"
           ;; falls through to
           .include "DrawMainScreen.s"
+          .include "ScrollRight.s"
 
 MapData:
           .include "MapProvince10.s"

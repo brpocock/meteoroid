@@ -120,12 +120,9 @@ SpritesDone:
 ExecuteScroll:
           lda ScrollLeft
           lsr a
-          lsr a
-          sta Temp
-          lda # 15              ; skip row, offset, and run length, and color data
+          and #$7e
           clc
-          adc Temp
-          adc Temp
+          adc # 15              ; skip row, offset, and run length, and color data
           tay
 
 RotateMapToSCRam:
@@ -149,29 +146,6 @@ ClearBackgroundArray:
           ;; Y register contains the offset of the vertical span into the MapPointer table.
 
 ;;; 
-RotatePixels:       .macro
-          ;; Rotate in one pixel at the right of a row, shifting everything else left.
-          rol Temp
-          ror BackgroundPF2R, x
-          rol BackgroundPF1R, x
-          bcc +
-          lda PixelPointers, x
-          ora #$08
-          sta PixelPointers, x
-          clc
-+
-          rol PixelPointers, x
-          ror BackgroundPF2L, x
-          rol BackgroundPF1L, x
-          bcc +
-          lda BackgroundPF0, x
-          ora #$08
-          sta BackgroundPF0, x
-+
-          rol BackgroundPF0, x
-          inx
-          .endm
-;;;
 
           ;; Rotate in 10 vertical columns
           lda # 10
@@ -181,23 +155,7 @@ RotateTimes4:
           lda # 4
           sta P0LineCounter
 Rot12:
-          ;; Rotate in 12 pixels at the right of the screen
-          ldx # 0
-          ;; Rotate in the 8 pixels from the first map data byte
-          lda (MapPointer), y
-          sta Temp
-Rot8:
-          .RotatePixels
-          cpx # 8
-          blt Rot8
-          ;; Rotate in the 4 pixels from the second map data byte
-          iny
-          lda (MapPointer), y
-          sta Temp
-Rot4:
-          .RotatePixels
-          cpx # 12
-          blt Rot4
+          jsr ScrollRight
           ;; return to the upper byte, and
           dey
           ;; repeat each column of 12 pixels, 4 times
@@ -214,16 +172,16 @@ Rot4:
           ;; For each row, combine the PF0 values into one RAM byte
           ldx # 12
 CombinePF0:
-          lda BackgroundPF0, x
+          lda BackgroundPF0 - 1, x
           and #$f0
-          sta BackgroundPF0, x
-          lda PixelPointers, x
+          sta BackgroundPF0 - 1, x
+          lda PixelPointers - 1, x
           lsr a
           lsr a
           lsr a
           lsr a
-          ora BackgroundPF0, x
-          sta BackgroundPF0, x
+          ora BackgroundPF0 - 1, x
+          sta BackgroundPF0 - 1, x
           dex
           bne CombinePF0
 
