@@ -118,12 +118,6 @@ SpritesDone:
           sta AlarmFrames
 
 ExecuteScroll:
-          lda ScrollLeft
-          lsr a
-          and #$7e
-          clc
-          adc # 15              ; skip row, offset, and run length, and color data
-          tay
 
 RotateMapToSCRam:
           ;; Map data is stored in vertical strips.
@@ -143,11 +137,18 @@ ClearBackgroundArray:
           dex
           bne -
 
+SetMapPointerIndex:
           ;; Y register contains the offset of the vertical span into the MapPointer table.
+          lda ScrollLeft
+          lsr a
+          and #$7e
+          clc
+          adc # 15              ; skip row, offset, and run length, and color data
+          tay
 
 ;;; 
-
-          ;; Rotate in 10 vertical columns
+RotateIn40Pixels:
+          ;; Rotate in 10 vertical columns of 4px each
           lda # 10
           sta LineCounter
 RotateTimes4:

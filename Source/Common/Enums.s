@@ -143,7 +143,7 @@
 ;;; Screen boundaries for popping to the next screen
 
           ScreenLeftEdge = $30
-          ScreenRightEdge = $b0
+          ScreenRightEdge = $a0
 
           ScreenBottomEdge = 12 * 4
 ;;; 

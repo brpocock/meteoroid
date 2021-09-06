@@ -1,4 +1,4 @@
-s;;; Meteoroid Source/Routines/DrawMainScreen.s
+;;; Meteoroid Source/Routines/DrawMainScreen.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 
 DrawMainScreen:    .block
@@ -156,32 +156,25 @@ ScreenJumpLogic:
           gne ShouldIStayOrShouldIGo
 
 ScrollScreenLeft:
-          inc ScrollLeft
+          ldy # 2
+          lda (MapPointer), y
+          dey
+          sec
+          sbc (MapPointer), y
+          sec
+          sbc # 10
+          cmp ScrollLeft
+          blt ShouldIStayOrShouldIGo
 
+          jsr UncombinePF0
+
+          inc ScrollLeft
           lda ScrollLeft
           lsr a
           and #$7e
           clc
-          adc # 20 + 15
+          adc # 3 + 12 + 20     ; indices, colors, and screen width
           tay
-
-          ;; NB same as in SetUpScreen. Copied and pasted :(
-
-          ldx # 12
-UncombinePF0:
-          lda BackgroundPF0 - 1, x
-          tay
-          and #$f0
-          sta BackgroundPF0 - 1, x
-          tya
-          and #$0f
-          asl a
-          asl a
-          asl a
-          asl a
-          sta PixelPointers - 1, x
-          dex
-          bne UncombinePF0
 
           jsr ScrollRight
 
@@ -205,7 +198,7 @@ UncombinePF0:
           lda SpriteX - 1, x
           sec
           sbc # 4
-          sta WRITE + SpriteX, x
+          sta WRITE + SpriteX - 1, x
           dex
           bne -
 
@@ -214,39 +207,116 @@ UncombinePF0:
           lda MonsterMissileX - 1, x
           sec
           sbc # 4
-          sta WRITE + MonsterMissileX, x
+          sta WRITE + MonsterMissileX - 1, x
           dex
           bne -
 
-          ;; For each row, combine the PF0 values into one RAM byte
-          ldx # 12
-CombinePF0:
-          lda BackgroundPF0 - 1, x
-          and #$f0
-          sta BackgroundPF0 - 1, x
-          lda PixelPointers - 1, x
-          lsr a
-          lsr a
-          lsr a
-          lsr a
-          ora BackgroundPF0 - 1, x
-          sta BackgroundPF0 - 1, x
-          dex
-          bne CombinePF0
-
+          jsr CombinePF0
+DoneScrolling:
           jmp ShouldIStayOrShouldIGo
 
-ScrollScreenRight:
-          ldy # 2
-          lda (MapPointer), y
-          sec
-          sbc # 10
-          cmp ScrollLeft
-          bge ShouldIStayOrShouldIGo
-          dec ScrollLeft
+;;; 
           
+ScrollScreenRight:
+          ldy # 1
+          lda (MapPointer), y
+          cmp ScrollLeft
+          bge DoneScrolling
 
-          jmp SetUpScreen.ExecuteScroll
+          jsr UncombinePF0
+
+          dec ScrollLeft
+          lda ScrollLeft
+          lsr a
+          and #$7e
+          clc
+          adc # 15
+          tay
+
+;;;
+
+RotatePixelsBack:       .macro
+          ;; Rotate in one pixel at the right of a row, shifting everything else left.
+          ror Temp
+          rol BackgroundPF2R, x
+          ror BackgroundPF1R, x
+          rol PixelPointers, x
+          lda PixelPointers, x
+          clc
+          and #$0f
+          beq +
+          sec
++
+          rol BackgroundPF2L, x
+          ror BackgroundPF1L, x
+          rol BackgroundPF0, x
+          lda BackgroundPF0, x
+          clc
+          and #$0f
+          beq +
+          sec
++
+          inx
+          .endm
+;;; 
+
+Rot12:
+          ;; Rotate in 12 pixels at the left of the screen
+          ldx # 0
+          ;; Rotate in the 8 pixels from the first map data byte
+          lda (MapPointer), y
+          sta Temp
+Rot8:
+          .RotatePixelsBack
+          cpx # 8
+          blt Rot8
+          ;; Rotate in the 4 pixels from the second map data byte
+          iny
+          lda (MapPointer), y
+          sta Temp
+Rot4:
+          .RotatePixelsBack
+          cpx # 12
+          blt Rot4
+          
+;;; 
+          
+          lda PlayerX
+          clc
+          adc # 4
+          sta WRITE + PlayerX
+
+          lda PlayerMissileX
+          clc
+          adc # 4
+          sta WRITE + PlayerMissileX
+
+          lda BlessedX
+          clc
+          adc # 4
+          sta WRITE + BlessedX
+
+          ldx # 8
+-
+          lda SpriteX - 1, x
+          clc
+          adc # 4
+          sta WRITE + SpriteX - 1, x
+          dex
+          bne -
+
+          ldx # 4
+-
+          lda MonsterMissileX - 1, x
+          clc
+          adc # 4
+          sta WRITE + MonsterMissileX - 1, x
+          dex
+          bne -
+
+          jsr CombinePF0
+
+          jmp ShouldIStayOrShouldIGo
 
 GoScreenUp:
           lda #ScreenBottomEdge - 1

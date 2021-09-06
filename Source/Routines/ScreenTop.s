@@ -333,25 +333,17 @@ P1Ready:
 
           lda #>PlayerSprites
           sta pp0h
-          lda #<PlayerSprites
-          sta pp0l
 
-          lda # 0
-          sta Temp
           lda MovementStyle
-          beq +        ; always show frame 0 unless moving
-          asl a
+          beq +
+          gne +                 ; TODO remove and fix
           asl a
           asl a
           sta Temp
-          lda ClockFrame
-          and #$10
-          bne +
-          ldx #SoundFootstep
-          stx WRITE + NextSound
-+
+          asl a
           clc
           adc Temp
++
           adc #<PlayerSprites
           bcc +
           inc pp0h

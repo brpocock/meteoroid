@@ -3,6 +3,8 @@
 
           .include "StartBank.s"
 
+          BANK = $00
+
           .include "Font.s"
 
           .warn "Slot prefix ", SaveGameSlotPrefix

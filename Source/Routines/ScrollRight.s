@@ -50,3 +50,47 @@ Rot4:
           rts
 
           .bend
+;;; 
+CombinePF0:         .block
+          ;; For each row, combine the PF0 values into one RAM byte
+          ldx # 12
+CombinePF0Loop:
+          lda BackgroundPF0 - 1, x
+          and #$f0
+          sta BackgroundPF0 - 1, x
+          lda PixelPointers - 1, x
+          lsr a
+          lsr a
+          lsr a
+          lsr a
+          ora BackgroundPF0 - 1, x
+          sta BackgroundPF0 - 1, x
+          dex
+          bne CombinePF0Loop
+
+          rts
+          
+          .bend
+;;; 
+UncombinePF0:       .block
+
+          ldx # 12
+UncombinePF0Loop:
+          lda BackgroundPF0 - 1, x
+          tay
+          and #$f0
+          sta BackgroundPF0 - 1, x
+          tya
+          and #$0f
+          asl a
+          asl a
+          asl a
+          asl a
+          sta PixelPointers - 1, x
+          dex
+          bne UncombinePF0Loop
+
+          rts
+
+          .bend
+          
