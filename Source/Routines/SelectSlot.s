@@ -11,6 +11,12 @@ SelectSlot:        .block
           .KillMusic
           jsr Prepare48pxMobBlob
 
+          stx HMCLR
+          lda #$30
+          sta HMP0
+          sta HMP1
+          sta HMOVE
+
           lda #SoundChirp
           sta WRITE + NextSound
 

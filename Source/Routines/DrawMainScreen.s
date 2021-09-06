@@ -155,14 +155,15 @@ ScreenJumpLogic:
           bge ScrollScreenLeft
           gne ShouldIStayOrShouldIGo
 
+;;; 
 ScrollScreenLeft:
           ldy # 2
           lda (MapPointer), y
           dey
           sec
           sbc (MapPointer), y
-          sec
-          sbc # 10
+          clc
+          adc # 10
           cmp ScrollLeft
           blt ShouldIStayOrShouldIGo
 
@@ -233,32 +234,32 @@ ScrollScreenRight:
           adc # 15
           tay
 
-;;;
-
 RotatePixelsBack:       .macro
-          ;; Rotate in one pixel at the right of a row, shifting everything else left.
-          ror Temp
-          rol BackgroundPF2R, x
-          ror BackgroundPF1R, x
-          rol PixelPointers, x
-          lda PixelPointers, x
-          clc
-          and #$0f
-          beq +
-          sec
-+
-          rol BackgroundPF2L, x
-          ror BackgroundPF1L, x
+          ;; Rotate in one pixel at the left of a row, shifting everything else right.
+          rol Temp
           rol BackgroundPF0, x
-          lda BackgroundPF0, x
-          clc
-          and #$0f
+          lda #$01
+          and BackgroundPF0, x
           beq +
-          sec
+          lda BackgroundPF0, x
+          ora #$10
+          and #$f0
+          sta BackgroundPF0, x
 +
-          inx
+          ror BackgroundPF1L, x
+          rol BackgroundPF2L, x
+          rol PixelPointers, x
+          lda #$01
+          and PixelPointers, x
+          beq +
+          lda PixelPointers, x
+          ora #$10
+          and #$f0
+          sta PixelPointers, x
++
+          ror BackgroundPF1R, x
+          rol BackgroundPF2R, x
           .endm
-;;; 
 
 Rot12:
           ;; Rotate in 12 pixels at the left of the screen
@@ -268,6 +269,7 @@ Rot12:
           sta Temp
 Rot8:
           .RotatePixelsBack
+          inx
           cpx # 8
           blt Rot8
           ;; Rotate in the 4 pixels from the second map data byte
@@ -276,6 +278,7 @@ Rot8:
           sta Temp
 Rot4:
           .RotatePixelsBack
+          inx
           cpx # 12
           blt Rot4
           

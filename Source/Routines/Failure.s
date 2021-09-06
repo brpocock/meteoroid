@@ -6,12 +6,12 @@ Failure:	.block
           bge NoStack
 
           pla
-          sta Score + 2
+          sta WRITE + Score + 2
           pla                   ; discard junk
           pla
-          sta Score
+          sta WRITE + Score
           pla
-          sta Score + 1
+          sta WRITE + Score + 1
 
           jmp DoneWithStack
 

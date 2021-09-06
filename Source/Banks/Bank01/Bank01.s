@@ -18,6 +18,8 @@ DoLocal:
           beq StartNewGame
           cpy #ServiceValidateMap
           beq ValidateMap
+          cpy #ServiceSubscreen
+          beq Subscreen
           brk
 
           .include "CopyPointerText.s"
@@ -37,6 +39,8 @@ DoLocal:
           .include "VSync.s"
           .include "VBlank.s"
           .include "Overscan.s"
+
+          .include "Subscreen.s"
 
           .include "AtariVox-EEPROM-Driver.s"
 

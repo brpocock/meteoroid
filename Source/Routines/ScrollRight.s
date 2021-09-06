@@ -24,7 +24,6 @@ RotatePixels:       .macro
           beq +
           sec
 +
-          inx
           .endm
 ;;; 
 
@@ -36,6 +35,7 @@ Rot12:
           sta Temp
 Rot8:
           .RotatePixels
+          inx
           cpx # 8
           blt Rot8
           ;; Rotate in the 4 pixels from the second map data byte
@@ -44,6 +44,7 @@ Rot8:
           sta Temp
 Rot4:
           .RotatePixels
+          inx
           cpx # 12
           blt Rot4
 

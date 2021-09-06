@@ -9,7 +9,6 @@
 TopOfScreenService: .block
 
           jsr Overscan
-          .SkipLines 7
           lda ClockFrame
           and #$01
           bne +
@@ -82,6 +81,9 @@ PrepareForHPBar:
           sta PixelPointers
           sta PixelPointers + 1
 
+          .ldacolu COLGOLD, $4
+          sta COLUPF
+
           lda CurrentHP
           lsr a
           cmp # 15
@@ -113,6 +115,9 @@ PF1ForHP:
 FullPF1:
           lda #$ff
           sta PixelPointers
+
+          .ldacolu COLGOLD, $4
+          sta COLUPF
 
 DrawHP:
           ldy # 4
