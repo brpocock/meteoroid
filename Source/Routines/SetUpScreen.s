@@ -149,42 +149,27 @@ SetMapPointerIndex:
 ;;; 
 RotateIn40Pixels:
           ;; Rotate in 10 vertical columns of 4px each
-          lda # 10
-          sta LineCounter
-RotateTimes4:
-          ;; For each column, rotate it in 4 times
-          lda # 4
-          sta P0LineCounter
-Rot12:
+
+          ldy # 0
+          sty LineCounter
+Rot40:
+          lda ScrollLeft
+          clc
+          adc LineCounter
+          lsr a
+          and #$7c
+          clc
+          adc # 3 + 12
+          tay
+
           jsr ScrollRight
-          ;; return to the upper byte, and
-          dey
-          ;; repeat each column of 12 pixels, 4 times
-          dec P0LineCounter
-          ldx P0LineCounter
-          bne Rot12
-          ;; then move to the next column
-          dec LineCounter
-          iny
-          iny
-          ldx LineCounter
-          bne RotateTimes4
-;;; 
-          ;; For each row, combine the PF0 values into one RAM byte
-          ldx # 12
-CombinePF0:
-          lda BackgroundPF0 - 1, x
-          and #$f0
-          sta BackgroundPF0 - 1, x
-          lda PixelPointers - 1, x
-          lsr a
-          lsr a
-          lsr a
-          lsr a
-          ora BackgroundPF0 - 1, x
-          sta BackgroundPF0 - 1, x
-          dex
-          bne CombinePF0
+
+          inc LineCounter
+          ldy LineCounter
+          cpy # 40
+          blt Rot40
+
+          jsr CombinePF0
 
           .WaitScreenBottom
 

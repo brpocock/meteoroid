@@ -172,7 +172,7 @@ ScrollScreenLeft:
           inc ScrollLeft
           lda ScrollLeft
           lsr a
-          and #$7e
+          and #$7c
           clc
           adc # 3 + 12 + 20     ; indices, colors, and screen width
           tay
@@ -229,7 +229,7 @@ ScrollScreenRight:
           dec ScrollLeft
           lda ScrollLeft
           lsr a
-          and #$7e
+          and #$7c
           clc
           adc # 15
           tay

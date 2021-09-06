@@ -81,9 +81,6 @@ PrepareForHPBar:
           sta PixelPointers
           sta PixelPointers + 1
 
-          .ldacolu COLGOLD, $4
-          sta COLUPF
-
           lda CurrentHP
           lsr a
           cmp # 15
@@ -120,6 +117,9 @@ FullPF1:
           sta COLUPF
 
 DrawHP:
+          .ldacolu COLGOLD, $4
+          sta COLUPF
+
           ldy # 4
 DrawHPLoop:
           stx WSYNC
