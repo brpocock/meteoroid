@@ -483,9 +483,9 @@ Shape:~{~{~a~}~2%~}
                 colors))
       (format *trace-output* "~% Done writing to ~A" out-file-name))))
 
-(defun reverse-16 (shape)
+(defun reverse-12 (shape)
   (let* ((height (length shape))
-         (group-height 16))
+         (group-height 12))
     (loop for group from 0 below height by group-height
           append (loop for line from (1- group-height) downto 0
                        collecting (elt shape (+ group line))))))
@@ -696,7 +696,7 @@ CoLu:~{~%	;.byte $~2,'0x~}
                 (pathname-name png-file)
                 (assembler-label-name (pathname-base-name png-file))
                 height width
-                (mapcar #'byte-and-art (reverse-16 shape))
+                (mapcar #'byte-and-art (reverse-12 shape))
                 colors))
       (format *trace-output* "~% Done writing to ~A" out-file-name))))
 
@@ -1034,7 +1034,7 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
        (compile-tileset png-file target-dir height width palette-pixels))
       
       ((and (zerop (mod width 8))
-            (zerop (mod height 16)))
+            (zerop (mod height 12)))
        (format *trace-output* "~% Image ~A seems to be sprite (player) data"
                png-file)
        (compile-tia-player png-file target-dir height width palette-pixels))
