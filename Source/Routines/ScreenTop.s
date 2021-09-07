@@ -129,7 +129,7 @@ DrawHPLoop:
           sta PF1
           lda PixelPointers + 1
           sta PF2
-          .SleepX 35
+          .SleepX 32
 
           lda # 0
           sta PF1
