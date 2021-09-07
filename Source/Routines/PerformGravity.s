@@ -99,10 +99,12 @@ Next:
 
 ;;; 
 
-
-PeekPlayerFloor:
-          ldy PlayerY
-          iny
+GetPlayerFootPosition:
+          lda PlayerY
+          and #~$03             ; 4 sprite lines per row
+          lsr a
+          lsr a
+          tay
           lda PlayerX
           lsr a                 ; convert to playfield pixels
           lsr a
@@ -111,11 +113,14 @@ PeekPlayerFloor:
           lsr a                 ; convert to background blocks
           lsr a
           tax
-          jmp PeekMap           ; tail call
+          rts
 
-PeekSpriteFloor:
-          ldy PlayerY - 1, x
-          iny
+GetSpriteFootPosition:
+          lda PlayerY - 1, x
+          and #~$03
+          lsr a
+          lsr a
+          tay
           lda PlayerX - 1, x
           lsr a                 ; convert to playfield pixels
           lsr a
@@ -126,22 +131,29 @@ PeekSpriteFloor:
           and #$f0
           ora Temp
           tax
+          rts
+
+PeekPlayerFloor:
+          jsr GetPlayerFootPosition
+          iny
+          jmp PeekMap           ; tail call
+
+PeekSpriteFloor:
+          jsr GetSpriteFootPosition
+          iny
           ;; fall through
 
 ;;; 
 PeekMap:  .block
           ;; Input coördinates in X and Y registers
+          ;; already Y ÷ 4 and X ÷ 16 to get block position
           txa
           asl a                 ; X × 2 (bytes per column)
           clc
           adc # 15              ; skip header (3) and colors (12)
           sta Temp              ; working idea of index
 
-          tya                   ; examine Y index
-          tax                   ; copy to X
-          and #~$03
-          lsr a                 ; ÷ 4 (line triples per row)
-          lsr a
+          tya                   ; examine Y row
 
           ldy Temp              ; index into map data of first byte
           cmp # 8               ; first or second byte?
