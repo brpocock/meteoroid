@@ -42,7 +42,12 @@ DrawOneRow:
           iny                   ; 2 / 51
           iny                   ; 2 / 53
           iny                   ; 2 / 55
-          lda (MapPointer), y   ; 5 / 60
+          .if TV == SECAM
+            lda #COLWHITE       ; 2 / 57
+            .Sleep 3            ; 3 / 60
+          .else
+            lda (MapPointer), y   ; 5 / 60
+          .fi
           sta COLUPF            ; 3 / 63
 
 DrawSomeLines:
