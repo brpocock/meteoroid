@@ -99,6 +99,7 @@ DoneStickDown:
           lda MapFlags
           and # ~MapFlagFacing
           sta WRITE + MapFlags
+
           lda MovementStyle
           cmp #MoveFall
           beq +
@@ -107,6 +108,7 @@ DoneStickDown:
           lda #MoveWalk
           sta WRITE + MovementStyle
 +
+
           lda SWCHA
 
           ldx #-1
@@ -120,6 +122,15 @@ DoneStickLeft:
           lda MapFlags
           ora #MapFlagFacing
           sta WRITE + MapFlags
+
+          lda MovementStyle
+          cmp #MoveFall
+          beq +
+          cmp #MoveJump
+          beq +
+          lda #MoveWalk
+          sta WRITE + MovementStyle
++
 
           ldx #1
           stx WRITE + DeltaX

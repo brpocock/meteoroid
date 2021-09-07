@@ -267,5 +267,6 @@ colors:   .macro co1, co2
 
           TotalLines = VBlankLines + KernelLines + OverscanLines
 
+          HBlankWidth = 56
           HBlankCycles = 40
           VisibleLineCycles = 36

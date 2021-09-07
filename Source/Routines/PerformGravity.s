@@ -64,6 +64,7 @@ CheckWalkFloor:
           jmp CanStand
 StartFalling:
           lda #MoveFall
+          ldx LineCounter
           sta WRITE + MovementStyle - 1, x
           jmp Next
 
@@ -106,6 +107,8 @@ GetPlayerFootPosition:
           lsr a
           tay
           lda PlayerX
+          sec
+          sbc #HBlankWidth
           lsr a                 ; convert to playfield pixels
           lsr a
           clc
@@ -126,6 +129,8 @@ GetSpriteFootPosition:
           lsr a
           lsr a                 ; convert to background blocks
           lsr a
+          sec
+          sbc #HBlankWidth
           sta Temp
           lda SpriteXH - 2, x
           and #$f0
@@ -162,6 +167,7 @@ PeekMap:  .block
 +
           ;; A has the Y value in rows
           and #$07              ; get the bit index
+          eor #$07              ; invert it for map's orientation
           tax
           lda BitMask, x
           and (MapPointer), y   ; Returns zero or non-zero
