@@ -64,10 +64,11 @@ ReturnIfPaused:
 
 HandleStick:
           lda SWCHA
-          .BitBit P0StickUp
+          and #P0StickUp
           beq DoJump
-          ;; lda NewButtons
-          ;; and #$40
+          lda NewButtons
+          beq DoneStickUp
+          and #$40
           bne DoneStickUp
 
 DoJump:
@@ -87,13 +88,19 @@ CanJump:
           sta WRITE + JumpMomentum
 
 DoneStickUp:
-          .BitBit P0StickDown
+          lda SWCHA
+          and #P0StickDown
           bne DoneStickDown
+
+          lda Equipment
+          and #EquipMorph
+          beq DoneStickDown
 
           ;; TODO morphball switching
 
 DoneStickDown:
-          .BitBit P0StickLeft
+          lda SWCHA
+          and #P0StickLeft
           bne DoneStickLeft
 
           lda MapFlags
@@ -109,13 +116,12 @@ DoneStickDown:
           sta WRITE + MovementStyle
 +
 
-          lda SWCHA
-
           ldx #-1
           stx WRITE + DeltaX
 
 DoneStickLeft:
-          .BitBit P0StickRight
+          lda SWCHA
+          and #P0StickRight
           bne DoneStickRight
 
           tax
