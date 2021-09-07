@@ -52,20 +52,19 @@ SkipSwitches:
 ;;; 
 
 HandleUserMovement:
-          lda #0
-          sta WRITE + DeltaX
-          sta WRITE + DeltaY
 
-ReturnIfPaused:     
+ReturnIfPaused:
           lda Pause
           beq +
           rts
 +
 
 HandleStick:
-          lda SWCHA
+          lda NewSWCHA          ; only when first pressed
+          beq +
           and #P0StickUp
           beq DoJump
++
           lda NewButtons
           beq DoneStickUp
           and #$40
@@ -79,12 +78,12 @@ DoJump:
           bne DoneStickUp
 
 CanJump:
-          ldx #-2
+          ldx #-4
           stx WRITE + DeltaY
 
           lda #MoveJump
           sta WRITE + MovementStyle
-          lda # 5
+          lda # 16
           sta WRITE + JumpMomentum
 
 DoneStickUp:
@@ -101,8 +100,15 @@ DoneStickUp:
 DoneStickDown:
           lda SWCHA
           and #P0StickLeft
-          bne DoneStickLeft
+          beq StickLeft
 
+          lda DeltaX
+          bpl DoneStickLeft
+          lda # 0
+          sta WRITE + DeltaX
+          geq DoneStickLeft
+
+StickLeft:
           lda MapFlags
           and # ~MapFlagFacing
           sta WRITE + MapFlags
@@ -116,14 +122,23 @@ DoneStickDown:
           sta WRITE + MovementStyle
 +
 
+          ldx DeltaX
+          dex
           ldx #-1
           stx WRITE + DeltaX
 
 DoneStickLeft:
           lda SWCHA
           and #P0StickRight
-          bne DoneStickRight
+          beq StickRight
 
+          lda DeltaX
+          bmi DoneStickRight
+          lda # 0
+          sta WRITE + DeltaX
+          geq DoneStickRight
+
+StickRight:
           tax
           lda MapFlags
           ora #MapFlagFacing
@@ -144,49 +159,6 @@ DoneStickLeft:
 DoneStickRight:
 
 ApplyStick:
-
-FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
-          .block
-          lda \fractionVar
-          ldx \deltaVar
-          cpx #0
-          beq DoneMovement
-          bpl MovePlus
-MoveMinus:
-          sec
-          sbc #ceil(\pxPerSecond * $80)
-          sta WRITE + \fractionVar
-          bcs DoneMovement
-          adc #$80
-          sta WRITE + \fractionVar
-          lda \positionVar
-          sec
-          sbc # 1
-          sta WRITE + \positionVar
-          jmp DoneMovement
-
-MovePlus:
-          clc
-          adc #ceil(\pxPerSecond * $80)
-          sta WRITE + \fractionVar
-          bcc DoneMovement
-          sbc #$80
-          sta WRITE + \fractionVar
-          lda \positionVar
-          clc
-          adc # 1
-          sta WRITE + \positionVar
-DoneMovement:
-          .bend
-          .endm
-
-          MovementDivisor = 0.85
-          ;; Make MovementDivisor  relatively the same in  both directions
-	;; so diagonal movement forms a 45° line
-          MovementSpeedX = ((40.0 / MovementDivisor) / FramesPerSecond)
-          .FractionalMovement DeltaX, PlayerXFraction, PlayerX, MovementSpeedX
-          MovementSpeedY = ((30.0 / MovementDivisor) / FramesPerSecond)
-          .FractionalMovement DeltaY, PlayerYFraction, PlayerY, MovementSpeedY
 
           rts
           .bend

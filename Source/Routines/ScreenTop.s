@@ -12,6 +12,7 @@ TopOfScreenService: .block
           and #$01
           bne +
           stx WSYNC
+          stx WSYNC
 +
           jsr VSync
 ;;; 
@@ -198,6 +199,11 @@ M0HPos:
           beq NoSprites
 
           stx CXCLR
+
+          lda ScrollLeft
+          asl a
+          asl a
+          sta Temp              ; Scroll Left in screen blocks
           ldx SpriteFlicker
           ldy # 9
 NextFlickerCandidate:
@@ -207,9 +213,27 @@ NextFlickerCandidate:
           ldx #0
 FlickerOK:
           dey
-          beq SetUpSprites
+          bne FoundFlickerCandidate
+          ldx #$ff
           stx WRITE + SpriteFlicker
+          jmp SetUpSprites
 
+FoundFlickerCandidate:
+          stx WRITE + SpriteFlicker
+CheckVisibility:
+          lda SpriteX, x
+          asl a
+          asl a
+          asl a
+          asl a
+          ora SpriteXH, x
+          cmp Temp
+          blt NextFlickerCandidate
+          sec
+          sbc # 11
+          cmp Temp
+          bge NextFlickerCandidate
+          
 PreparePlayer1:
           lda SpriteX, x
           sec
@@ -255,6 +279,8 @@ SetUpSprites:
           beq NoSprites
 
           ldx SpriteFlicker
+          cpx #$ff
+          beq NoSprites
           lda SpriteAction, x
           and #$07
           cmp # SpriteProvinceDoor

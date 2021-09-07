@@ -103,6 +103,23 @@ EndOfASpriteList:
 
 FoundSpriteList:
 
+          ;; TODO real sprite list loading code
+          ;; XXX for now just set up a bogus sprite to test against
+
+          lda #SpriteEquipment
+          sta WRITE + SpriteAction
+          lda # 0
+          sta WRITE + SpriteXH
+          lda # 8 * 4 + HBlankWidth
+          sta WRITE + SpriteX
+          lda # 8 * 4
+          sta WRITE + SpriteY
+          lda # 0
+          sta WRITE + SpriteIndex
+
+          lda # 1
+          sta WRITE + SpriteCount
+
 SpritesDone:
 ;;; 
           .FarJSR MapServicesBank, ServiceValidateMap
@@ -148,7 +165,7 @@ SetMapPointerIndex:
 
 ;;; 
 RotateIn40Pixels:
-          ;; Rotate in 10 vertical columns of 4px each
+          ;; Rotate in 40 vertical pixel columns
 
           ldy # 0
           sty LineCounter
@@ -156,8 +173,8 @@ Rot40:
           lda ScrollLeft
           clc
           adc LineCounter
-          lsr a
-          and #$7c
+          lsr a                 ; } equivalent to ÷4 then ×2
+          and #~$01             ; }
           clc
           adc # 3 + 12
           tay

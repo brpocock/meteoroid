@@ -148,6 +148,106 @@ FillBottomScreen:
           sta ENABL
 
 ;;; 
+          
+FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
+          .block
+          lda \fractionVar
+          ldx \deltaVar
+          cpx #0
+          beq DoneMovement
+          bpl MovePlus
+MoveMinus:
+          sec
+          sbc #ceil(\pxPerSecond * $80)
+          sta WRITE + \fractionVar
+          bcs DoneMovement
+          adc #$80
+          sta WRITE + \fractionVar
+          lda \positionVar
+          sec
+          sbc # 1
+          sta WRITE + \positionVar
+          jmp DoneMovement
+
+MovePlus:
+          clc
+          adc #ceil(\pxPerSecond * $80)
+          sta WRITE + \fractionVar
+          bcc DoneMovement
+          sbc #$80
+          sta WRITE + \fractionVar
+          lda \positionVar
+          clc
+          adc # 1
+          sta WRITE + \positionVar
+DoneMovement:
+          .bend
+          .endm
+
+          MovementDivisor = 0.85
+          ;; Make MovementDivisor  relatively the same in  both directions
+	;; so diagonal movement forms a 45° line
+          MovementSpeedX = ((40.0 / MovementDivisor) / FramesPerSecond)
+          .FractionalMovement DeltaX, PlayerXFraction, PlayerX, MovementSpeedX
+
+CheckWallLeftRight:
+          lda DeltaX
+          beq WallCheckDone
+          bpl CheckWallRight
+CheckWallLeft:
+          jsr GetPlayerFootPosition
+          jsr PeekMap
+          bne HitWallLeft
+          jsr GetPlayerFootPosition
+          dey
+          jsr PeekMap
+          bne HitWallLeft
+          jsr GetPlayerFootPosition
+          dey
+          dey
+          jsr PeekMap
+          beq WallCheckDone
+HitWallLeft:
+          lda # 1
+          sta WRITE + DeltaX
+          lda PlayerX
+          clc
+          adc # 1
+          sta WRITE + PlayerX
+          lda # 0
+          sta WRITE + PlayerXFraction
+          jmp WallCheckDone
+
+CheckWallRight:
+          jsr GetPlayerFootPosition
+          jsr PeekMap
+          bne HitWallRight
+          jsr GetPlayerFootPosition
+          dey
+          jsr PeekMap
+          bne HitWallRight
+          jsr GetPlayerFootPosition
+          dey
+          dey
+          jsr PeekMap
+          beq WallCheckDone
+HitWallRight:
+          lda #-1
+          sta WRITE + DeltaX
+          lda PlayerX
+          sec
+          sbc # 1
+          sta WRITE + PlayerX
+          lda # 0
+          sta WRITE + PlayerXFraction
+          jmp WallCheckDone
+          
+WallCheckDone:
+          
+          MovementSpeedY = ((30.0 / MovementDivisor) / FramesPerSecond)
+          .FractionalMovement DeltaY, PlayerYFraction, PlayerY, MovementSpeedY
+
+;;; 
 ScreenJumpLogic:
           lda PlayerY
           bmi GoScreenUp
@@ -168,8 +268,10 @@ ScrollScreenLeft:
           dey
           sec
           sbc (MapPointer), y
-          clc
-          adc # 10
+          sec
+          asl a
+          asl a                 ; convert to PF pixels
+          sbc # 10
           cmp ScrollLeft
           blt ShouldIStayOrShouldIGo
 
@@ -177,10 +279,11 @@ ScrollScreenLeft:
 
           inc ScrollLeft
           lda ScrollLeft
-          lsr a
-          and #$7c
+          adc # 39               ;  screen width
+          lsr a                  ; } equivalent to ÷4 ×2
+          and #~$01              ; }
           clc
-          adc # 3 + 12 + 20     ; indices, colors, and screen width
+          adc # 3 + 12     ; indices & colors
           tay
 
           jsr ScrollRight
@@ -235,60 +338,12 @@ ScrollScreenRight:
           dec ScrollLeft
           lda ScrollLeft
           lsr a
-          and #$7c
+          and #~$01
           clc
           adc # 15
           tay
 
-RotatePixelsBack:       .macro
-          ;; Rotate in one pixel at the left of a row, shifting everything else right.
-          rol Temp
-          rol BackgroundPF0, x
-          lda #$01
-          and BackgroundPF0, x
-          beq +
-          lda BackgroundPF0, x
-          ora #$10
-          and #$f0
-          sta BackgroundPF0, x
-+
-          ror BackgroundPF1L, x
-          rol BackgroundPF2L, x
-          rol PixelPointers, x
-          lda #$01
-          and PixelPointers, x
-          beq +
-          lda PixelPointers, x
-          ora #$10
-          and #$f0
-          sta PixelPointers, x
-+
-          ror BackgroundPF1R, x
-          rol BackgroundPF2R, x
-          .endm
-
-Rot12:
-          ;; Rotate in 12 pixels at the left of the screen
-          ldx # 0
-          ;; Rotate in the 8 pixels from the first map data byte
-          lda (MapPointer), y
-          sta Temp
-Rot8:
-          .RotatePixelsBack
-          inx
-          cpx # 8
-          blt Rot8
-          ;; Rotate in the 4 pixels from the second map data byte
-          iny
-          lda (MapPointer), y
-          sta Temp
-Rot4:
-          .RotatePixelsBack
-          inx
-          cpx # 12
-          blt Rot4
-          
-;;; 
+          jsr ScrollBack
           
           lda PlayerX
           clc
@@ -324,14 +379,17 @@ Rot4:
           bne -
 
           jsr CombinePF0
-
+DoneScrollingBack:
           jmp ShouldIStayOrShouldIGo
 
 GoScreenUp:
+          ldy #0
+          lda (MapPointer), y
+          beq DoneScrollingBack
+
           lda #ScreenBottomEdge - 1
           sta WRITE + BlessedY
           sta WRITE + PlayerY
-          ldy #0
           geq GoScreen
 
 GoScreenDown:

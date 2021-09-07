@@ -3,13 +3,7 @@
 
 CheckPlayerCollision:         .block
           lda CXP0FB
-          and #$c0              ; hit playfield or ball
-          beq NoBumpWall
-          bne NoBumpWall        ; XXX TODO remove this after gravity works
-          jsr BumpWall
-          rts
 
-NoBumpWall:
           lda CXPPMM
           .BitBit $80              ; hit other sprite
           beq PlayerMoveOK         ; did not hit
@@ -18,6 +12,8 @@ BumpSprite:
           jsr BumpWall
 
           ldx SpriteFlicker
+          cpx #$ff
+          beq PlayerMoveOK
           lda SpriteAction, x
 
           cmp #SpriteDoor       ; Doors ignore cooldown timer
@@ -95,47 +91,22 @@ ProvinceChange:
 ;;; 
 BumpWall:
           sta CXCLR
-
-          lda BlessedX
-          cmp PlayerX
-          beq +
-          sta WRITE + PlayerX
-          jmp BumpY
-+
-          lda DeltaX
-          bne ShoveX
-          jsr Random
-          and # 1
-          bne ShoveX
-          lda #-1
-ShoveX:
-          sta WRITE + DeltaX
-          clc
-          adc PlayerX
-          sta WRITE + PlayerX
-
-BumpY:
-          lda BlessedY
-          cmp PlayerY
-          beq +
-          sta WRITE + PlayerY
-          jmp DoneBump
-+
-          lda DeltaY
-          bne ShoveY
-          jsr Random
-          and # 1
-          bne ShoveY
-          lda #-1
-ShoveY:
-          sta WRITE + DeltaY
-          clc
-          adc PlayerY
-          sta WRITE + PlayerY
-
+          lda MovementStyle
+          cmp #MoveJump
+          bne Recover
+          lda #MoveFall
+          sta WRITE + MovementStyle
           lda # 0
-          sta WRITE + PlayerXFraction
-          sta WRITE + PlayerYFraction
+          sta WRITE + JumpMomentum
+
+Recover:
+          lda DeltaX
+          eor #$ff
+          sta WRITE + DeltaX
+          lda DeltaY
+          eor #$ff
+          sta WRITE + DeltaY
+          
 DoneBump:
           lda #SoundBump
           sta WRITE + NextSound

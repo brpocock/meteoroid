@@ -16,36 +16,47 @@ Loop:
           cmp #MoveFall
           bne Next
 KeepFalling:
-          lda PlayerY - 1, x
+          lda DeltaY
+          cmp # 12              ; terminal velocity
+          bge +
           clc
           adc # 1
-          sta WRITE + PlayerY - 1, x
-
-          tay
-          ;; keep falling until we land on a 4-pixel boundary
-          and #$03
-          cmp #$03
-          bne Next
-
-          iny                   ; round up to the next line
-          tya
-          lsr a                 ; divide by 4 to get logical row
-          lsr a
-          sta Temp              ; logical row number
-
+          sta WRITE + DeltaY
++
+          
           ;; find offset into map data
 
           cpx # 1               ; player, not sprite
           beq +
-          jsr PeekSpriteFloor
+          jsr GetSpriteFootPosition
+          iny
+          jsr PeekMap
+          bne StartStanding
+          lda # 0               ; TODO fat sprites
           beq CanFall
-          jmp StartStanding
+          jsr GetSpriteFootPosition
+          inx
+          iny
+          jsr PeekMap
+          beq CanFall
+          gne StartStanding
 +
-          jsr PeekPlayerFloor
-          beq CanFall           ; it's blank, falling is OK
+          jsr GetPlayerFootPosition
+          iny
+          jsr PeekMap           ; tail call
+          beq CanFall
 StartStanding:
+          ldx LineCounter
           lda #MoveStand        ; stop falling, we've landed on ground
-          sta WRITE + MovementStyle
+          sta WRITE + MovementStyle - 1, x
+          lda PlayerY - 1, x
+          ora #$03
+          sta WRITE + PlayerY - 1, x
+          cpx # 1
+          bne Next
+          lda # 0
+          sta WRITE + DeltaX
+          sta WRITE + DeltaY
           jmp Next
           
 CanFall:
@@ -55,17 +66,31 @@ CanStand:
 CheckWalkFloor:
           cpx # 1
           beq +
-          jsr PeekSpriteFloor
+          jsr GetSpriteFootPosition
+          iny
+          jsr PeekMap
+          bne CanStand
+          jsr GetSpriteFootPosition
+          lda # 0               ; TODO fat sprites
           beq StartFalling
-          jmp CanStand
+          inx
+          iny
+          jsr PeekMap
+          bne CanStand
+          geq StartFalling
 +
-          jsr PeekPlayerFloor
-          beq StartFalling
-          jmp CanStand
+          jsr GetPlayerFootPosition
+          iny
+          jsr PeekMap
+          bne CanStand
 StartFalling:
           lda #MoveFall
           ldx LineCounter
           sta WRITE + MovementStyle - 1, x
+          cpx # 1
+          bne Next
+          lda # 1
+          sta WRITE + DeltaY
           jmp Next
 
 DefyingGravity:
@@ -78,16 +103,25 @@ DefyingGravity:
           sty WRITE + JumpMomentum
           beq StopJump
 
-          ;; TODO check headroom for collision with brick above
+          ;; check headroom for collision with brick above
+          jsr GetPlayerFootPosition
+          dey
+          dey
+          dey
+          jsr PeekMap
+          bne StopJump
 
-          lda PlayerY
-          sec
-          sbc # 2
-          sta WRITE + PlayerY
+JumpClear:          
+          ;; OK, let's jump some more
+          lda #-2
+          sta WRITE + DeltaY
           jmp Next
+
 StopJump:
           lda # MoveFall
           sta WRITE + MovementStyle
+          lda # 2
+          sta WRITE + DeltaY
 
 Next:
           dec LineCounter
@@ -98,16 +132,3 @@ Next:
 
           .bend
 
-;;; 
-
-PeekPlayerFloor:
-          jsr GetPlayerFootPosition
-          iny
-          jmp PeekMap           ; tail call
-
-PeekSpriteFloor:
-          jsr GetSpriteFootPosition
-          iny
-          jmp PeekMap
-
-;;; 

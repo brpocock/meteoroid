@@ -36,7 +36,7 @@ GetPlayerFootPosition:
           tay
           lda PlayerX
           sec
-          sbc #HBlankWidth
+          sbc #HBlankWidth - 4
           lsr a                 ; convert to playfield pixels
           lsr a
           clc
@@ -58,7 +58,7 @@ GetSpriteFootPosition:
           lsr a                 ; convert to background blocks
           lsr a
           sec
-          sbc #HBlankWidth
+          sbc #HBlankWidth - 4
           sta Temp
           lda SpriteXH - 2, x
           and #$f0

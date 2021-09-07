@@ -7,6 +7,8 @@ CheckSpriteCollision:         .block
           beq Bye
 
           ldx SpriteFlicker
+          cpx #$ff
+          beq Bye
 
           lda MapFlags
           .BitBit MapFlagRandomSpawn
@@ -21,14 +23,6 @@ CheckSpriteCollision:         .block
           jmp Bye
 
 NoRePosition
-          lda BitMask + 4, x   ; $10 … $80 = MapFlagSprite✗Moved
-
-          bit MapFlags
-          beq Bye               ; sprite did not move since last check?
-          eor #$ff
-          and MapFlags
-          sta MapFlags
-
           ldx SpriteFlicker
           lda SpriteMotion, x
           beq Bye
