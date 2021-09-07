@@ -34,6 +34,7 @@ DoLocal:
           .include "CheckPlayerCollision.s"
           .include "SpriteMovement.s"
           .include "BulletMovement.s"
+          .include "PerformGravity.s"
           .include "UserInput.s"
 
           .include "VSync.s"

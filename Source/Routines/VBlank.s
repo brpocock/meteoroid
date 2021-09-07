@@ -52,12 +52,6 @@ ButtonsChanged:
           ora #$01              ; guarantee non-zero if it changed
           sta WRITE + NewButtons
 
-          and #$40              ; C button pressed?
-          bne DoneButtons
-          lda NewSWCHB
-          ora #~SWCHBSelect     ; zero = Select button pressed
-          sta WRITE + NewSWCHB
-          sta WRITE + DebounceSWCHB
 DoneButtons:
 
           .if BANK == MapServicesBank
@@ -69,6 +63,7 @@ DoneButtons:
           jsr CheckSpriteCollision
           jsr SpriteMovement
           jsr BulletMovement
+          jsr PerformGravity
           jsr CheckPlayerCollision
           jsr UserInput
 

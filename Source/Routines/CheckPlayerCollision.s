@@ -5,6 +5,7 @@ CheckPlayerCollision:         .block
           lda CXP0FB
           and #$c0              ; hit playfield or ball
           beq NoBumpWall
+          bne NoBumpWall        ; XXX
           jsr BumpWall
           rts
 

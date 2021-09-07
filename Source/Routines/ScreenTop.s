@@ -75,6 +75,9 @@ DrawTanks:
 
           .SkipLines 3
 
+          .ldacolu COLYELLOW, $a
+          sta COLUPF
+
 PrepareForHPBar:
           lda # 0
           sta PF0
@@ -99,6 +102,9 @@ PrepareForHPBar:
           sta PixelPointers + 1
           jmp PF1ForHP
 ZeroPF2:
+          .ldacolu COLORANGE, $a
+          sta COLUPF
+
 PF1ForHP:
           lda CurrentHP
           lsr a
@@ -112,9 +118,6 @@ PF1ForHP:
 FullPF1:
           lda #$ff
           sta PixelPointers
-
-          .ldacolu COLGOLD, $4
-          sta COLUPF
 
 DrawHP:
           .ldacolu COLGOLD, $4
@@ -148,7 +151,7 @@ DrawHPLoop:
           sta NUSIZ0
           sta NUSIZ1
 
-          .ldacolu COLBLUE, $e
+          .ldacolu COLGOLD, $c
           sta COLUP0
 
           .ldacolu COLMAGENTA, $e
@@ -333,22 +336,15 @@ P1Ready:
           lda PlayerMissileY
           sta M0LineCounter
 
-          lda #$ff
+          lda #$ff              ; TODO
           sta M1LineCounter
 
           lda #>PlayerSprites
           sta pp0h
 
           lda MovementStyle
-          beq +
-          gne +                 ; TODO remove and fix
-          asl a
-          asl a
-          sta Temp
-          asl a
+          .Mul 12, Temp
           clc
-          adc Temp
-+
           adc #<PlayerSprites
           bcc +
           inc pp0h

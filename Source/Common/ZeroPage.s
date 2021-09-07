@@ -72,9 +72,6 @@ CurrentTanks:
 MaxTanks:
           .byte ?
 
-MovementStyle:
-          .byte ?
-
 Equipment:
           .byte ?
 

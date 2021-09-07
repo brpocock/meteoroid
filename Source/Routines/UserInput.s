@@ -51,28 +51,46 @@ NoPause:
 SkipSwitches:
 ;;; 
 
-HandleStick:
+HandleUserMovement:
           lda #0
           sta WRITE + DeltaX
           sta WRITE + DeltaY
 
+ReturnIfPaused:     
           lda Pause
           beq +
           rts
 +
+
+HandleStick:
           lda SWCHA
           .BitBit P0StickUp
+          beq DoJump
+          ;; lda NewButtons
+          ;; and #$40
           bne DoneStickUp
 
-          ldx #-1
+DoJump:
+          lda MovementStyle
+          cmp #MoveStand
+          beq CanJump
+          cmp #MoveWalk
+          bne DoneStickUp
+
+CanJump:
+          ldx #-2
           stx WRITE + DeltaY
+
+          lda #MoveJump
+          sta WRITE + MovementStyle
+          lda # 10
+          sta WRITE + JumpMomentum
 
 DoneStickUp:
           .BitBit P0StickDown
           bne DoneStickDown
 
-          ldx #1
-          stx WRITE + DeltaY
+          ;; TODO morphball switching
 
 DoneStickDown:
           .BitBit P0StickLeft
@@ -81,8 +99,14 @@ DoneStickDown:
           lda MapFlags
           and # ~MapFlagFacing
           sta WRITE + MapFlags
+          lda MovementStyle
+          cmp #MoveFall
+          beq +
+          cmp #MoveJump
+          beq +
           lda #MoveWalk
           sta WRITE + MovementStyle
++
           lda SWCHA
 
           ldx #-1
@@ -96,8 +120,6 @@ DoneStickLeft:
           lda MapFlags
           ora #MapFlagFacing
           sta WRITE + MapFlags
-          lda #MoveWalk
-          sta WRITE + MovementStyle
 
           ldx #1
           stx WRITE + DeltaX

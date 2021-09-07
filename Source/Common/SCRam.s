@@ -8,10 +8,6 @@
 
 SCRAM:
 
-PlayerX:
-          .byte ?
-PlayerY:
-          .byte ?
 PlayerXFraction:
           .byte ?
 PlayerYFraction:
@@ -22,12 +18,18 @@ PlayerMissileX:
 PlayerMissileY:
           .byte ?
 
-SpriteX:
-          .byte ?, ?, ?, ?,  ?, ?, ?, ?
 SpriteXH:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
+PlayerX:
+          .byte ?
+SpriteX:
+          .byte ?, ?, ?, ?,  ?, ?, ?, ?
+PlayerY:
+          .byte ?
 SpriteY:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
+MovementStyle:
+          .byte ?
 SpriteMotion:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
 SpriteIndex:
@@ -82,6 +84,8 @@ NewButtons:
 DeltaX:
           .byte ?
 DeltaY:
+          .byte ?
+JumpMomentum:
           .byte ?
 
 ;;; String Buffer for text displays of composed text,

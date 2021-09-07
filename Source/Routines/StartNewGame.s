@@ -33,7 +33,8 @@ InitGameVars:
           sta WRITE + PlayerYFraction
           sta WRITE + DeltaX
           sta WRITE + DeltaY
-          sta MovementStyle     ; standing
+          sta WRITE + JumpMomentum
+          sta WRITE + MovementStyle     ; standing
 
           lda #$a0              ; Player start position
           sta WRITE + BlessedX
