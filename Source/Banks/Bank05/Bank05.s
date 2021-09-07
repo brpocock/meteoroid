@@ -14,6 +14,7 @@ DoLocal:
           .include "DrawMainScreen.s"
 
           .include "ScrollRight.s"
+          .include "PeekMap.s"
           .include "PerformGravity.s"
 
           .include "VSync.s"
