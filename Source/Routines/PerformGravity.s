@@ -70,12 +70,15 @@ StartFalling:
 DefyingGravity:
           cpx # 1               ; is this the player?
           beq +
-          brk                   ; if not, we should not register as a jump per se.
+          brk                   ; if not, we should not register as a jump per se (yet?).
 +
           ldy JumpMomentum
           dey
           sty WRITE + JumpMomentum
           beq StopJump
+
+          ;; TODO check headroom for collision with brick above
+
           lda PlayerY
           sec
           sbc # 2
