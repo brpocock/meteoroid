@@ -83,7 +83,7 @@ CanJump:
 
           lda #MoveJump
           sta WRITE + MovementStyle
-          lda # 10
+          lda # 5
           sta WRITE + JumpMomentum
 
 DoneStickUp:

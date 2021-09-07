@@ -4,6 +4,7 @@
 PerformGravity:     .block
 
           ldx # 1
+          stx LineCounter
 Loop:
           lda MovementStyle - 1, x
           cmp #MoveStand
@@ -22,41 +23,30 @@ Loop:
           and #$03
           cmp #$03
           bne Next
-          iny
+
+          iny                   ; round up to the next line
           tya
+          lsr a                 ; divide by 4 to get logical row
           lsr a
-          lsr a
-          sta Temp              ; Y offset
+          sta Temp              ; logical row number
 
           ;; find offset into map data
           lda PlayerX - 1, x
-          and #$fc
-          lsr a
-          lsr a
 
-          cpx # 1               ; player
+          cpx # 1               ; player, not sprite
           bne FindOffsetForSprite
 FindOffsetForPlayer:
+          lsr a
+          lsr a
           clc
           adc ScrollLeft
-          and #$fc
           lsr a
-          adc # 15
-          tay
-          lda Temp              ; Y offset saved previously
-          cmp # 8
-          blt +
-          iny
-+
-          lda (MapPointer), y
-          sta Pointer           ; just need another temp var!
-          lda Temp
-          and #$07
-          tay
-          lda BitMask, y
-          and Pointer
-          beq CanFall
-          lda #MoveStand
+          lsr a
+          tax
+          ldy PlayerY
+          jsr PeekMap
+          beq CanFall           ; it's blank, falling is OK
+          lda #MoveStand        ; stop falling, we've landed on ground
           sta WRITE + MovementStyle
 
 FindOffsetForSprite:
@@ -89,4 +79,34 @@ Next:
 
           rts
 
+          .bend
+
+;;; 
+
+PeekMap:  .block
+          ;; Input coördinates in X and Y registers
+          txa
+          asl a
+          sta Temp
+          tya
+          lsr a
+          lsr a
+          tay
+          cpy # 8
+          blt +
+          clc
+          adc # 1
++
+          clc
+          adc Temp
+          clc
+          adc # 15              ; skip header (3) and colors (12)
+          tay
+          lda Temp
+          and #$07
+          tax
+          inx
+          lda BitMask, x
+          and (MapPointer), y   ; Returns zero or non-zero
+          rts
           .bend
