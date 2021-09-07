@@ -12,7 +12,18 @@ DoLocal:
           .include "SetUpScreen.s"
           ;; falls through to
           .include "DrawMainScreen.s"
+
           .include "ScrollRight.s"
+          .include "PerformGravity.s"
+
+          .include "VSync.s"
+          .include "Overscan.s"
+
+          .include "Random.s"
+          .include "PlayMusic.s"
+          rts
+
+          .include "WaitScreenBottom.s"
 
 MapData:  
           .include "MapProvince0.s"
@@ -21,13 +32,4 @@ MapData:
 BackgroundMusic:
           .include "Province0.s"
 
-          .include "VSync.s"
-          .include "VBlank.s"
-          .include "Overscan.s"
-          .include "Random.s"
-
-          .include "PlayMusic.s"
-          rts
-
-          .include "WaitScreenBottom.s"
           .include "EndBank.s"

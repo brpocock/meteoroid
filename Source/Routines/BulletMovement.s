@@ -3,10 +3,6 @@
 
 BulletMovement:     .block
 
-          ldx PlayerMissileX
-          inx
-          stx WRITE + PlayerMissileX
-
           rts
 
           .bend

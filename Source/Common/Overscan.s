@@ -7,12 +7,12 @@ Overscan: .block
           ldx #SFXBank
           jsr FarCall
 
-          .weak
-          DoMusic = 0
-          .endweak
-
-          .if DoMusic > 0
+          .if BANK >= Province0Bank
           jsr DoMusic
+          .fi
+
+          .if BANK == Province0Bank
+          jsr PerformGravity
           .fi
 
           .WaitForTimer

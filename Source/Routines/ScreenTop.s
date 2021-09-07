@@ -8,7 +8,6 @@
           MonsterSprites = $f200
 TopOfScreenService: .block
 
-          jsr Overscan
           lda ClockFrame
           and #$01
           bne +

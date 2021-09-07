@@ -3,16 +3,19 @@
 
 PerformGravity:     .block
 
-          ldx # 1
+          ldx # 9
           stx LineCounter
 Loop:
           lda MovementStyle - 1, x
           cmp #MoveStand
           beq Next
           cmp #MoveJump
-          beq AgeJump
+          beq DefyingGravity
+          cmp #MoveWalk
+          beq CheckWalkFloor
           cmp #MoveFall
           bne Next
+KeepFalling:
           lda PlayerY - 1, x
           clc
           adc # 1
@@ -31,31 +34,40 @@ Loop:
           sta Temp              ; logical row number
 
           ;; find offset into map data
-          lda PlayerX - 1, x
 
           cpx # 1               ; player, not sprite
-          bne FindOffsetForSprite
-FindOffsetForPlayer:
-          lsr a
-          lsr a
-          clc
-          adc ScrollLeft
-          lsr a
-          lsr a
-          tax
-          ldy PlayerY
-          jsr PeekMap
+          beq +
+          jsr PeekSpriteFloor
+          beq CanFall
+          jmp StartStanding
++
+          jsr PeekPlayerFloor
           beq CanFall           ; it's blank, falling is OK
+StartStanding:
           lda #MoveStand        ; stop falling, we've landed on ground
           sta WRITE + MovementStyle
-
-FindOffsetForSprite:
-          ;; TODO
+          jmp Next
           
 CanFall:
+CanStand:
           jmp Next
 
-AgeJump:
+CheckWalkFloor:
+          cpx # 1
+          beq +
+          jsr PeekSpriteFloor
+          beq StartFalling
+          jmp CanStand
++
+          jsr PeekPlayerFloor
+          beq StartFalling
+          jmp CanStand
+StartFalling:
+          lda #MoveFall
+          sta WRITE + MovementStyle - 1, x
+          jmp Next
+
+DefyingGravity:
           cpx # 1               ; is this the player?
           beq +
           brk                   ; if not, we should not register as a jump per se.
@@ -74,7 +86,8 @@ StopJump:
           sta WRITE + MovementStyle
 
 Next:
-          dex
+          dec LineCounter
+          ldx LineCounter
           bne Loop
 
           rts
@@ -83,29 +96,58 @@ Next:
 
 ;;; 
 
+
+PeekPlayerFloor:
+          ldy PlayerY
+          iny
+          lda PlayerX
+          lsr a                 ; convert to playfield pixels
+          lsr a
+          clc
+          adc ScrollLeft
+          lsr a                 ; convert to background blocks
+          lsr a
+          tax
+          jmp PeekMap           ; tail call
+
+PeekSpriteFloor:
+          ldy PlayerY - 1, x
+          iny
+          lda PlayerX - 1, x
+          lsr a                 ; convert to playfield pixels
+          lsr a
+          lsr a                 ; convert to background blocks
+          lsr a
+          sta Temp
+          lda SpriteXH - 2, x
+          and #$f0
+          ora Temp
+          tax
+          ;; fall through
+
+;;; 
 PeekMap:  .block
           ;; Input coördinates in X and Y registers
           txa
-          asl a
-          sta Temp
-          tya
-          lsr a
-          lsr a
-          tay
-          cpy # 8
-          blt +
-          clc
-          adc # 1
-+
-          clc
-          adc Temp
+          asl a                 ; X × 2 (bytes per column)
           clc
           adc # 15              ; skip header (3) and colors (12)
-          tay
-          lda Temp
-          and #$07
+          sta Temp              ; working idea of index
+
+          tya                   ; examine Y index
+          tax                   ; copy to X
+          and #~$03
+          lsr a                 ; ÷ 4 (line triples per row)
+          lsr a
+
+          ldy Temp              ; index into map data of first byte
+          cmp # 8               ; first or second byte?
+          blt +
+          iny
++
+          ;; A has the Y value in rows
+          and #$07              ; get the bit index
           tax
-          inx
           lda BitMask, x
           and (MapPointer), y   ; Returns zero or non-zero
           rts

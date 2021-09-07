@@ -4,6 +4,7 @@
 DrawMainScreen:    .block
 
 Loop:
+          .WaitScreenBottom
           .FarJSR MapServicesBank, ServiceTopOfScreen
 
 ;;; 

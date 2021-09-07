@@ -3,8 +3,8 @@
 ;;;
 ;;; Mapped as $1000 (read) and $1080 (write)
 
-          * = $1080
-          .offs -$1000
+          * = $f080
+          .offs -$f000
 
 SCRAM:
 
@@ -17,7 +17,9 @@ PlayerMissileX:
           .byte ?
 PlayerMissileY:
           .byte ?
-
+;;; High bits of sprite position and sprite facing bit
+;;; High bits are in upper nybble
+;;; Facing (REFP1) bit is $08
 SpriteXH:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
 PlayerX:
@@ -196,10 +198,10 @@ Pause:
 
 ;;; 
           
-          .warn "SC-RAM is used up to ", * - 1, " leaving ", ($1100 - *), " bytes free"
+          .warn "SC-RAM is used up to ", * - 1, " leaving ", ($f100 - *), " bytes free"
           
-          .if * > $1100
-          .error "Ran out of SC RAM, overran by ", * - $1100, " bytes"
+          .if * > $f100
+          .error "Ran out of SC RAM, overran by ", * - $f100, " bytes"
           .fi
 
           WRITE = -$80

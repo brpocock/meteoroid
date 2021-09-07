@@ -62,8 +62,6 @@ DoneButtons:
 
           jsr CheckSpriteCollision
           jsr SpriteMovement
-          jsr BulletMovement
-          jsr PerformGravity
           jsr CheckPlayerCollision
           jsr UserInput
 
