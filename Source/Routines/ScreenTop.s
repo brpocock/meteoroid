@@ -14,7 +14,7 @@ TopOfScreenService: .block
           stx WSYNC
 +
           jsr VSync
-          
+
           lda ClockFrame
           and #$01
           bne +
