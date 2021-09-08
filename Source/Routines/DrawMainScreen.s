@@ -55,33 +55,33 @@ DrawSomeLines:
 
 ;;; 
 DrawPlayerLine:        .macro    playerNumber
+          ldy PixelPointers + 6 ; 3
           stx WSYNC             ; 3
-          lda # 0               ; 2 / 2
-          sta VBLANK            ; 3 / 5
+          lda # 0               ; 2
+          sta VBLANK            ; 3
 
-          lda PixelPointers + 4 ; 3 / 8
-          sta PF0               ; 3 / 11
-          lda PixelPointers + 5 ; 3 / 14
-          sta PF1               ; 3 / 17
-          lda PixelPointers + 6 ; 3 / 20
-          sta PF2               ; 3 / 23
-          lda PixelPointers + 10 + \playerNumber ; 3 / 26
-          sta GRP0 + \playerNumber ; 3 / 29
-          lda # 0               ; 2 / 31
-          sta PixelPointers + 10 + \playerNumber ; 3 / 34
-          lda PixelPointers + 7 ; 3 / 37
-          sta PF0               ; 3 / 40
-          lda PixelPointers + 8 ; 3 / 43
-          sta PF1               ; 3 / 46
-          lda PixelPointers + 9 ; 3 / 49
-          sta PF2               ; 3 / 52
+          lda PixelPointers + 4 ; 3
+          sta PF0               ; 3
+          lda PixelPointers + 5 ; 3
+          sta PF1               ; 3
+          sty PF2               ; 3
+          lda PixelPointers + 10 + \playerNumber ; 3
+          sta GRP0 + \playerNumber ; 3
+          lda # 0               ; 2
+          sta PixelPointers + 10 + \playerNumber ; 3
+          lda PixelPointers + 7 ; 3
+          sta PF0               ; 3
+          lda PixelPointers + 8 ; 3
+          sta PF1               ; 3
+          lda PixelPointers + 9 ; 3
+          sta PF2               ; 3
 
-          lda # 11                          ; 2 / 54
-          dcp P0LineCounter + \playerNumber ; 5 / 59
-          blt NoPlayer                      ; 2 (3) / 61 (62)
-          ldy P0LineCounter + \playerNumber ; 3 / 64
-          lda (pp0l + \playerNumber * 2), y ; 5 / 69
-          sta PixelPointers + 10 + \playerNumber ; 3 / 72
+          lda # 11                          ; 2
+          dcp P0LineCounter + \playerNumber ; 5
+          blt NoPlayer                      ; 2 (3)
+          ldy P0LineCounter + \playerNumber ; 3
+          lda (pp0l + \playerNumber * 2), y ; 5
+          sta PixelPointers + 10 + \playerNumber ; 3
 NoPlayer:
 
           .endm
@@ -128,8 +128,8 @@ NoM1:
 ;;; 
           .DrawPlayerLine 1
 
-          dex                   ; 2 / 66 (58)
-          bne DrawLineTriple    ; 2 (3) / 68 (60)
+          dex                   ; 2
+          bne DrawLineTriple    ; 2 (3)
 
           inc LineCounter       ; 5 / 73 (65)
           ldy LineCounter       ; 3 / 76* (68)
