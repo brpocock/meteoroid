@@ -14,6 +14,12 @@ TopOfScreenService: .block
           stx WSYNC
 +
           jsr VSync
+          
+          lda ClockFrame
+          and #$01
+          bne +
+          stx WSYNC
++
 ;;; 
           lda # 0
           sta VBLANK
