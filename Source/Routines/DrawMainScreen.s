@@ -148,106 +148,7 @@ FillBottomScreen:
           sta ENABL
 
 ;;; 
-          
-FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
-          .block
-          lda \fractionVar
-          ldx \deltaVar
-          cpx #0
-          beq DoneMovement
-          bpl MovePlus
-MoveMinus:
-          sec
-          sbc #ceil(\pxPerSecond * $80)
-          sta WRITE + \fractionVar
-          bcs DoneMovement
-          adc #$80
-          sta WRITE + \fractionVar
-          lda \positionVar
-          sec
-          sbc # 1
-          sta WRITE + \positionVar
-          jmp DoneMovement
 
-MovePlus:
-          clc
-          adc #ceil(\pxPerSecond * $80)
-          sta WRITE + \fractionVar
-          bcc DoneMovement
-          sbc #$80
-          sta WRITE + \fractionVar
-          lda \positionVar
-          clc
-          adc # 1
-          sta WRITE + \positionVar
-DoneMovement:
-          .bend
-          .endm
-
-          MovementDivisor = 0.85
-          ;; Make MovementDivisor  relatively the same in  both directions
-	;; so diagonal movement forms a 45° line
-          MovementSpeedX = ((40.0 / MovementDivisor) / FramesPerSecond)
-          .FractionalMovement DeltaX, PlayerXFraction, PlayerX, MovementSpeedX
-
-CheckWallLeftRight:
-          lda DeltaX
-          beq WallCheckDone
-          bpl CheckWallRight
-CheckWallLeft:
-          jsr GetPlayerFootPosition
-          jsr PeekMap
-          bne HitWallLeft
-          jsr GetPlayerFootPosition
-          dey
-          jsr PeekMap
-          bne HitWallLeft
-          jsr GetPlayerFootPosition
-          dey
-          dey
-          jsr PeekMap
-          beq WallCheckDone
-HitWallLeft:
-          lda # 1
-          sta WRITE + DeltaX
-          lda PlayerX
-          clc
-          adc # 1
-          sta WRITE + PlayerX
-          lda # 0
-          sta WRITE + PlayerXFraction
-          jmp WallCheckDone
-
-CheckWallRight:
-          jsr GetPlayerFootPosition
-          jsr PeekMap
-          bne HitWallRight
-          jsr GetPlayerFootPosition
-          dey
-          jsr PeekMap
-          bne HitWallRight
-          jsr GetPlayerFootPosition
-          dey
-          dey
-          jsr PeekMap
-          beq WallCheckDone
-HitWallRight:
-          lda #-1
-          sta WRITE + DeltaX
-          lda PlayerX
-          sec
-          sbc # 1
-          sta WRITE + PlayerX
-          lda # 0
-          sta WRITE + PlayerXFraction
-          jmp WallCheckDone
-          
-WallCheckDone:
-          
-          MovementSpeedY = ((30.0 / MovementDivisor) / FramesPerSecond)
-          .FractionalMovement DeltaY, PlayerYFraction, PlayerY, MovementSpeedY
-
-;;; 
 ScreenJumpLogic:
           lda PlayerY
           bmi GoScreenUp
@@ -279,6 +180,7 @@ ScrollScreenLeft:
 
           inc ScrollLeft
           lda ScrollLeft
+          clc
           adc # 39               ;  screen width
           lsr a                  ; } equivalent to ÷4 ×2
           and #~$01              ; }
@@ -287,6 +189,8 @@ ScrollScreenLeft:
           tay
 
           jsr ScrollRight
+
+          jsr CombinePF0
 
           lda PlayerX
           sec
@@ -321,7 +225,6 @@ ScrollScreenLeft:
           dex
           bne -
 
-          jsr CombinePF0
 DoneScrolling:
           jmp ShouldIStayOrShouldIGo
 

@@ -12,7 +12,6 @@ TopOfScreenService: .block
           and #$01
           bne +
           stx WSYNC
-          stx WSYNC
 +
           jsr VSync
 ;;; 

@@ -59,6 +59,16 @@ ReturnIfPaused:
           rts
 +
 
+          lda MovementStyle
+          cmp #MoveWalk
+          bne +
+          lda LastActivity
+          cmp # 60 * 4
+          blt +
+          lda #MoveStand
+          sta WRITE + MovementStyle
++         
+
 HandleStick:
           lda NewSWCHA          ; only when first pressed
           beq +

@@ -158,15 +158,6 @@ ClearBackgroundArray:
           dex
           bne -
 
-SetMapPointerIndex:
-          ;; Y register contains the offset of the vertical span into the MapPointer table.
-          lda ScrollLeft
-          lsr a
-          and #$7e
-          clc
-          adc # 15              ; skip row, offset, and run length, and color data
-          tay
-
 ;;; 
 RotateIn40Pixels:
           ;; Rotate in 40 vertical pixel columns
