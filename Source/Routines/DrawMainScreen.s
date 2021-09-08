@@ -199,6 +199,10 @@ ScrollScreenLeft:
           lda PlayerMissileX
           sec
           sbc # 4
+          cmp # 160 + HBlankWidth
+          blt +
+          lda # 0
++
           sta WRITE + PlayerMissileX
 
           lda BlessedX
@@ -211,6 +215,10 @@ ScrollScreenLeft:
           lda MonsterMissileX - 1, x
           sec
           sbc # 4
+          cmp # 160 + HBlankWidth
+          blt +
+          lda # 0
++
           sta WRITE + MonsterMissileX - 1, x
           dex
           bne -
@@ -248,6 +256,10 @@ ScrollScreenRight:
           lda PlayerMissileX
           clc
           adc # 4
+          cmp # 160 + HBlankWidth
+          blt +
+          lda # 0
++
           sta WRITE + PlayerMissileX
 
           lda BlessedX
@@ -260,6 +272,10 @@ ScrollScreenRight:
           lda MonsterMissileX - 1, x
           clc
           adc # 4
+          cmp # 160 + HBlankWidth
+          blt +
+          lda # 0
++
           sta WRITE + MonsterMissileX - 1, x
           dex
           bne -

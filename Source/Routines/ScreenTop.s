@@ -5,7 +5,7 @@
 	;; in every map bank.
 
           PlayerSprites = $f100
-          MonsterSprites = $f200
+          MapSprites = $f200
 TopOfScreenService: .block
 
           lda ClockFrame
@@ -298,30 +298,6 @@ P1HPos:
           asl a
           sta HMP1
           
-FindMissileFlicker:
-          lda MissileFlicker
-          clc
-          adc # 1
-          and #$03
-          sta WRITE + MissileFlicker
-          tax
-
-PrepareMissile1:
-          lda MonsterMissileX, x
-          sec
-          sta WSYNC
-M1HPos:
-          sbc # 15
-          bcs M1HPos
-          sta RESM1
-
-          eor #$07
-          asl a
-          asl a
-          asl a
-          asl a
-          sta HMM1
-
 SetUpSprites:
           ldx SpriteCount
           beq NoSprites
@@ -330,12 +306,12 @@ SetUpSprites:
           beq NoSprites
 
           ldx SpriteFlicker
-          lda #>MonsterSprites
+          lda #>MapSprites
           sta pp1h
           lda SpriteIndex, x
           .Mul 12, Temp
           clc
-          adc #<MonsterSprites
+          adc #<MapSprites
           bcc +
           inc pp1h
 +
@@ -370,11 +346,39 @@ P1Ready:
           sta PF1
           sta PF2
 
+FindMissileFlicker:
+          lda MissileFlicker
+          clc
+          adc # 1
+          and #$03
+          sta WRITE + MissileFlicker
+          tax
+
+PrepareMissile1:
+          lda MonsterMissileX, x
+          beq NoMissile1
+          sec
+          sta WSYNC
+M1HPos:
+          sbc # 15
+          bcs M1HPos
+          sta RESM1
+
+          eor #$07
+          asl a
+          asl a
+          asl a
+          asl a
+          sta HMM1
+
+          lda MonsterMissileY, x
+NoMissile1:
+          ;; A will be zero if we branched here to skip M1 for this frame
+          sta M1LineCounter
+
+          
           lda PlayerMissileY
           sta M0LineCounter
-
-          lda #$ff              ; TODO
-          sta M1LineCounter
 
           lda #>PlayerSprites
           sta pp0h

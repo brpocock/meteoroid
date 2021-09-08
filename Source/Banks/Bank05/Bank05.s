@@ -7,6 +7,7 @@
 
           ;; The addresses of these must be known to the Map Services bank
           .include "PlayerSprite.s"
+          .align $100
           .include "MapSprites.s"
 DoLocal:
           .include "SetUpScreen.s"
