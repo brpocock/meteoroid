@@ -80,10 +80,10 @@ $label_file_name.labels.txt\n";
       }
       if ($value >= 0xf080 and $value <= 0xf0ff) {
         printf $sym_file "%-21s %04x ???? ; %s" =>
-          $label, $value + 0xe000, $line;
+          $label, $value, $line;
         ++$count;
         printf $sym_file "%-21s %04x ???? ; %s" =>
-          $label . "_WRITE", $value + 0xe000 - 0x80, $line;
+          $label . "_WRITE", $value - 0x80, $line;
         ++$count;
       } else {
         printf $sym_file "%-21s %04x ???? ; %s" =>
