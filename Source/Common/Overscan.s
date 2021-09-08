@@ -9,9 +9,6 @@ Overscan: .block
 
           .if BANK >= Province0Bank
           jsr DoMusic
-          .fi
-
-          .if BANK == Province0Bank
           jsr PerformGravity
           .fi
 
