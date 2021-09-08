@@ -581,46 +581,46 @@ Mul .macro factor, temp
           ;; nothing
 
           .case 2
-          asl
+          asl a
 
           .case 3
           sta \temp
-          asl
+          asl a
           adc \temp
 
           .case 4
-          asl
-          asl
+          asl a
+          asl a
 
           .case 5
           sta \temp
-          asl
-          asl
+          asl a
+          asl a
           adc \temp
 
           .case 6
           .Mul 3, \temp
-          asl
+          asl a
 
           .case 7
           sta \temp
-          asl
-          asl
-          asl
+          asl a
+          asl a
+          asl a
           sbc \temp
 
           .case 8
-          asl
-          asl
-          asl
+          asl a
+          asl a
+          asl a
 
           .case 12
           .Mul 6, \temp
-          asl
+          asl a
 
           .case 14
           .Mul 7, \temp
-          asl
+          asl a
 
           .case 15
           sta \temp
@@ -631,12 +631,12 @@ Mul .macro factor, temp
 
           .case 16
           .rept 4
-          asl
+          asl a
           .next
 
           .case 32
           .rept 5
-          asl
+          asl a
           .next
 
           .default
