@@ -23,6 +23,14 @@ VSync: .block
           sty PF2
           sta WSYNC                    ; VSYNC line 1/3
 
+UpdateLastActivity:
+          lda LastActivity
+          clc
+          adc # 1
+          beq +                 ; once it reached $ff it stops counting
+          sta WRITE + LastActivity
++
+          
           ldy AlarmFrames
           beq AlarmFZero
 DecAlarm:

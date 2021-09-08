@@ -197,6 +197,22 @@ Pause:
           .byte ?
 
 ;;; 
+
+SpriteMoving:
+          .byte ?
+
+SpriteDeltaX:
+          .byte ?
+
+SpriteDeltaY:
+          .byte ?
+
+;;; 
+
+LastActivity:
+          .byte ?
+
+;;; 
           
           .warn "SC-RAM is used up to ", * - 1, " leaving ", ($f100 - *), " bytes free"
           

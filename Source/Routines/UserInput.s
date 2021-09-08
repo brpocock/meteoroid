@@ -78,13 +78,22 @@ DoJump:
           bne DoneStickUp
 
 CanJump:
-          ldx #-4
-          stx WRITE + DeltaY
 
           lda #MoveJump
           sta WRITE + MovementStyle
-          lda # 16
-          sta WRITE + JumpMomentum
+          lda # 0
+          sta WRITE + LastActivity
+
+          ldy # 16
+          ldx #-10
+          lda Equipment
+          .BitBit EquipHighJump
+          beq +
+          ldy # 32
+          ldx #-20
++
+          sty WRITE + JumpMomentum
+          stx WRITE + DeltaY
 
 DoneStickUp:
           lda SWCHA
@@ -120,6 +129,8 @@ StickLeft:
           beq +
           lda #MoveWalk
           sta WRITE + MovementStyle
+          lda # 0
+          sta WRITE + LastActivity
 +
 
           ldx DeltaX
@@ -151,6 +162,8 @@ StickRight:
           beq +
           lda #MoveWalk
           sta WRITE + MovementStyle
+          lda # 0
+          sta WRITE + LastActivity
 +
 
           ldx #1

@@ -154,12 +154,6 @@ CurrentUtterance:
 Rand:
           .word ?
 
-;;; Parameters used in sprite movement
-ParamX:
-          .word ?
-ParamY:
-          .byte ?
-          
 ;;; 
 ;;; Verify that we don't run over
 

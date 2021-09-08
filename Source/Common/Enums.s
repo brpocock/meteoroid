@@ -166,9 +166,10 @@
           EquipCharge = $02
           EquipBomb = $04
           EquipMissile = $08
-          EquipFreeze = $10
+          EquipHighJump = $10
           EquipBarrierSuit = $20
           EquipScubaSuit = $40
+
 
 ;;; 
 ;;; Movement Style
