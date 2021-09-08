@@ -201,11 +201,12 @@ M0HPos:
           stx CXCLR
 
           lda ScrollLeft
-          lsr a
+          lsr a                 ; ÷ 4 PF px per block
           lsr a
           sta Temp              ; Scroll Left in screen blocks
           ldx SpriteFlicker
-          ldy # 9
+          ldy SpriteCount       ; don't loop forever if you can't find one
+          iny
 NextFlickerCandidate:
           inx
           cpx SpriteCount
@@ -222,20 +223,59 @@ FoundFlickerCandidate:
           stx WRITE + SpriteFlicker
 CheckVisibility:
           lda SpriteX, x
+          lsr a                 ; ÷4 px per PF px
           lsr a
+          lsr a                 ; ÷4 PF px per block
           lsr a
-          lsr a
-          lsr a
-          ora SpriteXH, x
+          clc
+          adc SpriteXH, x       ; units are blocks
           cmp Temp
           blt NextFlickerCandidate
-          sec
-          sbc # 11
+          tay
+          lda Temp
+          adc #11
+          sta Temp
+          tya
           cmp Temp
           bge NextFlickerCandidate
-          
+
 PreparePlayer1:
+          ;; fix X to be screen-relative
+          ;; XH / X is of the form
+          ;; hhhh xxxx xxxx
+          ;; ScrollLeft is of the form
+          ;; 00ss ssss ss00
+          ;; We're going to use Pointer as an additional 16-bit workspace
+          lda SpriteXH, x
+          lsr a
+          lsr a
+          lsr a
+          lsr a
+          sta Pointer + 1
           lda SpriteX, x
+          sta Pointer
+          ;; and we'll be evil and combine Temp and LineCounter to make a second 16-bit value
+          lda # 0
+          sta LineCounter
+          lda ScrollLeft
+          rol a
+          rol LineCounter
+          rol a
+          rol LineCounter
+          sta Temp
+          ;; Now a 16-bit subtraction
+          lda Pointer + 1
+          sec
+          sbc LineCounter
+          bne NextFlickerCandidate
+          lda Pointer
+          sec
+          sbc Temp
+          bcc NextFlickerCandidate
+          cmp #$40
+          blt NextFlickerCandidate
+          cmp #$40 + 160
+          bge NextFlickerCandidate
           sec
           sta WSYNC
 P1HPos:

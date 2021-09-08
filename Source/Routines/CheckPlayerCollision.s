@@ -16,9 +16,8 @@ BumpSprite:
           beq PlayerMoveOK
           lda SpriteAction, x
 
-          cmp #SpriteDoor       ; Doors ignore cooldown timer
+          cmp #SpriteDoor
           beq DoorWithSprite
-
           cmp #SpriteMonster
           beq FightWithSprite
           and #SpriteProvinceDoor
@@ -98,6 +97,9 @@ BumpWall:
           sta WRITE + MovementStyle
           lda # 0
           sta WRITE + JumpMomentum
+          lda # 1
+          sta WRITE + DeltaY
+          jmp DoneBump
 
 Recover:
           lda DeltaX
