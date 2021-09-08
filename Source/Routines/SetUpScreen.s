@@ -14,6 +14,11 @@ SetUpScreen: .block
           sta WRITE + MapFlags
           sta WRITE + CurrentMusic + 1
 
+          lda #<BackgroundMusic
+          sta CurrentMusic
+          lda #>BackgroundMusic
+          sta CurrentMusic + 1
+
           lda BlessedX
           sta WRITE + PlayerX
           lda BlessedY
