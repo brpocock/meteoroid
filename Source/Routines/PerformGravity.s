@@ -3,7 +3,6 @@
 
 PerformGravity:     .block
 
-          
 FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
           .block
           lda \fractionVar
@@ -50,13 +49,16 @@ CheckWallLeftRight:
           beq WallCheckDone
           bpl CheckWallRight
 CheckWallLeft:
+          ldx # 0
           jsr GetPlayerFootPosition
           jsr PeekMap
           bne HitWallLeft
+          ldx # 0
           jsr GetPlayerFootPosition
           dey
           jsr PeekMap
           bne HitWallLeft
+          ldx # 0
           jsr GetPlayerFootPosition
           dey
           dey
@@ -74,13 +76,16 @@ HitWallLeft:
           jmp WallCheckDone
 
 CheckWallRight:
+          ldx # 7
           jsr GetPlayerFootPosition
           jsr PeekMap
           bne HitWallRight
+          ldx # 7
           jsr GetPlayerFootPosition
           dey
           jsr PeekMap
           bne HitWallRight
+          ldx # 7
           jsr GetPlayerFootPosition
           dey
           dey
@@ -142,6 +147,7 @@ KeepFalling:
           beq CanFall
           gne StartStanding
 +
+          ldx # 4
           jsr GetPlayerFootPosition
           iny
           jsr PeekMap           ; tail call
@@ -180,6 +186,7 @@ CheckWalkFloor:
           bne CanStand
           geq StartFalling
 +
+          ldx # 4
           jsr GetPlayerFootPosition
           iny
           jsr PeekMap
@@ -205,6 +212,7 @@ DefyingGravity:
           beq StopJump
 
           ;; check headroom for collision with brick above
+          ldx # 4
           jsr GetPlayerFootPosition
           dey
           dey

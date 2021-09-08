@@ -34,9 +34,10 @@ GetPlayerFootPosition:
           lsr a
           lsr a
           tay
-          lda PlayerX
+          txa
+          adc PlayerX
           sec
-          sbc #HBlankWidth - 4
+          sbc #HBlankWidth
           lsr a                 ; convert to playfield pixels
           lsr a
           clc
