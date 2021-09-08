@@ -376,7 +376,6 @@ NoMissile1:
           ;; A will be zero if we branched here to skip M1 for this frame
           sta M1LineCounter
 
-          
           lda PlayerMissileY
           sta M0LineCounter
 
