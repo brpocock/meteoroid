@@ -168,8 +168,6 @@
           EquipMissile = $08
           EquipHighJump = $10
           EquipBarrierSuit = $20
-          EquipScubaSuit = $40
-
 
 ;;; 
 ;;; Movement Style
