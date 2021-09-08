@@ -151,7 +151,14 @@ DrawHPLoop:
           sta NUSIZ0
           sta NUSIZ1
 
+          lda Equipment
+          and #EquipBarrierSuit
+          beq NoBarrier
+          .ldacolu COLORANGE, $c
+          gne SuitColor
+NoBarrier:
           .ldacolu COLGOLD, $c
+SuitColor:
           sta COLUP0
 
           .ldacolu COLMAGENTA, $e
