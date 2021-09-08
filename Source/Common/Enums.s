@@ -183,3 +183,4 @@
           MoveFloat = $06
           MoveSwim = $07
           MoveSink = $08
+          MoveMorphFall = $09

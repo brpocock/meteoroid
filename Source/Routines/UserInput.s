@@ -58,17 +58,22 @@ ReturnIfPaused:
           beq +
           rts
 +
-
           lda MovementStyle
           cmp #MoveWalk
           bne +
           lda LastActivity
-          cmp # 60 * 4
+          cmp # FramesPerSecond * 2
           blt +
           lda #MoveStand
           sta WRITE + MovementStyle
+          gne HandleStick
 +         
-
+          lda MovementStyle
+          cmp #MoveMorphRoll
+          bne HandleStick
+          lda #MoveMorphRest
+          sta WRITE + MovementStyle
+          
 HandleStick:
           lda NewSWCHA          ; only when first pressed
           beq +
@@ -85,10 +90,18 @@ DoJump:
           cmp #MoveStand
           beq CanJump
           cmp #MoveWalk
+          beq CanJump
+          cmp #MoveMorphRest
           bne DoneStickUp
+MorphBack:
+          lda #MoveFall
+          sta WRITE + MovementStyle
+          lda PlayerY
+          sbc # 1
+          sta WRITE + PlayerY
+          jmp DoneStickUp
 
 CanJump:
-
           lda #MoveJump
           sta WRITE + MovementStyle
           lda # 0
@@ -110,11 +123,25 @@ DoneStickUp:
           and #P0StickDown
           bne DoneStickDown
 
+MaybeMorph:
           lda Equipment
           and #EquipMorph
           beq DoneStickDown
 
-          ;; TODO morphball switching
+Metamorphosis:
+          lda MovementStyle
+          cmp #MoveWalk
+          beq Morph
+          cmp #MoveStand
+          bne DoneStickDown
+Morph:
+          lda #MoveMorphFall
+MorphMorph:
+          sta WRITE + MovementStyle
+          lda PlayerY
+          sbc # 4
+          sta WRITE + PlayerY
+          jmp DoneStickDown
 
 DoneStickDown:
           lda SWCHA
@@ -131,22 +158,8 @@ StickLeft:
           lda MapFlags
           and # ~MapFlagFacing
           sta WRITE + MapFlags
-
-          lda MovementStyle
-          cmp #MoveFall
-          beq +
-          cmp #MoveJump
-          beq +
-          lda #MoveWalk
-          sta WRITE + MovementStyle
-          lda # 0
-          sta WRITE + LastActivity
-+
-
-          ldx DeltaX
-          dex
           ldx #-1
-          stx WRITE + DeltaX
+          jsr SetMovementHorizontal
 
 DoneStickLeft:
           lda SWCHA
@@ -164,24 +177,41 @@ StickRight:
           lda MapFlags
           ora #MapFlagFacing
           sta WRITE + MapFlags
-
-          lda MovementStyle
-          cmp #MoveFall
-          beq +
-          cmp #MoveJump
-          beq +
-          lda #MoveWalk
-          sta WRITE + MovementStyle
-          lda # 0
-          sta WRITE + LastActivity
-+
-
-          ldx #1
-          stx WRITE + DeltaX
+          ldx # 1
+          jsr SetMovementHorizontal
 
 DoneStickRight:
 
 ApplyStick:
 
           rts
+
+SetMovementHorizontal:     
+          lda MovementStyle
+          cmp #MoveFall
+          beq DoneChangingMovement
+          cmp #MoveMorphFall
+          beq DoneChangingMovement
+          cmp #MoveJump
+          beq DoneChangingMovement
+          cmp #MoveMorphRest
+          bne StartRollMaybe
+MoveByRolling:
+          lda #MoveMorphRoll
+          sta WRITE + MovementStyle
+          gne DoneChangingMovement
+
+StartRollMaybe:
+          lda #MoveMorphRoll
+          beq MoveByRolling
+MoveByWalking:
+          lda #MoveWalk
+          sta WRITE + MovementStyle
+          lda # 0
+          sta WRITE + LastActivity
+DoneChangingMovement:
+          stx WRITE + DeltaX
+
+          rts
+
           .bend

@@ -53,6 +53,9 @@ CheckWallLeft:
           jsr GetPlayerFootPosition
           jsr PeekMap
           bne HitWallLeft
+          lda MovementStyle
+          cmp #MoveMorphRoll
+          beq WallCheckDone
           ldx # 0
           jsr GetPlayerFootPosition
           dey
@@ -80,6 +83,9 @@ CheckWallRight:
           jsr GetPlayerFootPosition
           jsr PeekMap
           bne HitWallRight
+          lda MovementStyle
+          cmp #MoveMorphRoll
+          beq WallCheckDone
           ldx # 7
           jsr GetPlayerFootPosition
           dey
@@ -103,7 +109,7 @@ HitWallRight:
           jmp WallCheckDone
           
 WallCheckDone:
-          
+;;; 
           MovementSpeedY = ((30.0 / MovementDivisor) / FramesPerSecond)
           .FractionalMovement DeltaY, PlayerYFraction, PlayerY, MovementSpeedY
 
@@ -119,6 +125,10 @@ Loop:
           beq DefyingGravity
           cmp #MoveWalk
           beq CheckWalkFloor
+          cmp #MoveMorphRoll
+          beq CheckWalkFloor
+          cmp #MoveMorphFall
+          beq KeepFalling
           cmp #MoveFall
           bne Next
 KeepFalling:
@@ -129,7 +139,7 @@ KeepFalling:
           adc # 1
           sta WRITE + DeltaY
 +
-          
+
           ;; find offset into map data
 
           cpx # 1               ; player, not sprite
@@ -154,7 +164,14 @@ KeepFalling:
           beq CanFall
 StartStanding:
           ldx LineCounter
+          lda MovementStyle - 1, x
+          cmp #MoveMorphFall
+          bne +
+          lda #MoveMorphRest
+          gne SettleDown
++
           lda #MoveStand        ; stop falling, we've landed on ground
+SettleDown:
           sta WRITE + MovementStyle - 1, x
           lda PlayerY - 1, x
           ora #$03
@@ -192,8 +209,15 @@ CheckWalkFloor:
           jsr PeekMap
           bne CanStand
 StartFalling:
-          lda #MoveFall
           ldx LineCounter
+          lda MovementStyle - 1, x
+          cmp #MoveMorphRoll
+          bne +
+          lda #MoveMorphFall
+          gne FallDown
++
+          lda #MoveFall
+FallDown:
           sta WRITE + MovementStyle - 1, x
           cpx # 1
           bne Next

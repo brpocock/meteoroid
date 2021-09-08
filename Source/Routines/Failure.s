@@ -22,6 +22,8 @@ NoStack:
           sta Score + 2
 
 DoneWithStack:
+          ldx #$ff
+          txs
 Loop:
           .WaitScreenTop
 
