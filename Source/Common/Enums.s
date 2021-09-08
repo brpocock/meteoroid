@@ -178,7 +178,6 @@
           MoveFall = $03
           MoveMorphRest = $04
           MoveMorphRoll = $05
-          MoveFloat = $06
-          MoveSwim = $07
-          MoveSink = $08
+          MoveWalkStep = $06
+
           MoveMorphFall = $09
