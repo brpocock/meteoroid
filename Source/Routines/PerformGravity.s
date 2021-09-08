@@ -3,6 +3,36 @@
 
 PerformGravity:     .block
 
+CheckForForcedMorph:
+          lda Equipment
+          and #EquipMorph
+          beq NoMorph
+
+          lda MovementStyle
+          cmp #MoveWalk
+          beq CheckHeadroom
+          cmp #MoveStand
+          bne NoMorph
+CheckHeadroom:
+          ldx # 4
+          jsr GetPlayerFootPosition
+          dey
+          jsr PeekMap
+          bne ForceMorph
+          ldx # 4
+          jsr GetPlayerFootPosition
+          dey
+          dey
+          jsr PeekMap
+          beq NoMorph
+ForceMorph:
+          lda #MoveMorphFall
+          sta WRITE + MovementStyle
+
+NoMorph:
+
+;;; 
+
 FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
           .block
           lda \fractionVar
