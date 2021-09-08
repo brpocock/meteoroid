@@ -4,7 +4,7 @@
 Credits:  .block
           .WaitScreenBottom
           .SetUtterance Phrase_Credits
-          sta AttractHasSpoken
+          sta WRITE + AttractHasSpoken
 Loop:
           .WaitScreenTop
           .SkipLines 21
