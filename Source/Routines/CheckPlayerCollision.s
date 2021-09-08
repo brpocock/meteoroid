@@ -9,15 +9,17 @@ CheckPlayerCollision:         .block
           beq PlayerMoveOK         ; did not hit
 
 BumpSprite:
-          jsr BumpWall
-
           ldx SpriteFlicker
           cpx #$ff
           beq PlayerMoveOK
           lda SpriteAction, x
 
+          cmp #SpriteEquipment
+          beq PickUpEquipment
+
           cmp #SpriteDoor
           beq DoorWithSprite
+          
           cmp #SpriteMonster
           beq FightWithSprite
           and #SpriteProvinceDoor
@@ -25,8 +27,28 @@ BumpSprite:
           bne PlayerMoveOK      ; No action
           geq ProvinceChange
 
+PickUpEquipment:
+          lda SpriteHP, x
+          ora Equipment
+          sta Equipment
+
+          lda # 0
+          sta WRITE + SpriteXH, x
+          sta WRITE + SpriteX, x
+          sta WRITE + SpriteY, x
+          sta WRITE + SpriteHP, x
+          sta WRITE + SpriteAction, x
+          sta WRITE + SpriteIndex, x
+
+          lda #SoundVictory
+          sta WRITE + NextSound
+
+          rts
+          
 FightWithSprite:
           ldx SpriteFlicker     ; ? Seems unnecessary XXX
+          jsr BumpWall
+
 FightWithSpriteX:
           lda CurrentHP
           sbc SpriteHP, x       ; TODO

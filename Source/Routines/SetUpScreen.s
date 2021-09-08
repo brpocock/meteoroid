@@ -123,7 +123,7 @@ FoundSpriteList:
           sta WRITE + SpriteIndex
           lda #SpriteEquipment
           sta WRITE + SpriteAction
-          lda # 1
+          lda #EquipMorph
           sta WRITE + SpriteHP
 
           lda # 1

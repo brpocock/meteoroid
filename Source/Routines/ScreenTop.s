@@ -271,11 +271,19 @@ PreparePlayer1:
           lda Pointer
           sec
           sbc Temp
-          bcc NextFlickerCandidate
+          bcc NoP1
           cmp #$40
-          blt NextFlickerCandidate
+          blt NoP1
           cmp #$40 + 160
-          bge NextFlickerCandidate
+          blt SetP1
+
+NoP1:
+          ldx #$ff
+          stx WRITE + SpriteFlicker
+          stx P1LineCounter
+          lda # 15
+
+SetP1:
           sec
           sta WSYNC
 P1HPos:
@@ -289,7 +297,7 @@ P1HPos:
           asl a
           asl a
           sta HMP1
-
+          
 FindMissileFlicker:
           lda MissileFlicker
           clc
