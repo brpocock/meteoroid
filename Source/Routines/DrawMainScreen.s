@@ -212,6 +212,12 @@ ScrollScreenLeft:
           sec
           sbc # 4
           sta WRITE + SpriteX - 1, x
+          bcs +
+          lda SpriteXH - 1, x
+          sec
+          sbc #$10
+          sta WRITE + SpriteXH - 1, x
++
           dex
           bne -
 
@@ -270,6 +276,12 @@ ScrollScreenRight:
           clc
           adc # 4
           sta WRITE + SpriteX - 1, x
+          bcc +
+          lda SpriteXH - 1, x
+          clc
+          adc #$10
+          sta WRITE + SpriteXH - 1, x
++
           dex
           bne -
 

@@ -113,9 +113,9 @@ FoundSpriteList:
 
           lda # 0
           sta WRITE + SpriteXH
-          lda # 8 * 4 + HBlankWidth
+          lda #$4c
           sta WRITE + SpriteX
-          lda # 8 * 4
+          lda #$27
           sta WRITE + SpriteY
           lda # 0
           sta WRITE + SpriteMotion

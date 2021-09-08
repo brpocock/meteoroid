@@ -200,10 +200,6 @@ M0HPos:
 
           stx CXCLR
 
-          ldx # 0               ; TODO XXX remove this hard coding
-          stx WRITE + SpriteFlicker
-          jmp PreparePlayer1
-          
           lda ScrollLeft
           lsr a
           lsr a
