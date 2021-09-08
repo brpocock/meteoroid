@@ -74,9 +74,9 @@ LookForMapData:
 FoundMapData:
           ldy # 0
 
-          lda #>SpriteList
-          sta MapSpritePointer
           lda #<SpriteList
+          sta MapSpritePointer
+          lda #>SpriteList
           sta MapSpritePointer + 1
 
           ldx CurrentMap
