@@ -154,7 +154,11 @@ DrawHPLoop:
           lda Equipment
           and #EquipBarrierSuit
           beq NoBarrier
+          .if TV == SECAM
+          lda #COLRED
+          .else
           .ldacolu COLORANGE, $c
+          .fi
           gne SuitColor
 NoBarrier:
           .ldacolu COLGOLD, $c
@@ -389,7 +393,18 @@ NoMissile1:
           lda #>PlayerSprites
           sta pp0h
 
-          lda MovementStyle
+          ldy MovementStyle
+          cpy #MoveWalk
+          bne +
+          lda LastActivity
+          cmp #8
+          bge +
+          lda ClockFrame
+          and #$08
+          beq +
+          ldy #MoveWalkStep
++
+          tya
           .Mul 12, Temp
           clc
           adc #<PlayerSprites
