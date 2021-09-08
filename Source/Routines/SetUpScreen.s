@@ -131,6 +131,7 @@ SpritesDone:
 ;;; 
           .WaitScreenBottom
 
+          .WaitScreenTop
           lda #ModePlay
           sta WRITE + GameMode
 
@@ -138,8 +139,6 @@ SpritesDone:
           sta AlarmSeconds
           lda # 0
           sta AlarmFrames
-
-ExecuteScroll:
 
 RotateMapToSCRam:
           ;; Map data is stored in vertical strips.
