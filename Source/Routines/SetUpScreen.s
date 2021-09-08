@@ -162,24 +162,23 @@ ClearBackgroundArray:
 RotateIn40Pixels:
           ;; Rotate in 40 vertical pixel columns
 
-          ldy # 0
-          sty LineCounter
-Rot40:
+          lda # 40
+          sta LineCounter
+
+RotateColumn:
           lda ScrollLeft
-          clc
           adc LineCounter
-          lsr a                 ; } equivalent to ÷4 then ×2
-          and #~$01             ; }
+          lsr a
+          and #~$01
           clc
-          adc # 3 + 12
+          adc # 15
           tay
 
-          jsr ScrollRight
+          jsr ScrollBack
 
-          inc LineCounter
+          dec LineCounter
           ldy LineCounter
-          cpy # 40
-          blt Rot40
+          bpl RotateColumn
 
           jsr CombinePF0
 

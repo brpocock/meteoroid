@@ -248,6 +248,8 @@ ScrollScreenRight:
 
           jsr ScrollBack
           
+          jsr CombinePF0
+
           lda PlayerX
           clc
           adc # 4
@@ -281,7 +283,6 @@ ScrollScreenRight:
           dex
           bne -
 
-          jsr CombinePF0
 DoneScrollingBack:
           jmp ShouldIStayOrShouldIGo
 
