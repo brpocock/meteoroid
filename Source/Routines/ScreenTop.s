@@ -15,11 +15,6 @@ TopOfScreenService: .block
 +
           jsr VSync
 
-          lda ClockFrame
-          and #$01
-          bne +
-          stx WSYNC
-+
 ;;; 
           lda # 0
           sta VBLANK
@@ -140,7 +135,7 @@ DrawHPLoop:
           lda # 0
           sta PF1
           sta PF2
-          
+
           dey
           bne DrawHPLoop
 
@@ -205,9 +200,13 @@ M0HPos:
 
           stx CXCLR
 
+          ldx # 0               ; TODO XXX remove this hard coding
+          stx WRITE + SpriteFlicker
+          jmp PreparePlayer1
+          
           lda ScrollLeft
-          asl a
-          asl a
+          lsr a
+          lsr a
           sta Temp              ; Scroll Left in screen blocks
           ldx SpriteFlicker
           ldy # 9
@@ -227,10 +226,10 @@ FoundFlickerCandidate:
           stx WRITE + SpriteFlicker
 CheckVisibility:
           lda SpriteX, x
-          asl a
-          asl a
-          asl a
-          asl a
+          lsr a
+          lsr a
+          lsr a
+          lsr a
           ora SpriteXH, x
           cmp Temp
           blt NextFlickerCandidate
@@ -282,64 +281,28 @@ M1HPos:
 SetUpSprites:
           ldx SpriteCount
           beq NoSprites
-
           ldx SpriteFlicker
           cpx #$ff
           beq NoSprites
-          lda SpriteAction, x
-          and #$07
-          cmp # SpriteProvinceDoor
-          bne +
-          lda # SpriteDoor
-+
 
           ldx SpriteFlicker
           lda #>MonsterSprites
           sta pp1h
-          clc
           lda SpriteIndex, x
-          and #$07
-          .rept 4
-          asl a
-          .next
+          .Mul 12, Temp
+          clc
           adc #<MonsterSprites
           bcc +
           inc pp1h
 +
           sta pp1l
 
-          ;; FIXME use sprite motion to set facing directions
-          lda SpriteAction, x
-          cmp #SpriteMonster
-          bne FindAnimationFrame
+          ;; TODO animation frames
+          ;; TODO set REFP1 based on sprite facing direction
+          ;; TODO maybe have wide monsters NUSIZDouble
+          lda # NUSIZMissile2
+          sta NUSIZ1
 
-Flippy:
-          lda ClockFrame
-          .BitBit $20
-          bne NoFlip
-          lda # 0
-          sta REFP1
-          geq FindAnimationFrame
-
-NoFlip:
-          lda # REFLECTED
-          sta REFP1
-
-FindAnimationFrame:
-          lda ClockFrame
-          .BitBit $10
-          bne AnimationFrameReady
-
-          lda pp1l
-          clc
-          adc # 8
-          bcc +
-          inc pp1h
-+
-          sta pp1l
-
-AnimationFrameReady:
-          ldx SpriteFlicker
           lda SpriteY, x
           sta P1LineCounter
 

@@ -7,18 +7,17 @@ Loop:
           .WaitScreenBottom
           .FarJSR MapServicesBank, ServiceTopOfScreen
 
+          lda ClockFrame
+          and #$01
+          bne +
+          stx WSYNC
++
 ;;; 
 MainDrawLoop:
           lda # 0
           sta LineCounter
 
           stx WSYNC
-
-          lda ClockFrame
-          and #$01
-          beq +
-          stx WSYNC
-+
 
 DrawOneRow:
           lda # ENABLED         ; 2
@@ -57,80 +56,80 @@ DrawSomeLines:
 DrawPlayerLine:        .macro    playerNumber
           ldy PixelPointers + 6 ; 3
           stx WSYNC             ; 3
-          lda # 0               ; 2
-          sta VBLANK            ; 3
+          lda # 0               ; 2 / 2
+          sta VBLANK            ; 3 / 5
+          lda PixelPointers + 4 ; 3 / 8 (3)
+          sta PF0               ; 3 / 11 (6)
+          lda PixelPointers + 5 ; 3 / 14 (9)
+          sta PF1               ; 3 / 17 (12)
+          sty PF2               ; 3 / 20 (15)
+          lda PixelPointers + 10 + \playerNumber ; 3 / 23 (18)
+          sta GRP0 + \playerNumber ; 3 / 26 (21)
+          lda # 0               ; 2 / 28 (23)
+          sta PixelPointers + 10 + \playerNumber ; 3 / 31 (26)
+          lda PixelPointers + 7 ; 3 / 34 (29)
+          sta PF0               ; 3 / 37 (32)
+          lda PixelPointers + 8 ; 3 / 40 (35)
+          sta PF1               ; 3 / 43 (38)
+          lda PixelPointers + 9 ; 3 / 46 (41)
+          sta PF2               ; 3 / 49 (44)
 
-          lda PixelPointers + 4 ; 3
-          sta PF0               ; 3
-          lda PixelPointers + 5 ; 3
-          sta PF1               ; 3
-          sty PF2               ; 3
-          lda PixelPointers + 10 + \playerNumber ; 3
-          sta GRP0 + \playerNumber ; 3
-          lda # 0               ; 2
-          sta PixelPointers + 10 + \playerNumber ; 3
-          lda PixelPointers + 7 ; 3
-          sta PF0               ; 3
-          lda PixelPointers + 8 ; 3
-          sta PF1               ; 3
-          lda PixelPointers + 9 ; 3
-          sta PF2               ; 3
-
-          lda # 11                          ; 2
-          dcp P0LineCounter + \playerNumber ; 5
-          blt NoPlayer                      ; 2 (3)
-          ldy P0LineCounter + \playerNumber ; 3
-          lda (pp0l + \playerNumber * 2), y ; 5
-          sta PixelPointers + 10 + \playerNumber ; 3
-NoPlayer:
+          lda # 11                          ; 2 / 51 (46)
+          dcp P0LineCounter + \playerNumber ; 5 / 56 (51)
+          blt NoPlayer                      ; 2 (3) / 58 (53)
+          ldy P0LineCounter + \playerNumber ; 3 / 61 (56)
+          lda (pp0l + (2 * \playerNumber)), y ; 5 / 66 (61)
+          sta PixelPointers + 10 + \playerNumber ; 3 / 69 (64)
+NoPlayer:                                        ; from 54-69 cycles
 
           .endm
 
 ;;; 
 DrawLineTriple:
           .DrawPlayerLine 0
+          .DrawPlayerLine 1
 ;;; 
 DrawMissileLine:    
+          ldy PixelPointers + 6 ; 3
           stx WSYNC             ; 3
 
           lda PixelPointers + 4 ; 3 / 3
           sta PF0               ; 3 / 6
           lda PixelPointers + 5 ; 3 / 9
           sta PF1               ; 3 / 12
-          lda PixelPointers + 6 ; 3 / 15
-          sta PF2               ; 3 / 18
-          lda # 0               ; 2 / 20
+          sty PF2               ; 3 / 15
+          lda # 0               ; 2 / 17
 
-          sta ENAM0             ; 3 / 23
-          sta ENAM1             ; 3 / 26
+          sta ENAM0             ; 3 / 20
+          sta ENAM1             ; 3 / 23
 
-          lda # 1               ; 2
-          dcp M0LineCounter     ; 5 
-          blt NoM0              ; 2 (3)
-          lda # ENABLED         ; 2
-          sta ENAM0             ; 3
+          lda # 1               ; 2 / 25
+          dcp M0LineCounter     ; 5 / 30
+          blt NoM0              ; 2 (3) / 32
+          lda # ENABLED         ; 2 / 34
+          sta ENAM0             ; 3 / 37
 NoM0:
 
-          lda PixelPointers + 7 ; 3
-          sta PF0               ; 3
-          lda PixelPointers + 8 ; 3
-          sta PF1               ; 3
-          lda PixelPointers + 9 ; 3
-          sta PF2               ; 3
+          lda PixelPointers + 7 ; 3 / 40 (36)
+          sta PF0               ; 3 / 43 (39)
+          lda PixelPointers + 8 ; 3 / 46 (42)
+          sta PF1               ; 3 / 49 (45)
+          lda PixelPointers + 9 ; 3 / 52 (48)
+          sta PF2               ; 3 / 55 (51)
 
-          lda # 1               ; 2
-          dcp M1LineCounter     ; 5
-          blt NoM1              ; 2 (3)
-          lda # ENABLED         ; 2
-          sta ENAM1             ; 3
-NoM1:
+          lda # 1               ; 2 / 57 (53)
+          dcp M1LineCounter     ; 5 / 62 (58)
+          blt NoM1              ; 2 (3) / 64 (60)
+          lda # ENABLED         ; 2 / 66 (62)
+          sta ENAM1             ; 3 / 69 (65)
+NoM1:                           ; // 61-69 cycles
 
 ;;; 
-          .DrawPlayerLine 1
-
-          dex                   ; 2
-          bne DrawLineTriple    ; 2 (3)
-
+;;; 
+          dex                   ; 2 / 71
+          beq +                 ; 2 (3) / 73
+          jmp DrawLineTriple
++
           inc LineCounter       ; 5 / 73 (65)
           ldy LineCounter       ; 3 / 76* (68)
           cpy # 12              ; 2 / 78* (70)

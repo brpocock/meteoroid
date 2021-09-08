@@ -7,8 +7,8 @@ CheckSpriteCollision:         .block
           beq Bye
 
           ldx SpriteFlicker
-          cpx #$ff
-          beq Bye
+          cpx SpriteCount
+          bge Bye
 
           lda MapFlags
           .BitBit MapFlagRandomSpawn
@@ -69,7 +69,7 @@ CheckDown:
           eor # SpriteMoveUp | SpriteMoveDown
           ;; fall through
 Done:
-          sta SpriteMotion, x
+          sta WRITE + SpriteMotion, x
 Bye:
           rts
           .bend

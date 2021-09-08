@@ -36,14 +36,14 @@ InitGameVars:
           sta WRITE + JumpMomentum
           sta WRITE + MovementStyle     ; standing
 
-          lda #$a0              ; Player start position
+          lda #$82              ; Player start position
           sta WRITE + BlessedX
           sta WRITE + PlayerX
-          lda # 27
+          lda #$13
           sta WRITE + BlessedY
           sta WRITE + PlayerY
 
-          lda # 0
+          lda #$28
           sta ScrollLeft
 
           lda # 32

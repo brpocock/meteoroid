@@ -111,8 +111,6 @@ FoundSpriteList:
           ;; TODO real sprite list loading code
           ;; XXX for now just set up a bogus sprite to test against
 
-          lda #SpriteEquipment
-          sta WRITE + SpriteAction
           lda # 0
           sta WRITE + SpriteXH
           lda # 8 * 4 + HBlankWidth
@@ -120,7 +118,13 @@ FoundSpriteList:
           lda # 8 * 4
           sta WRITE + SpriteY
           lda # 0
+          sta WRITE + SpriteMotion
+          lda # 0
           sta WRITE + SpriteIndex
+          lda #SpriteEquipment
+          sta WRITE + SpriteAction
+          lda # 1
+          sta WRITE + SpriteHP
 
           lda # 1
           sta WRITE + SpriteCount
