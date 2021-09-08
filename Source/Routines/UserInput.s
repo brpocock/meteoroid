@@ -108,12 +108,12 @@ CanJump:
           sta WRITE + LastActivity
 
           ldy # 16
-          ldx #-10
+          ldx #-20
           lda Equipment
           .BitBit EquipHighJump
           beq +
           ldy # 32
-          ldx #-20
+          ldx #-40
 +
           sty WRITE + JumpMomentum
           stx WRITE + DeltaY
