@@ -107,13 +107,13 @@ CanJump:
           lda # 0
           sta WRITE + LastActivity
 
-          ldy # 16
-          ldx #-20
+          ldy # 8
+          ldx #-1
           lda Equipment
           .BitBit EquipHighJump
           beq +
-          ldy # 32
-          ldx #-40
+          ldy # 12
+          ldx #-2
 +
           sty WRITE + JumpMomentum
           stx WRITE + DeltaY
@@ -182,8 +182,6 @@ StickRight:
 
 DoneStickRight:
 
-ApplyStick:
-
           rts
 
 SetMovementHorizontal:     
@@ -199,6 +197,12 @@ SetMovementHorizontal:
 MoveByRolling:
           lda #MoveMorphRoll
           sta WRITE + MovementStyle
+          cpx # 0
+          bpl RollRight
+          ldx #-3
+          gne DoneChangingMovement
+RollRight:
+          ldx # 3
           gne DoneChangingMovement
 
 StartRollMaybe:

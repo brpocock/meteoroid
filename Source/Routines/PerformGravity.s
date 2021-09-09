@@ -37,10 +37,14 @@ FractionalMovement: .macro deltaVar, fractionVar, positionVar, pxPerSecond
           .block
           lda \fractionVar
           ldx \deltaVar
-          cpx #0
           beq DoneMovement
           bpl MovePlus
 MoveMinus:
+          txa
+          eor #$ff
+          tax
+          inx
+MoveMinusLoop:
           sec
           sbc #ceil(\pxPerSecond * $80)
           sta WRITE + \fractionVar
@@ -51,7 +55,9 @@ MoveMinus:
           sec
           sbc # 1
           sta WRITE + \positionVar
-          jmp DoneMovement
+          dex
+          bne MoveMinusLoop
+          geq DoneMovement
 
 MovePlus:
           clc
@@ -64,6 +70,9 @@ MovePlus:
           clc
           adc # 1
           sta WRITE + \positionVar
+          dex
+          bne MovePlus 
+
 DoneMovement:
           .bend
           .endm
