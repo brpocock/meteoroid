@@ -108,26 +108,37 @@ EndOfASpriteList:
 
 FoundSpriteList:
 
-          ;; TODO real sprite list loading code
-          ;; XXX for now just set up a bogus sprite to test against
+          ldy # 0
+          ldx # 0
 
-          lda # 0
-          sta WRITE + SpriteXH
-          lda #$4c
-          sta WRITE + SpriteX
-          lda #$27
-          sta WRITE + SpriteY
-          lda # 0
-          sta WRITE + SpriteMotion
-          lda # 0
-          sta WRITE + SpriteIndex
-          lda #SpriteEquipment
-          sta WRITE + SpriteAction
-          lda #EquipMorph
-          sta WRITE + SpriteHP
+          lda (MapSpritePointer), y
+LoadNextSprite:
+          sta WRITE + SpriteAction, x
+          iny
+          lda (MapSpritePointer), y
+          sta WRITE + SpriteHP, x
+          iny
+          lda (MapSpritePointer), y
+          sta WRITE + SpriteX, x
+          iny
+          lda (MapSpritePointer), y
+          sta WRITE + SpriteXH, x
+          iny
+          lda (MapSpritePointer), y
+          sta WRITE + SpriteY, x
+          iny
+          lda (MapSpritePointer), y
+          sta WRITE + SpriteMotion, x
+          iny
+          lda (MapSpritePointer), y
+          sta WRITE + SpriteIndex, x
+          iny
 
-          lda # 1
-          sta WRITE + SpriteCount
+          inx
+          lda (MapSpritePointer), y
+          bne LoadNextSprite
+
+          stx WRITE + SpriteCount
 
 SpritesDone:
 ;;; 

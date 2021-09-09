@@ -225,14 +225,11 @@ NextFlickerCandidate:
           ldx #0
 FlickerOK:
           dey
-          bne FoundFlickerCandidate
-          ldx #$ff
-          stx WRITE + SpriteFlicker
-          jmp SetUpSprites
-
+          beq NoP1
 FoundFlickerCandidate:
-          stx WRITE + SpriteFlicker
 CheckVisibility:
+          lda SpriteHP, x
+          beq NextFlickerCandidate
           lda SpriteX, x
           lsr a                 ; ÷4 px per PF px
           lsr a
@@ -242,11 +239,11 @@ CheckVisibility:
           adc SpriteXH, x       ; units are blocks
           cmp Temp
           blt NextFlickerCandidate
-          tay
+          pha
           lda Temp
           adc #11
           sta Temp
-          tya
+          pla
           cmp Temp
           bge NextFlickerCandidate
 
@@ -278,7 +275,7 @@ PreparePlayer1:
           lda Pointer + 1
           sec
           sbc LineCounter
-          bne NextFlickerCandidate
+          bne NoP1
           lda Pointer
           sec
           sbc Temp
@@ -295,6 +292,7 @@ NoP1:
           lda # 15
 
 SetP1:
+          stx WRITE + SpriteFlicker
           sec
           sta WSYNC
 P1HPos:

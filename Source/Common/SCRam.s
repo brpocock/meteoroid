@@ -8,6 +8,13 @@
 
 SCRAM:
 
+DeltaX:
+          .byte ?
+DeltaY:
+          .byte ?
+JumpMomentum:
+          .byte ?
+
 PlayerXFraction:
           .byte ?
 PlayerYFraction:
@@ -83,14 +90,7 @@ NewSWCHB:
           .byte ?
 NewButtons:
           .byte ?
-DeltaX:
-          .byte ?
-DeltaY:
-          .byte ?
-JumpMomentum:
-          .byte ?
-
-;;; String Buffer for text displays of composed text,
+;;; String Buffer for text displays of composed text
 StringBuffer:
           .byte ?, ?, ?, ?, ?, ?
           
@@ -157,20 +157,13 @@ AttractStoryPanel:
           .byte ?
 AttractStoryProgress:
           .byte ?
-;;; 
-;;; Start Game phase
-
-          * = Scratchpad
 
 ;;; 
 ;;; Scratchpad for Game Play mode
             * = Scratchpad
 
-;;; How many non-player sprites are on screen now?
+;;; How many non-player sprites are in the level now?
 ;;; These virtual sprites are multiplexed onto Player Graphic 1
-;;;
-;;; pp0 is pointer to player graphics.
-;;; pp1-pp4 are pointers to the other sprites, if any.
 SpriteCount:
           .byte ?
 
