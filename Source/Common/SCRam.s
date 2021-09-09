@@ -206,6 +206,18 @@ LastActivity:
           .byte ?
 
 ;;; 
+
+;;; Are we scrolling between rooms, and if so, in which direction?
+DoorWalkDirection:
+          .byte ?
+
+;;; If we are scrolling in a new room, how many columns remain?
+DoorWalkColumns:
+          .byte ?
+
+;;; If we have just completed the door walk, are we loading the sprite data?
+DoorWalkSummon:
+          .byte ?
           
           .warn "SC-RAM is used up to ", * - 1, " leaving ", ($f100 - *), " bytes free"
           
