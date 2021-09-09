@@ -318,7 +318,9 @@ SetUpSprites:
           lda #>MapSprites
           sta pp1h
           lda SpriteIndex, x
-          .Mul 12, Temp
+          .Mul 6, Temp
+          asl a
+          asl a
           clc
           adc #<MapSprites
           bcc +
@@ -326,7 +328,17 @@ SetUpSprites:
 +
           sta pp1l
 
-          ;; TODO animation frames
+          lda ClockFrame
+          and #$08
+          beq P1Frame0
+          lda pp1l
+          adc # 12
+          sta pp1l
+          bcc +
+          inc pp1h
++
+P1Frame0:
+
           ;; TODO set REFP1 based on sprite facing direction
           ;; TODO maybe have wide monsters NUSIZDouble
           lda # NUSIZMissile2
