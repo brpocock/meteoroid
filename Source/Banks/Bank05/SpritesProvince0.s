@@ -8,14 +8,21 @@ SpriteList:    .block
           .word $004c           ; x
           .byte $27             ; y
           .byte 0               ; art index
-          .byte SpriteMoveIdle
+          .byte SpriteMoveNone
 
           .byte SpriteEquipment
           .byte EquipHighJump
           .word $208d
-          .byte $27
+          .byte $2b
           .byte 0
-          .byte SpriteMoveIdle
+          .byte SpriteMoveNone
+
+          ;; .byte SpriteSavePoint
+          ;; .byte 1
+          ;; .word $00c6
+          ;; .byte $13
+          ;; .byte 1
+          ;; .byte SpriteMoveNone
 
           .byte 0
 

@@ -275,15 +275,18 @@ PreparePlayer1:
           lda Pointer + 1
           sec
           sbc LineCounter
-          bne NoP1
+          sta LineCounter
+          bmi NoP1
           lda Pointer
           sec
           sbc Temp
-          bcc NoP1
-          cmp #$40
-          blt NoP1
-          cmp #$40 + 160
-          blt SetP1
+          sta Temp
+
+          lda LineCounter
+          bne SetP1
+          lda Temp
+          cmp # 55
+          bge SetP1
 
 NoP1:
           ldx #$ff
@@ -294,7 +297,7 @@ NoP1:
 SetP1:
           stx WRITE + SpriteFlicker
           sec
-          sta WSYNC
+          stx WSYNC
 P1HPos:
           sbc # 15
           bcs P1HPos
@@ -404,6 +407,12 @@ NoMissile1:
           sta pp0h
 
           ldy MovementStyle
+          cpy #MoveTeleport
+          bne +
+          lda TeleportCountdown
+          sta COLUP0
+          sta REFP0
++
           cpy #MoveWalk
           bne +
           lda LastActivity

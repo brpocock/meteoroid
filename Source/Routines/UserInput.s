@@ -58,7 +58,28 @@ ReturnIfPaused:
           beq +
           rts
 +
+
           lda MovementStyle
+          cmp #MoveTeleport
+          bne NotTeleporting
+          lda TeleportCountdown
+          bmi TeleportCountNegative
+          sbc # 1
+          sta WRITE + TeleportCountdown
+          beq TeleportDone
+          rts
+
+TeleportCountNegative:
+          adc # 1
+          sta WRITE + TeleportCountdown
+          beq TeleportDone
+          rts
+
+TeleportDone:
+          lda #MoveStand
+          sta WRITE + MovementStyle
+
+NotTeleporting:
           cmp #MoveWalk
           bne +
           lda LastActivity

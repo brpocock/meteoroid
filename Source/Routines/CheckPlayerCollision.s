@@ -67,9 +67,6 @@ DoorWithSprite:
           rts
 
 PlayerMoveOK:
-          lda ClockFrame
-          and #$03
-          bne DonePlayerMove
           lda PlayerX
           sta WRITE + BlessedX
           lda PlayerY

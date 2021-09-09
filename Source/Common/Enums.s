@@ -179,5 +179,5 @@
           MoveMorphRest = $04
           MoveMorphRoll = $05
           MoveWalkStep = $06
-
+          MoveTeleport = $07
           MoveMorphFall = $09

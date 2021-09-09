@@ -23,6 +23,13 @@ SetUpScreen: .block
           sta WRITE + PlayerX
           lda BlessedY
           sta WRITE + PlayerY
+
+          lda #MoveTeleport
+          sta WRITE + MovementStyle
+
+          lda # FramesPerSecond * 2
+          sta WRITE + TeleportCountdown
+
           jmp NewRoomTimerRunning
 ;;; 
 NewRoom:
