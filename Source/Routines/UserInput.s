@@ -67,13 +67,13 @@ ReturnIfPaused:
           lda #MoveStand
           sta WRITE + MovementStyle
           gne HandleStick
-+         
++
           lda MovementStyle
           cmp #MoveMorphRoll
           bne HandleStick
           lda #MoveMorphRest
           sta WRITE + MovementStyle
-          
+
 HandleStick:
           lda NewSWCHA          ; only when first pressed
           beq +
@@ -184,7 +184,7 @@ DoneStickRight:
 
           rts
 
-SetMovementHorizontal:     
+SetMovementHorizontal:
           lda MovementStyle
           cmp #MoveFall
           beq DoneChangingMovement
