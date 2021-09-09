@@ -433,12 +433,31 @@ there is a problem.
 From here, you can press the \textbf{Game Reset} switch to return to the
 Title Screen.
 
-\ifdefined\PLUSCART\else
-
 \includegraphics[width=\columnwidth]{../Manual/WhiteSadFace\TV.png}
 
-The white sad  face screen means that the game  has encountered an error
-and cannot continue. 
+The sad  face screen means  that the game  has encountered an  error and
+cannot continue.
+
+\ifdefined\PLUSCART
+
+\subsection{Codes beginning with FF}
+
+If  the error  code  begins with  \texttt{FF}, it  means  that an  error
+occurred with using the cloud save feature of the PlusCart.
+
+\begin{description}
+\item[FF0000]  An unknown  error  occurred. This  might perhaps  reflect
+  a problem with the WiFi network or Internet connection.
+\item[FF0001] An unknown command was received by the cloud save server.
+\item[FF0002] A slot other than A, B, or C was passed.
+\item[FF0003] Extra data was sent after the command was complete.
+\item[FF0004] Insufficient data was received by the cloud save server.
+\item[FF0005] Can not load data from the save game.
+\end{description}
+
+\else
+
+\subsection{Codes\ifdefined\PLUSCART not beginning with FF\fi}
 
 You  should   not  be  able   to  reach  this  screen.   Please  contact
 \href{mailto:support@star-hope.org}{support@star-hope.org}           for
