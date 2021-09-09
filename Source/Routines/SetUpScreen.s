@@ -121,8 +121,19 @@ FoundSpriteList:
           lda (MapSpritePointer), y
 LoadNextSprite:
           sta WRITE + SpriteAction, x
+          cmp #SpriteEquipment
+          bne DefinitelyLoadSprite
           iny
           lda (MapSpritePointer), y
+          bit Equipment
+          beq LoadEquipmentSprite
+          lda # 0
+          geq LoadEquipmentSprite
+
+DefinitelyLoadSprite:
+          iny
+          lda (MapSpritePointer), y
+LoadEquipmentSprite:
           sta WRITE + SpriteHP, x
           iny
           lda (MapSpritePointer), y
