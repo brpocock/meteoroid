@@ -218,7 +218,8 @@ DoorWalkColumns:
 ;;; If we have just completed the door walk, are we loading the sprite data?
 DoorWalkSummon:
           .byte ?
-          
+
+;;; 
           .warn "SC-RAM is used up to ", * - 1, " leaving ", ($f100 - *), " bytes free"
           
           .if * > $f100
@@ -227,6 +228,8 @@ DoorWalkSummon:
 
           WRITE = -$80
 
+;;; 
+          
           * = $1000
           .offs -$1000
 
