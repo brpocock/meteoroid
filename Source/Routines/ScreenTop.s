@@ -313,6 +313,8 @@ SetUpSprites:
           sta pp1h
           lda SpriteColors, x
           sta COLUP1
+          lda SpriteY, x
+          sta P1LineCounter
           lda SpriteIndex, x
           tax
           lda Mult24, x
@@ -340,9 +342,6 @@ P1FrameReady:
           ;; TODO maybe have wide monsters NUSIZDouble
           lda # NUSIZMissile2
           sta NUSIZ1
-
-          lda SpriteY, x
-          sta P1LineCounter
 
           jmp P1Ready
 
