@@ -75,11 +75,11 @@
           SpriteMoveDown = $80
 ;;; 
 ;;; Sprite actions
-          SpriteMonster = $00
-          SpriteSavePoint = $01
-          SpriteEquipment = $02
-          SpriteDoor = $03
-          SpriteProvinceDoor = $07
+          SpriteMonster = $01
+          SpriteSavePoint = $02
+          SpriteEquipment = $03
+          SpriteDoor = $04
+          SpriteProvinceDoor = $05 ; XXX
 ;;; 
           ;; Save game slot address.
           ;; Must be $40-aligned

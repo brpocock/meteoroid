@@ -17,12 +17,12 @@ SpriteList:    .block
           .byte 0
           .byte SpriteMoveNone
 
-          ;; .byte SpriteSavePoint
-          ;; .byte 1
-          ;; .word $00c6
-          ;; .byte $13
-          ;; .byte 1
-          ;; .byte SpriteMoveNone
+          .byte SpriteSavePoint
+          .byte 1
+          .word $1046
+          .byte $13
+          .byte 1
+          .byte SpriteMoveNone
 
           .byte 0
 

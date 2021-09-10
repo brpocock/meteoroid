@@ -17,15 +17,10 @@ BumpSprite:
           cmp #SpriteEquipment
           beq PickUpEquipment
 
-          cmp #SpriteDoor
-          beq DoorWithSprite
-          
           cmp #SpriteMonster
           beq FightWithSprite
-          and #SpriteProvinceDoor
-          cmp #SpriteProvinceDoor
-          bne PlayerMoveOK      ; No action
-          geq ProvinceChange
+
+          gne PlayerMoveOK      ; No action
 
 PickUpEquipment:
           lda SpriteHP, x
@@ -33,12 +28,7 @@ PickUpEquipment:
           sta Equipment
 
           lda # 0
-          sta WRITE + SpriteXH, x
-          sta WRITE + SpriteX, x
-          sta WRITE + SpriteY, x
           sta WRITE + SpriteHP, x
-          sta WRITE + SpriteAction, x
-          sta WRITE + SpriteIndex, x
 
           lda #SoundVictory
           sta WRITE + NextSound

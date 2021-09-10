@@ -10,6 +10,7 @@
           .include "48Pixels.s"
           .include "Prepare48pxMobBlob.s"
           .include "Failure.s"
+          .include "SpriteColors.s"
 
 DoLocal:
           cpy #ServiceTopOfScreen

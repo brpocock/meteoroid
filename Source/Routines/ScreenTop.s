@@ -165,9 +165,6 @@ NoBarrier:
 SuitColor:
           sta COLUP0
 
-          .ldacolu COLMAGENTA, $e
-          sta COLUP1
-
           sta HMCLR
 
 PrepareP0:
@@ -272,25 +269,23 @@ PreparePlayer1:
           rol LineCounter
           sta Temp
           ;; Now a 16-bit subtraction
-          lda Pointer + 1
-          sec
-          sbc LineCounter
-          sta LineCounter
-          bmi NoP1
           lda Pointer
           sec
           sbc Temp
           sta Temp
+          lda Pointer + 1
+          sbc LineCounter
+          sta Pointer + 1
+          bne NoP1
 
-          lda LineCounter
-          bne SetP1
           lda Temp
-          cmp # 55
-          bge SetP1
+          cmp # HBlankWidth
+          blt NoP1
+          cmp # HBlankWidth + 160
+          blt SetP1
 
 NoP1:
           ldx #$ff
-          stx WRITE + SpriteFlicker
           stx P1LineCounter
           lda # 15
 
@@ -311,36 +306,35 @@ P1HPos:
           sta HMP1
           
 SetUpSprites:
-          ldx SpriteCount
-          beq NoSprites
-          ldx SpriteFlicker
           cpx #$ff
           beq NoSprites
 
-          ldx SpriteFlicker
           lda #>MapSprites
           sta pp1h
+          lda SpriteColors, x
+          sta COLUP1
           lda SpriteIndex, x
-          .Mul 6, Temp
-          asl a
-          asl a
+          tax
+          lda Mult24, x
+          .if <MapSprites != 0
           clc
           adc #<MapSprites
           bcc +
           inc pp1h
 +
+          .fi
           sta pp1l
 
           lda ClockFrame
           and #$08
-          beq P1Frame0
+          beq P1FrameReady
           lda pp1l
           adc # 12
           sta pp1l
           bcc +
           inc pp1h
 +
-P1Frame0:
+P1FrameReady:
 
           ;; TODO set REFP1 based on sprite facing direction
           ;; TODO maybe have wide monsters NUSIZDouble
@@ -357,14 +351,12 @@ NoSprites:
           sta P1LineCounter
 
 P1Ready:
+
+SetP0LineCounter:
           lda PlayerY
-          ldy NextMap
-          cpy CurrentMap
-          beq +
-          ;; new screen being loaded: player is off the screen
-          lda #$ff
-+
           sta P0LineCounter
+
+ClearPlayfield:
           lda #0
           sta PF0
           sta PF1
@@ -460,4 +452,7 @@ HPBitsReversed:
           .byte %00000001, %00000011, %00000111, %00001111
           .byte %00011111, %00111111, %01111111, %11111111
 
+Mult24:
+          .byte (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)*12
+          
           .bend
