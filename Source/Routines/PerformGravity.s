@@ -157,6 +157,8 @@ WallCheckDone:
           ldx # 9
           stx LineCounter
 Loop:
+          cpx # 1
+          bne Next              ; XXX Until sprite movement is brought in line
           lda MovementStyle - 1, x
           cmp #MoveStand
           beq Next
@@ -171,6 +173,8 @@ Loop:
           cmp #MoveFall
           bne Next
 KeepFalling:
+          cpx # 1
+          bne +
           lda DeltaY
           cmp # 12              ; terminal velocity
           bge +
