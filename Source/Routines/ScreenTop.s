@@ -315,7 +315,7 @@ SetUpSprites:
           sta COLUP1
           lda SpriteY, x
           sta P1LineCounter
-          lda SpriteIndex, x
+          lda SpriteIndex, x    ; TODO allow more than 8 sprite designs per province
           tax
           lda Mult24, x
           .if <MapSprites != 0
