@@ -163,16 +163,15 @@ ScreenJumpLogic:
 
 ;;; 
 ScrollScreenLeft:
+          lda ScrollLeft
+          lsr a
+          lsr a
+          clc
+          adc # 11
+          sta Temp
           ldy # 2
           lda (MapPointer), y
-          dey
-          sec
-          sbc (MapPointer), y
-          sec
-          asl a
-          asl a                 ; convert to PF pixels
-          sbc # 10
-          cmp ScrollLeft
+          cmp Temp
           blt ShouldIStayOrShouldIGo
 
           jsr UncombinePF0
@@ -191,6 +190,7 @@ ScrollScreenLeft:
 
           jsr CombinePF0
 
+MoveSpritesLeft:
           lda PlayerX
           sec
           sbc # 4
@@ -248,6 +248,7 @@ ScrollScreenRight:
           
           jsr CombinePF0
 
+MoveSpritesRight:
           lda PlayerX
           clc
           adc # 4
