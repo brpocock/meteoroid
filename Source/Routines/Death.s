@@ -14,10 +14,10 @@ Death:    .block
           sta CurrentUtterance
 
           ldx #ModeDeath
-          stx GameMode
+          stx WRITE + GameMode
 
           ldx #SoundGameOver
-          stx NextSound
+          stx WRITE + NextSound
 
           lda # 60
           sta AlarmSeconds

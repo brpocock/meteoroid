@@ -37,18 +37,55 @@ PickUpEquipment:
           
 FightWithSprite:
           ldx SpriteFlicker     ; ? Seems unnecessary XXX
-          jsr BumpWall
 
 FightWithSpriteX:
-          lda CurrentHP
-          sbc SpriteHP, x       ; TODO
-          bpl +
-          lda # 0
-+
-          sta CurrentHP
-          ;; TODO: knock back?
-          rts
+          lda DeltaX
+          beq DoneKnockBackFight ; TODO monster movement
+          clc
+          adc #$80
+          sta WRITE + DeltaX
+DoneKnockBackFight:
+          lda DeltaY
+          sec
+          sbc # 3
+          sta WRITE + DeltaY
+          lda MovementStyle
+          cmp #MoveMorphRest
+          beq HurtMorphFall
+          cmp #MoveMorphRoll
+          beq HurtMorphFall
+          cmp #MoveMorphFall
+          beq HurtMorphFall
+          lda #MoveFall
+          sta WRITE + MovementStyle
+          gne HurtMe
 
+HurtMorphFall:
+          lda #MoveMorphFall
+          sta WRITE + MovementStyle
+
+HurtMe:  
+          lda CurrentHP
+          sec
+          sbc # 1
+          bmi +
+          sta CurrentHP
+          rts
++
+          lda # 0
+          sta CurrentHP
+          lda CurrentTanks
+          bne +
+          .FarJSR AnimationsBank, ServiceDeath
+
++
+          sec
+          sbc # 1
+          sta CurrentTanks
+          lda # MaxHP
+          sta CurrentHP
+          rts
+          
 DoorWithSprite:
           lda SpriteAction, x   ; TODO
           sta NextMap
@@ -96,31 +133,4 @@ ProvinceChange:
           .WaitScreenBottom
           jmp GoPlay
 
-;;; 
-BumpWall:
-          sta CXCLR
-          lda MovementStyle
-          cmp #MoveJump
-          bne Recover
-          lda #MoveFall
-          sta WRITE + MovementStyle
-          lda # 0
-          sta WRITE + JumpMomentum
-          lda # 1
-          sta WRITE + DeltaY
-          jmp DoneBump
-
-Recover:
-          lda DeltaX
-          eor #$ff
-          sta WRITE + DeltaX
-          lda DeltaY
-          eor #$ff
-          sta WRITE + DeltaY
-          
-DoneBump:
-          lda #SoundBump
-          sta WRITE + NextSound
-
-          rts
           .bend

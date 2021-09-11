@@ -182,3 +182,6 @@
           MoveWalkStep = $06
           MoveTeleport = $07
           MoveMorphFall = $09
+;;; 
+
+          MaxHP = 32

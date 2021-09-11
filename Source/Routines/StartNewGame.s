@@ -46,7 +46,7 @@ InitGameVars:
           lda #$28
           sta ScrollLeft
 
-          lda # 32
+          lda # MaxHP
           sta CurrentHP
           lda # 1
           sta CurrentTanks
