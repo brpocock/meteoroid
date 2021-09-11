@@ -17,9 +17,9 @@ Failure:	.block
 
 NoStack:
           lda # 0
-          sta Score
-          sta Score + 1
-          sta Score + 2
+          sta WRITE + Score
+          sta WRITE + Score + 1
+          sta WRITE + Score + 2
 
 DoneWithStack:
           ldx #$ff
