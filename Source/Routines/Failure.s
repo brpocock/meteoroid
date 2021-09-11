@@ -1,6 +1,9 @@
 ;;; Meteoroid Source/Routines/Failure.s
 ;;; Copyright © 2021 Bruce-Robert Pocock
 Failure:	.block
+          lda #ModeFailure
+          sta WRITE + GameMode
+
           tsx
           cpx #$fd
           bge NoStack

@@ -32,6 +32,7 @@
           ModeSubscreen = $70
 
           ModeDeath = $90
+          ModeFailure = $91
 ;;; 
 ;;; Sounds in the library (index values)
           SoundDrone = 1
