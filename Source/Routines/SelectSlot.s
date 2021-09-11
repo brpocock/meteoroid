@@ -244,7 +244,7 @@ GoBack:
 SlotOK:
           sta WSYNC
           .WaitScreenTopMinus 2, 0
-          lda #SoundHappy
+          lda #SoundVictory
           sta WRITE + NextSound
 
           jsr CheckSaveSlot
