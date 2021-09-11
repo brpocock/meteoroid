@@ -8,7 +8,7 @@ SpriteMovement:     .block
 +
           ldx SpriteCount
           beq MovementLogicDone
-          cpx # 5
+          cpx # 9
           blt +
           brk
 +
