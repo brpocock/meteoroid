@@ -560,15 +560,52 @@ Shape:~{~{~a~}~2%~}
                             (aref output x-out y-out 2) (aref pixels x y 2))))
     output))
 
-(defun split-10×12-map-into-rows (pixels)
+(defun pixel-not-black-p (pixel)
+  (not (and (zerop (aref pixel 0))
+            (zerop (aref pixel 1))
+            (zerop (aref pixel 2)))))
+
+(defun extract-column (pixels column)
+  (loop for y from 0 below 12
+        collecting (let ((pixel (make-array 3 :element-type 'integer)))
+                     (setf (aref pixel 0) (aref pixels column y 0)
+                           (aref pixel 1) (aref pixels column y 1)
+                           (aref pixel 2) (aref pixels column y 2))
+                     pixel)))
+
+(defun column-is-solid-p (pixels column)
+  (every #'pixel-not-black-p (extract-column pixels column)))
+
+(defun split-12px-map-into-rows (pixels)
   (loop for row from 0 below (/ (array-dimension pixels 1) 12)
         collecting (pixels-subset-copy pixels 0 (1- (array-dimension pixels 0))
                                        (* row 12) (+ (* row 12) 11))))
 
-(defun split-10×12-map-row-into-screens (pixels)
-  (loop for screen from 0 below (/ (array-dimension pixels 0) 10)
-        collecting (pixels-subset-copy pixels (* screen 10) (+ (* screen 10) 9)
-                                       0 11)))
+(defun find-horizontal-spans (pixels)
+  (let ((splits (loop for column from 0 below (array-dimension pixels 0)
+                      if (column-is-solid-p pixels column)
+                        collect column)))
+    (let ((span-starts (list))
+          (span-ends (list)))
+      (loop for i from 0 below (1- (length splits))
+            for split = (elt splits i)
+            do (progn (push split span-starts)
+                      (push (elt splits (1+ i)) span-ends)))
+      (loop for i from 0 below (length span-starts)
+            for start = (elt span-starts i)
+            for end = (elt span-ends i)
+            if (<= 10 (- end start))
+              collect (cons start end)))))
+
+(defun split-12px-map-row-into-spans (pixels)
+  (assert (column-is-solid-p pixels 0) ()
+          "First column of each row must be solid")
+  (assert (column-is-solid-p pixels (1- (array-dimension pixels 0))) () 
+          "Last column of each row must be solid")
+  (loop for (span-start . span-end) in (find-horizontal-spans pixels)
+        collecting (cons span-start 
+                         (pixels-subset-copy pixels span-start span-end
+                                             0 11))))
 
 (defun concatenate-pixels (pixels screen)
   (unless screen (error "Concatenate nothing?"))
@@ -598,8 +635,8 @@ Shape:~{~{~a~}~2%~}
             (return-from screen-solid-white-p nil)))))
     t))
 
-(defun split-10×12-map-row-into-spans (pixels)
-  (let ((screens (split-10×12-map-row-into-screens pixels))
+(defun split-10×12px-map-row-into-spans (pixels)
+  (let ((screens (split-10×12px-map-row-into-screens pixels))
         (spans (list (cons 0 nil))))
     (labels ((append-span (screen)
                (let ((new-span (concatenate-pixels (cdr (lastcar spans)) screen)))
@@ -627,7 +664,7 @@ Shape:~{~{~a~}~2%~}
   (loop for y from 0 below 12
         collecting (map-line-as-comment span-pixels y)))
 
-(defun compile-map-10×12 (png-file out-dir height width pixels)
+(defun compile-map-12px (png-file out-dir height width pixels)
   (let ((out-file (merge-pathnames
                    (make-pathname :name (pathname-name png-file)
                                   :type "s")
@@ -643,29 +680,28 @@ Shape:~{~{~a~}~2%~}
               (pathname-name png-file)
               (assembler-label-name (pathname-base-name png-file))
               height width)
-      (loop for row in (split-10×12-map-into-rows pixels)
+      (loop for row in (split-12px-map-into-rows pixels)
             for row-index from 0
             do
-               (dolist (span (split-10×12-map-row-into-spans row))
-                 (destructuring-bind (span-offset . span-pixels) span
-                   (when (and span-offset span-pixels)
-                     (format *trace-output* "~& — Span at row ~d offset ~d (width ~d block~:p)"
-                             row-index span-offset (array-dimension span-pixels 0))
-                     (format src-file "
+               (loop for (span-offset . span-pixels) in (split-12px-map-row-into-spans row)
+                     do (when (and span-offset span-pixels)
+                          (format *trace-output* "~& — Span at row ~d offset ~d (width ~d block~:p)"
+                                  row-index span-offset (array-dimension span-pixels 0))
+                          (format src-file "
 ;;; Row ~d: span at offset ~d, runs for ~d block~:p
 	.byte ~d, ~d, ~d
 ;;; Row per-line-group colors 
 ~{~&	.colu ~a~}"
-                             row-index span-offset (array-dimension span-pixels 0)
-                             row-index span-offset (array-dimension span-pixels 0)
-                             (per-line-colu span-pixels))
-                     (format src-file "
+                                  row-index span-offset (array-dimension span-pixels 0)
+                                  row-index span-offset (array-dimension span-pixels 0)
+                                  (per-line-colu span-pixels))
+                          (format src-file "
 ~{~&;;; ~a~}"
-                             (map-as-comment span-pixels))
-                     (format src-file "
+                                  (map-as-comment span-pixels))
+                          (format src-file "
 ;;; Vertical span data
 ~{~&	.byte %~8,'0b, %~4,'0b0000~}"
-                             (map-spans-to-bytes span-pixels))))))
+                                  (map-spans-to-bytes span-pixels)))))
       (format src-file "~2&	.bend~%"))))
 
 (defun compile-tia-player (png-file out-dir 
@@ -1010,9 +1046,9 @@ value ~D for tile-cell ~D is too far down for an image with width ~D" (tile-cell
   (let ((monochrome-lines-p (monochrome-lines-p palette-pixels height width)))
     (cond
       ((and (zerop (mod height 12))
-            (zerop (mod width 10)))
-       (format *trace-output* "~% Image ~A seems to be a 10×12 map" png-file)
-       (compile-map-10×12 png-file target-dir height width (png-read:image-data png)))
+            (> width 10))
+       (format *trace-output* "~% Image ~A seems to be a 12px high map" png-file)
+       (compile-map-12px png-file target-dir height width (png-read:image-data png)))
       ((and (zerop (mod height 5))
             (zerop (mod width 4))
             (= 48 (* (/ height 5) (/ width 4)))
