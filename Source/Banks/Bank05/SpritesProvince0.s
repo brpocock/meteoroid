@@ -28,7 +28,7 @@ SpriteList:    .block
           .byte SpriteDoor
           .byte 1
           .word $3044
-          .byte $2b
+          .byte $22
           .byte 4
           .byte SpriteMoveNone
 
