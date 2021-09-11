@@ -171,6 +171,9 @@ SpriteCount:
 SpriteFlicker:
           .byte ?
 
+SpriteFlickerNext:
+          .byte ?
+          
 MissileCount:
           .byte ?
           

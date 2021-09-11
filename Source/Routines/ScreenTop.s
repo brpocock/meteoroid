@@ -212,14 +212,16 @@ M0HPos:
           lsr a                 ; ÷ 4 PF px per block
           lsr a
           sta Temp              ; Scroll Left in screen blocks
-          ldx SpriteFlicker
+          ldx SpriteFlickerNext
           ldy SpriteCount       ; don't loop forever if you can't find one
           iny
 NextFlickerCandidate:
           inx
+          stx WRITE + SpriteFlickerNext
           cpx SpriteCount
           blt FlickerOK
           ldx #0
+          stx WRITE + SpriteFlickerNext
 FlickerOK:
           dey
           beq NoP1
@@ -232,8 +234,7 @@ CheckVisibility:
           lsr a
           lsr a                 ; ÷4 PF px per block
           lsr a
-          clc
-          adc SpriteXH, x       ; units are blocks
+          ora SpriteXH, x       ; units are blocks
           cmp Temp
           blt NextFlickerCandidate
           pha
@@ -269,16 +270,16 @@ PreparePlayer1:
           rol LineCounter
           sta Temp
           ;; Now a 16-bit subtraction
-          lda Pointer
           sec
+          lda Pointer
           sbc Temp
-          sta Temp
+          sta Pointer
           lda Pointer + 1
           sbc LineCounter
           sta Pointer + 1
           bne NoP1
 
-          lda Temp
+          lda Pointer
           cmp # HBlankWidth
           blt NoP1
           cmp # HBlankWidth + 160
