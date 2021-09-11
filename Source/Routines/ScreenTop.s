@@ -18,6 +18,8 @@ TopOfScreenService: .block
 ;;; 
           lda # 0
           sta VBLANK
+          stx CXCLR
+
 PrepareTanksToDraw:
           ldx # 6
           lda # 0
@@ -167,7 +169,7 @@ SuitColor:
 
           sta HMCLR
 
-PrepareP0:
+PreparePlayer0:
           lda PlayerX
           sec
           sta WSYNC
@@ -203,10 +205,9 @@ M0HPos:
           asl a
           sta HMM0
 
+PreparePlayer1:
           ldx SpriteCount
           beq NoSprites
-
-          stx CXCLR
 
           lda ScrollLeft
           lsr a                 ; ÷ 4 PF px per block
@@ -224,9 +225,11 @@ NextFlickerCandidate:
           stx WRITE + SpriteFlickerNext
 FlickerOK:
           dey
-          beq NoP1
+          beq NoSprites
 FoundFlickerCandidate:
-CheckVisibility:
+GrossVisibilityPlayer1:
+          ;; Temp contains ScrollLeft in blocks
+          ;; Compare vs. the XH/X in blocks
           lda SpriteHP, x
           beq NextFlickerCandidate
           lda SpriteX, x
@@ -237,18 +240,17 @@ CheckVisibility:
           ora SpriteXH, x       ; units are blocks
           cmp Temp
           blt NextFlickerCandidate
-          pha
+          sta Pointer           ; alternate temp byte, we'll be using it again shortly
           lda Temp
           adc #11
-          sta Temp
-          pla
-          cmp Temp
-          bge NextFlickerCandidate
+          cmp Pointer
+          blt NextFlickerCandidate
 
-PreparePlayer1:
+FineVisibilityPlayer1:
           ;; fix X to be screen-relative
           ;; XH / X is of the form
           ;; hhhh xxxx xxxx
+          ;; (where XH is only in the high nybble)
           ;; ScrollLeft is of the form
           ;; 00ss ssss ss00
           ;; We're going to use Pointer as an additional 16-bit workspace
@@ -277,18 +279,13 @@ PreparePlayer1:
           lda Pointer + 1
           sbc LineCounter
           sta Pointer + 1
-          bne NoP1
+          bne NoSprites
 
           lda Pointer
           cmp # HBlankWidth
-          blt NoP1
-          cmp # HBlankWidth + 160
-          blt SetP1
-
-NoP1:
-          ldx #$ff
-          stx P1LineCounter
-          lda # 15
+          blt NoSprites
+          cmp # HBlankWidth + 159
+          bge NoSprites
 
 SetP1:
           stx WRITE + SpriteFlicker
