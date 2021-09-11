@@ -146,10 +146,10 @@ LoadEquipmentSprite:
           sta WRITE + SpriteY, x
           iny
           lda (MapSpritePointer), y
-          sta WRITE + SpriteMotion, x
+          sta WRITE + SpriteIndex, x
           iny
           lda (MapSpritePointer), y
-          sta WRITE + SpriteIndex, x
+          sta WRITE + SpriteMotion, x
           iny
 
           inx
