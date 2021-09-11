@@ -67,7 +67,9 @@ HurtMorphFall:
           lda #MoveMorphFall
           sta WRITE + MovementStyle
 
-HurtMe:  
+HurtMe:
+          lda #SoundBump
+          sta NextSound
           lda CurrentHP
           sec
           sbc # 1
