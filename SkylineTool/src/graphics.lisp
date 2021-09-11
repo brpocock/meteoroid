@@ -601,8 +601,7 @@ Shape:~{~{~a~}~2%~}
             if (<= 10 (- end start))
               collect (cons start end)
             else do (when (<= 2 (- end start))
-                      (warn "Span too short: from ~d to ~d" start end)))
-      )))
+                      (warn "Span too short: from ~d to ~d" start end))))))
 
 (defun split-12px-map-row-into-spans (pixels)
   (assert (column-is-solid-p pixels 0) ()
