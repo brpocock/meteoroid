@@ -69,7 +69,7 @@ HurtMorphFall:
 
 HurtMe:
           lda #SoundBump
-          sta NextSound
+          sta WRITE + NextSound
           lda CurrentHP
           sec
           sbc # 1
