@@ -20,10 +20,6 @@ PlayerXFraction:
 PlayerYFraction:
           .byte ?
 
-PlayerMissileX:
-          .byte ?
-PlayerMissileY:
-          .byte ?
 ;;; High bits of sprite position and sprite facing bit
 ;;; High bits are in upper nybble
 ;;; Facing (REFP1) bit is $08
@@ -48,8 +44,13 @@ SpriteAction:
 SpriteHP:
           .byte ?, ?, ?, ?,  ?, ?, ?, ?
 
+PlayerMissileX:
+          .byte ?
 MonsterMissileX:
           .byte ?, ?, ?, ?
+
+PlayerMissileY:
+          .byte ?
 MonsterMissileY:
           .byte ?, ?, ?, ?
           
@@ -127,40 +128,37 @@ SFXNoteTimer:
 NextSound:
           .byte ?
 
-;;; 
-;;; Transient work space for one game mode
-;;;
-;;; The scratchpad pages are "overlaid," each game mode uses them differently.
-;;; Upon entering a game mode, some care must be taken to re-initialize this
-;;; area of memory appropriately.
 
-            Scratchpad = *
 ;;; 
-;;; Attract mode flags
 
+;;; Are we scrolling between rooms, and if so, in which direction?
+;;; Or story mode progress when in the attract sequence
+AttractTitleScroll:
+AttractStoryProgress:
+DoorWalkDirection:
+          .byte ?
+
+;;; If we are scrolling in a new room, how many columns remain?
+;;; Or which panel of the story mode progress when in the attract sequence
+AttractStoryPanel:
+DoorWalkColumns:
+          .byte ?
+
+;;; If we have just completed the door walk, are we loading the sprite data?
+;;; Or, progress in revealing the title
+AttractTitleReveal:
+DoorWalkSummon:
+          .byte ?
+
+;;; Teleport effect countdown (and count back up)
 ;;; Attract mode flag for whether the speech associated with a certain mode
 ;;; has been started yet. (It's delayed on the title to avoid a conflict
 ;;; with the title screen jingle or the AtariVox start-up sound)
-
 AttractHasSpoken:
-          .byte ?
-
-AttractTitleScroll:
-          .byte ?
-
-AttractTitleReveal:
-          .byte ?
-          
-;;; The Story mode has several "panels" to be shown
-
-AttractStoryPanel:
-          .byte ?
-AttractStoryProgress:
+TeleportCountdown:
           .byte ?
 
 ;;; 
-;;; Scratchpad for Game Play mode
-            * = Scratchpad
 
 ;;; How many non-player sprites are in the level now?
 ;;; These virtual sprites are multiplexed onto Player Graphic 1
@@ -180,6 +178,9 @@ MissileCount:
 MissileFlicker:
           .byte ?
 
+;;; A “1” bit indicates a leftwards missile
+MissileDeltaX:
+          .byte ?
 ;;; 
 ;;; Main "Traffic Cop" Switching
 ;;;
@@ -206,24 +207,6 @@ SpriteDeltaY:
 ;;; 
 
 LastActivity:
-          .byte ?
-
-;;; 
-
-;;; Are we scrolling between rooms, and if so, in which direction?
-DoorWalkDirection:
-          .byte ?
-
-;;; If we are scrolling in a new room, how many columns remain?
-DoorWalkColumns:
-          .byte ?
-
-;;; If we have just completed the door walk, are we loading the sprite data?
-DoorWalkSummon:
-          .byte ?
-
-;;; Teleport effect countdown (and count back up)
-TeleportCountdown:
           .byte ?
 
 ;;; 

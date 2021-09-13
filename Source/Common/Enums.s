@@ -181,6 +181,7 @@
           MoveMorphRoll = $05
           MoveWalkStep = $06
           MoveTeleport = $07
+          MoveShoot = $08
           MoveMorphFall = $09
 ;;; 
 

@@ -35,6 +35,7 @@ DoLocal:
           .include "CheckPlayerCollision.s"
           .include "SpriteMovement.s"
           .include "UserInput.s"
+          .include "MissileMovement.s"
 
           .include "VSync.s"
           .include "VBlank.s"

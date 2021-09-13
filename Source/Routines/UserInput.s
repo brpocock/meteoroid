@@ -96,6 +96,43 @@ NotTeleporting:
           sta WRITE + MovementStyle
 
 HandleStick:
+          lda PlayerMissileX    ; already have a missile flying?
+          bne ActuallyCheckStick
+          lda NewButtons
+          beq ActuallyCheckStick
+          and #$80
+          beq ActuallyCheckStick
+
+FireMissile:
+          lda DeltaX
+          bpl FireRightwards
+FireLeftwards:
+          lda MissileDeltaX
+          ora #$01
+          sta WRITE + MissileDeltaX
+          lda PlayerX
+          sec
+          sbc # 1
+FireMissileCommon:  
+          sta PlayerMissileX
+          lda PlayerY
+          clc
+          adc # 4
+          sta WRITE + PlayerMissileY
+          lda # MoveShoot
+          sta WRITE + MovementStyle
+          gne ActuallyCheckStick
+
+FireRightwards:
+          lda MissileDeltaX
+          and #~$01
+          sta WRITE + MissileDeltaX
+          lda PlayerX
+          clc
+          adc # 9
+          gne FireMissileCommon
+
+ActuallyCheckStick:
           lda NewSWCHA          ; only when first pressed
           beq +
           and #P0StickUp
