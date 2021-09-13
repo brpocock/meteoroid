@@ -103,6 +103,15 @@ HandleStick:
           and #$80
           beq ActuallyCheckStick
 
+FireWeapon:
+          lda MovementStyle
+          cmp #MoveMorphRest
+          beq FireBomb
+          cmp #MoveMorphFall
+          beq FireBomb
+          cmp #MoveMorphRoll
+          beq FireBomb
+
 FireMissile:
           lda DeltaX
           bpl FireRightwards
@@ -114,7 +123,7 @@ FireLeftwards:
           sec
           sbc # 1
 FireMissileCommon:  
-          sta PlayerMissileX
+          sta WRITE + PlayerMissileX
           lda PlayerY
           clc
           adc # 4
@@ -123,6 +132,13 @@ FireMissileCommon:
           sta WRITE + MovementStyle
           gne ActuallyCheckStick
 
+FireBomb:
+          lda Equipment
+          and #EquipBomb
+          beq ActuallyCheckStick
+          ;; TODO
+          jmp ActuallyCheckStick
+          
 FireRightwards:
           lda MissileDeltaX
           and #~$01
