@@ -14,7 +14,7 @@ Loop:
 UpdateMissileRight:
           lda PlayerMissileX, x
           clc
-          adc # 2
+          adc # 3
           sta WRITE + PlayerMissileX, x
           cmp # ScreenRightEdge
           blt Next
@@ -25,7 +25,7 @@ UpdateMissileRight:
 UpdateMissileLeft:
           lda PlayerMissileX, x
           sec
-          sbc # 2
+          sbc # 3
           sta WRITE + PlayerMissileX, x
           cmp # ScreenLeftEdge
           bge Next
