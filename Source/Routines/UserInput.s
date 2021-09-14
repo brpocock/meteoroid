@@ -55,9 +55,7 @@ HandleUserMovement:
 
 ReturnIfPaused:
           lda DoorWalkDirection
-          beq +
-          rts
-+
+          bne DoDoorWalking
           lda Pause
           beq +
           rts
@@ -296,6 +294,100 @@ MoveByWalking:
 DoneChangingMovement:
           stx WRITE + DeltaX
 
+          rts
+
+DoDoorWalking:
+          lda DoorWalkDirection
+          bpl DoorWalkingRight
+DoorWalkingLeft:
+          lda ScrollLeft
+          beq AtLeftEnd
+          dec ScrollLeft
+          rts
+
+AtLeftEnd:
+          ;; TODO, wait for next room to be queued
+          lda DoorWalkDirection
+          cmp #-3
+          beq DemolishWallLeft
+
+          ;; Wait for next scene to be loaded
+          lda #-2
+          sta WRITE + DoorWalkDirection
+          rts
+          
+DoorWalkingRight:
+          ldy # 2
+          lda (MapPointer), y
+          asl a
+          asl a
+          sec
+          sbc # 39
+          cmp ScrollLeft
+          bge AtRightEnd
+          inc ScrollLeft
+          rts
+
+AtRightEnd:
+          lda DoorWalkDirection
+          cmp # 3
+          beq DemolishWallRight
+
+          ;; Wait for the next scene to be loaded
+          lda # 2
+          sta WRITE + DoorWalkDirection
+          rts
+
+DemolishWallLeft:
+          lda DoorWalkColumns
+          cmp # 5
+          bge ScrollSceneLeft
+          clc
+          adc # 1
+          sta WRITE + DoorWalkColumns
+          and #~$07
+          lsr a
+          lsr a
+          lsr a
+          ;; TODO remove one column at a time
+          lda # 0
+          sta BackgroundPF0 + 7
+          sta BackgroundPF0 + 8
+          sta BackgroundPF0 + 9
+          rts
+
+DemolishWallRight:
+          lda DoorWalkColumns
+          cmp # 5
+          bge ScrollSceneRight
+          clc
+          adc # 1
+          sta WRITE + DoorWalkColumns
+          and #~$07
+          lsr a
+          lsr a
+          lsr a
+          ;; TODO remove one column at a time
+          lda # 0
+          sta BackgroundPF2R + 7
+          sta BackgroundPF2R + 8
+          sta BackgroundPF2R + 9
+          rts
+
+ScrollSceneLeft:
+          lda #MoveWalk          
+          sta WRITE + MovementStyle
+          lda MapFlags
+          and #~MapFlagFacing
+          sta WRITE + MapFlags
+          rts
+
+ScrollSceneRight:
+          lda #MoveWalk
+          sta WRITE + MovementStyle
+          lda MapFlags
+          ora #MapFlagFacing
+          sta WRITE + MapFlags
           rts
 
           .bend

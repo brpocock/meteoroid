@@ -156,6 +156,12 @@ ScreenJumpLogic:
           cmp #ScreenBottomEdge
           bge GoScreenDown
 
+          lda DoorWalkDirection
+          cmp #-2
+          beq GoRoomLeft
+          cmp # 2
+          beq GoRoomRight
+
           lda PlayerX
           cmp #ScreenLeftEdge
           blt ScrollScreenRight
@@ -286,6 +292,25 @@ MoveSpritesRight:
 DoneScrollingBack:
           jmp ShouldIStayOrShouldIGo
 
+GoRoomLeft:
+          lda # 0               ; TODO figure out room to the left
+          sta WRITE + CurrentMap
+          jsr SetUpScreen.SearchForMap
+          ldy # 2
+          lda (MapPointer), y
+          sec
+          sbc # 40
+          sta ScrollLeft
+          jmp ShouldIStayOrShouldIGo
+
+GoRoomRight:
+          lda # 1               ; TODO figure out room to the right
+          sta WRITE + CurrentMap
+          jsr SetUpScreen.SearchForMap
+          lda # 0
+          sta ScrollLeft
+          jmp ShouldIStayOrShouldIGo
+          
 GoScreenUp:
           ldy #0
           lda (MapPointer), y

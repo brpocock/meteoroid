@@ -5,7 +5,8 @@ MissileMovement:    .block
 
           ldx # 4
 Loop:
-          lda PlayerMissileX, x
+          lda PlayerMissileY, x
+          eor #$ff
           beq Next
 
           lda BitMask, x
@@ -14,23 +15,23 @@ Loop:
 UpdateMissileRight:
           lda PlayerMissileX, x
           clc
-          adc # 3
+          adc # 2
           sta WRITE + PlayerMissileX, x
-          cmp # ScreenRightEdge
+          cmp # HBlankWidth + 160
           blt Next
-          lda # 0
-          sta WRITE + PlayerMissileX, x
+          lda #$ff
+          sta WRITE + PlayerMissileY, x
           geq Next
 
 UpdateMissileLeft:
           lda PlayerMissileX, x
           sec
-          sbc # 3
+          sbc # 2
           sta WRITE + PlayerMissileX, x
-          cmp # ScreenLeftEdge
+          cmp # HBlankWidth
           bge Next
-          lda # 0
-          sta WRITE + PlayerMissileX, x
+          lda #$ff
+          sta WRITE + PlayerMissileY, x
 
 Next:
           dex

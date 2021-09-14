@@ -32,6 +32,34 @@ SetUpScreen: .block
           sta WRITE + TeleportCountdown
 
           jmp NewRoomTimerRunning
+
+;;; 
+
+SearchForMap:
+          lda #>MapData
+          sta MapPointer + 1
+          lda #<MapData
+          sta MapPointer
+
+          ldx CurrentMap
+          beq FoundMapData
+
+          ldy # 2
+LookForMapData:
+          lda (MapPointer), y
+          clc
+          adc MapPointer
+          bcc +
+          inc MapPointer + 1
++
+          sta MapPointer
+
+          dex
+          bne LookForMapData
+
+FoundMapData:
+          rts
+          
 ;;; 
 NewRoom:
           .WaitForTimer
@@ -57,29 +85,7 @@ NewRoomTimerRunning:
           lda NextMap
           sta CurrentMap
 
-SearchForMap:
-          lda #>MapData
-          sta MapPointer + 1
-          lda #<MapData
-          sta MapPointer
-
-          ldx CurrentMap
-          beq FoundMapData
-
-          ldy # 2
-LookForMapData:
-          lda (MapPointer), y
-          clc
-          adc MapPointer
-          bcc +
-          inc MapPointer + 1
-+
-          sta MapPointer
-
-          dex
-          bne LookForMapData
-
-FoundMapData:
+          jsr SearchForMap
           ldy # 0
 
           lda #<SpriteList
