@@ -301,6 +301,8 @@ GoRoomLeft:
           sec
           sbc # 40
           sta ScrollLeft
+          lda #-3
+          sta WRITE + DoorWalkDirection
           jmp ShouldIStayOrShouldIGo
 
 GoRoomRight:
@@ -309,6 +311,8 @@ GoRoomRight:
           jsr SetUpScreen.SearchForMap
           lda # 0
           sta ScrollLeft
+          lda # 3
+          sta WRITE + DoorWalkDirection
           jmp ShouldIStayOrShouldIGo
           
 GoScreenUp:
