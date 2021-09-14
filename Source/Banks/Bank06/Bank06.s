@@ -20,16 +20,16 @@ DoLocal:
 MapData:
           .include "MapProvince1.s"
           .include "SpritesProvince1.s"
-BackgroundMusic:
-          .include "Province1.s"
+
+
 
           .include "VSync.s"
           .include "VBlank.s"
           .include "Overscan.s"
           .include "Random.s"
 
-          .include "PlayMusic.s"
-          rts
+
+
 
           .include "WaitScreenBottom.s"
           .include "EndBank.s"

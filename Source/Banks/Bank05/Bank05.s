@@ -22,16 +22,11 @@ DoLocal:
           .include "Overscan.s"
 
           .include "Random.s"
-          .include "PlayMusic.s"
-          rts
 
           .include "WaitScreenBottom.s"
 
 MapData:  
           .include "MapProvince0.s"
           .include "SpritesProvince0.s"
-
-BackgroundMusic:
-          .include "Province0.s"
 
           .include "EndBank.s"

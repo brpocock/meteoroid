@@ -2,9 +2,9 @@
 ;;; Copyright © 2021 Bruce-Robert Pocock
 	BANK = $02
 
-	.include "StartBank.s"
+          .include "StartBank.s"
           .include "Source/Generated/Bank04/SpeakJetIDs.s"
-          
+
           .include "Font.s"
 
 DoLocal:

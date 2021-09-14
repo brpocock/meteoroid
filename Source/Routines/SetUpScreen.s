@@ -15,11 +15,6 @@ SetUpScreen: .block
           sta WRITE + CurrentMusic + 1
           sta WRITE + DoorWalkDirection
 
-          lda #<BackgroundMusic
-          sta CurrentMusic
-          lda #>BackgroundMusic
-          sta CurrentMusic + 1
-
           lda BlessedX
           sta WRITE + PlayerX
           lda BlessedY

@@ -8,7 +8,6 @@ Overscan: .block
           jsr FarCall
 
           .if BANK >= Province0Bank
-          jsr DoMusic
           jsr PerformGravity
           .fi
 
