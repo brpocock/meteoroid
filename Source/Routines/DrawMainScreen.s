@@ -16,6 +16,8 @@ Loop:
 MainDrawLoop:
           lda # 0
           sta LineCounter
+          sta pp5l
+          sta pp5h
 
           stx WSYNC
 

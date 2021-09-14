@@ -13,6 +13,7 @@ SetUpScreen: .block
           sta WRITE + PlayerYFraction
           sta WRITE + MapFlags
           sta WRITE + CurrentMusic + 1
+          sta WRITE + DoorWalkDirection
 
           lda #<BackgroundMusic
           sta CurrentMusic

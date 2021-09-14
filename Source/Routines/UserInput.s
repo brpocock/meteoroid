@@ -54,6 +54,10 @@ SkipSwitches:
 HandleUserMovement:
 
 ReturnIfPaused:
+          lda DoorWalkDirection
+          beq +
+          rts
++
           lda Pause
           beq +
           rts
@@ -96,7 +100,8 @@ NotTeleporting:
           sta WRITE + MovementStyle
 
 HandleStick:
-          lda PlayerMissileX    ; already have a missile flying?
+          lda PlayerMissileY    ; already have a missile flying?
+          eor #$ff
           bne ActuallyCheckStick
           lda NewButtons
           beq ActuallyCheckStick
@@ -113,8 +118,9 @@ FireWeapon:
           beq FireBomb
 
 FireMissile:
-          lda DeltaX
-          bpl FireRightwards
+          lda MapFlags
+          and #MapFlagFacing
+          bne FireRightwards
 FireLeftwards:
           lda MissileDeltaX
           ora #$01
@@ -126,7 +132,7 @@ FireMissileCommon:
           sta WRITE + PlayerMissileX
           lda PlayerY
           clc
-          adc # 4
+          sbc # 4
           sta WRITE + PlayerMissileY
           lda # MoveShoot
           sta WRITE + MovementStyle
