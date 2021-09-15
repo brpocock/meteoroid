@@ -161,6 +161,10 @@ ScreenJumpLogic:
           beq GoRoomLeft
           cmp # 2
           beq GoRoomRight
+          cmp #-4
+          beq ScrollLeftToNewRoom
+          cmp # 4
+          beq ScrollRightToNewRoom
 
           lda PlayerX
           cmp #ScreenLeftEdge
@@ -170,6 +174,37 @@ ScreenJumpLogic:
           gne ShouldIStayOrShouldIGo
 
 ;;; 
+
+ScrollLeftToNewRoom:
+          ;; TODO WRITEME
+          
+ScrollRightToNewRoom:
+          jsr UncombinePF0
+
+          lda DoorWalkColumns
+          clc
+          adc # 1
+          sta WRITE + DoorWalkColumns
+          cmp # 39
+          bge DoneScrollingRoomRight
+
+          and #~$03
+          lsr a
+          clc
+          adc # 15
+          tay
+
+          jsr ScrollRight
+
+          jsr CombinePF0
+
+          jmp ShouldIStayOrShouldIGo
+
+DoneScrollingRoomRight:
+          lda # 3
+          sta WRITE + DoorWalkDirection
+          jmp ShouldIStayOrShouldIGo
+
 ScrollScreenLeft:
           lda ScrollLeft
           lsr a
@@ -341,13 +376,6 @@ GoScreen:
           lda #ModePlayNewRoom
           sta WRITE + GameMode
           gne ShouldIStayOrShouldIGo
-
-ScreenBounce:
-          ;; stuff the player into the middle of the screen
-          lda #$7a
-          sta PlayerX
-          lda #$21
-          sta PlayerY
 
 ShouldIStayOrShouldIGo:
           lda GameMode

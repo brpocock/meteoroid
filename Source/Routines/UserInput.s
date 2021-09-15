@@ -315,7 +315,7 @@ AtLeftEnd:
           lda #-2
           sta WRITE + DoorWalkDirection
           rts
-          
+
 DoorWalkingRight:
           ldy # 2
           lda (MapPointer), y
@@ -329,6 +329,14 @@ DoorWalkingRight:
           rts
 
 AtRightEnd:
+          lda # 1
+          sta WRITE + DeltaX
+          lda PlayerX
+          cmp # HBlankWidth + 160 - 8
+          bge AllTheWayRight
+          rts
+
+AllTheWayRight:
           lda DoorWalkDirection
           cmp # 3
           beq DemolishWallRight
