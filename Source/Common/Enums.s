@@ -192,8 +192,6 @@
           DoorNothing = $00
           DoorScrollToEnd = $01
           DoorDestroyBlocks = $02
-          DoorLoadNextRoomRight = $03
-          DoorScrollToRoomRight = $04
+          DoorLoadNextRoom = $03
+          DoorScrollIntoRoom = $04
           DoorLoadSprites = $05
-          DoorLoadNextRoomLeft = $06
-          DoorScrollToRoomLeft = $07

@@ -38,22 +38,30 @@ ShotDoor:
           cmp # 1
           bne CannotOpenDoor
 ShotOpensDoor:
+          lda SpriteY, x
+          lsr a
+          lsr a
+          sec
+          sbc # 2
+          sta WRITE + DoorYPosition
           lda #SoundChirp
           sta WRITE + NextSound
-          lda #0
-          sta WRITE + DoorWalkColumns
-          sta WRITE + DoorWalkSummon
+          lda # 0
+          sta WRITE + DoorColumns
+          sta WRITE + SpriteHP, x
+          lda #DoorScrollToEnd
+          sta WRITE + DoorMode
           lda SpriteX, x
           cmp # ( HBlankWidth + 160 ) / 2
-          bge ShotRightDoor
+          blt ShotRightDoor
 ShotLeftDoor:
           lda #-1
-          sta WRITE + DoorWalkDirection
+          sta WRITE + DoorDirection
           rts
 
 ShotRightDoor:
           lda # 1
-          sta WRITE + DoorWalkDirection
+          sta WRITE + DoorDirection
           rts
 
 CannotOpenDoor:

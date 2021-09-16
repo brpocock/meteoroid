@@ -156,18 +156,27 @@ ScreenJumpLogic:
           cmp #ScreenBottomEdge
           bge GoScreenDown
 
-          lda DoorWalkDirection
-          cmp #-2
-          beq GoRoomLeft
-          cmp # 2
-          beq GoRoomRight
-
           lda PlayerX
           cmp #ScreenLeftEdge
           blt ScrollScreenRight
           cmp #ScreenRightEdge
           bge ScrollScreenLeft
+
+          lda DoorMode
+          cmp #DoorScrollToEnd
+          beq DoorScrolling
+          cmp #DoorLoadNextRoom
+          beq DoorSwitchRoom
+          cmp #DoorScrollIntoRoom
+          beq AfterDoorScrolling
+          cmp #DoorLoadSprites
+          beq AfterDoorSprites
           gne ShouldIStayOrShouldIGo
+
+DoorScrolling:
+          ldx DoorDirection
+          bmi ShouldIStayOrShouldIGo
+          ;; fall through
 
 ;;; 
 ScrollScreenLeft:
@@ -180,7 +189,7 @@ ScrollScreenLeft:
           ldy # 2
           lda (MapPointer), y
           cmp Temp
-          blt ShouldIStayOrShouldIGo
+          blt DoneScrolling
 
           jsr UncombinePF0
 
@@ -232,7 +241,12 @@ MoveSpritesLeft:
           bne -
 
 DoneScrolling:
-          jmp ShouldIStayOrShouldIGo
+          lda DoorMode
+          cmp #DoorScrollToEnd
+          bne ShouldIStayOrShouldIGo
+          lda #DoorDestroyBlocks
+          sta WRITE + DoorMode
+          gne ShouldIStayOrShouldIGo
 
 ;;; 
           
@@ -240,7 +254,7 @@ ScrollScreenRight:
           ldy # 1
           lda (MapPointer), y
           cmp ScrollLeft
-          bge DoneScrolling
+          bge ShouldIStayOrShouldIGo
 
           jsr UncombinePF0
 
@@ -289,9 +303,27 @@ MoveSpritesRight:
           dex
           bne -
 
-DoneScrollingBack:
-          jmp ShouldIStayOrShouldIGo
+          jmp DoneScrolling
+;;; 
+AfterDoorScrolling:
+          ldx DoorDirection
+          bpl AfterDoorScrollRight
 
+AfterDoorScrollLeft:
+          jmp SetUpScreen       ; FIXME
+
+AfterDoorScrollRight:
+          jmp SetUpScreen       ; FIXME
+;;; 
+AfterDoorSprites:
+          jsr SetUpScreen.LoadSpriteList
+          jmp ShouldIStayOrShouldIGo
+;;; 
+          
+DoorSwitchRoom:
+          ldx DoorDirection
+          bpl GoRoomRight
+          
 GoRoomLeft:
           lda # 0               ; TODO figure out room to the left
           sta WRITE + CurrentMap
@@ -301,8 +333,8 @@ GoRoomLeft:
           sec
           sbc # 40
           sta ScrollLeft
-          lda #-3
-          sta WRITE + DoorWalkDirection
+          ;; lda #-3
+          ;; sta WRITE + DoorWalkDirection
           jmp ShouldIStayOrShouldIGo
 
 GoRoomRight:
@@ -311,14 +343,16 @@ GoRoomRight:
           jsr SetUpScreen.SearchForMap
           lda # 0
           sta ScrollLeft
-          lda # 3
-          sta WRITE + DoorWalkDirection
+          ;; lda # 3
+          ;; sta WRITE + DoorWalkDirection
           jmp ShouldIStayOrShouldIGo
+
+;;; 
           
 GoScreenUp:
           ldy #0
           lda (MapPointer), y
-          beq DoneScrollingBack
+          beq DoneScrolling
 
           lda #ScreenBottomEdge - 1
           sta WRITE + BlessedY
@@ -342,13 +376,8 @@ GoScreen:
           sta WRITE + GameMode
           gne ShouldIStayOrShouldIGo
 
-ScreenBounce:
-          ;; stuff the player into the middle of the screen
-          lda #$7a
-          sta PlayerX
-          lda #$21
-          sta PlayerY
-
+;;; 
+          
 ShouldIStayOrShouldIGo:
           lda GameMode
           cmp #ModePlay

@@ -65,6 +65,7 @@ DoneButtons:
           jsr MissileMovement
           jsr CheckPlayerCollision
           jsr UserInput
+          jsr Doors
 
           .fi
 

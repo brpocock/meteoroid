@@ -135,7 +135,7 @@ NextSound:
 ;;; Or story mode progress when in the attract sequence
 AttractTitleScroll:
 AttractStoryProgress:
-DoorWalkDirection:
+DoorDirection:
           .byte ?
 
 ;;; What mode (see Enums.s) are we in w.r.t. door opening or walking?
@@ -159,6 +159,8 @@ AttractHasSpoken:
 TeleportCountdown:
           .byte ?
 
+DoorYPosition:
+          .byte ?
 ;;; 
 
 ;;; How many non-player sprites are in the level now?

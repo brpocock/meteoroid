@@ -12,8 +12,8 @@ SetUpScreen: .block
           sta WRITE + PlayerXFraction
           sta WRITE + PlayerYFraction
           sta WRITE + MapFlags
-          sta WRITE + CurrentMusic + 1
-          sta WRITE + DoorWalkDirection
+          sta CurrentMusic + 1
+          sta WRITE + DoorMode
 
           lda BlessedX
           sta WRITE + PlayerX
@@ -54,36 +54,11 @@ LookForMapData:
 
 FoundMapData:
           rts
-          
+
 ;;; 
-NewRoom:
-          .WaitForTimer
-          stx WSYNC
-          .if TV == NTSC
-          stx WSYNC
-          .fi
 
-          jsr Overscan
-
-          .WaitScreenTopMinus 2, -1
-
-NewRoomTimerRunning:
-
-          lda CurrentProvince
-
-          cmp #PROVINCE
-
-          beq +
-          .WaitScreenBottom
-          jmp GoPlay
-+
-          lda NextMap
-          sta CurrentMap
-
-          jsr SearchForMap
-          ldy # 0
-
-          lda #<SpriteList
+LoadSpriteList:
+                    lda #<SpriteList
           sta MapSpritePointer
           lda #>SpriteList
           sta MapSpritePointer + 1
@@ -161,6 +136,37 @@ LoadEquipmentSprite:
           stx WRITE + SpriteCount
 
 SpritesDone:
+          rts
+
+;;; 
+NewRoom:
+          .WaitForTimer
+          stx WSYNC
+          .if TV == NTSC
+          stx WSYNC
+          .fi
+
+          jsr Overscan
+
+          .WaitScreenTopMinus 2, -1
+
+NewRoomTimerRunning:
+
+          lda CurrentProvince
+
+          cmp #PROVINCE
+
+          beq +
+          .WaitScreenBottom
+          jmp GoPlay
++
+          lda NextMap
+          sta CurrentMap
+
+          jsr SearchForMap
+          ldy # 0
+
+          jsr LoadSpriteList
 ;;; 
           .FarJSR MapServicesBank, ServiceValidateMap
 ;;; 
