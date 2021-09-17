@@ -195,3 +195,6 @@
           DoorLoadNextRoom = $03
           DoorScrollIntoRoom = $04
           DoorLoadSprites = $05
+
+          DoorOpenLeft = $80
+          DoorOpenRight = $40

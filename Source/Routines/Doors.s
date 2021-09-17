@@ -61,7 +61,7 @@ DestroyRightBlocks:
           lda BackgroundPF2R, x
           and Temp
           sta BackgroundPF2R, x
-          
+
 NextBlocksToDestroy:
           lda DoorColumns
           cmp # 8
@@ -69,6 +69,22 @@ NextBlocksToDestroy:
           lda # 0
           sta WRITE + DoorColumns
           sta WRITE + DoorMode
+          lda DoorDirection
+          bmi OpenDoorLeft
+OpenDoorRight:
+          lda #DoorOpenRight
+          sta WRITE + DoorOpen
+          rts
+
+OpenDoorLeft:
+          lda #DoorOpenLeft
+          sta WRITE + DoorOpen
+          rts
+
+DestroyMoreBlocks:
+          clc
+          adc # 1
+          sta WRITE + DoorColumns
 
           rts
 
@@ -92,15 +108,8 @@ DestroyLeftBlocks:
 
           jmp NextBlocksToDestroy
 
-DestroyMoreBlocks:
-          clc
-          adc # 1
-          sta WRITE + DoorColumns
-
-          rts
 ;;; 
 
-          
 KeepScrollingLeft:
           sec
           sbc # 1

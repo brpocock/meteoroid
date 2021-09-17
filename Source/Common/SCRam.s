@@ -161,6 +161,9 @@ TeleportCountdown:
 
 DoorYPosition:
           .byte ?
+
+DoorOpen:
+          .byte ?
 ;;; 
 
 ;;; How many non-player sprites are in the level now?

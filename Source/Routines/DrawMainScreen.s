@@ -53,7 +53,6 @@ DrawOneRow:
 
 DrawSomeLines:
           ldx # 4               ; 2 / 70
-
 ;;; 
 DrawPlayerLine:        .macro    playerNumber
           ldy PixelPointers + 6 ; 3
@@ -85,13 +84,12 @@ DrawPlayerLine:        .macro    playerNumber
 NoPlayer:                                        ; from 54-69 cycles
 
           .endm
-
 ;;; 
 DrawLineTriple:
           .DrawPlayerLine 0
           .DrawPlayerLine 1
 ;;; 
-DrawMissileLine:    
+DrawMissileLine:
           ldy PixelPointers + 6 ; 3
           stx WSYNC             ; 3
 
@@ -125,12 +123,10 @@ NoM0:
           lda # ENABLED         ; 2 / 66 (62)
           sta ENAM1             ; 3 / 69 (65)
 NoM1:                           ; // 61-69 cycles
-
-;;; 
 ;;; 
           dex                   ; 2 / 71
           beq +                 ; 2 (3) / 73
-          jmp DrawLineTriple
+          jmp DrawLineTriple    ; 3 / 76*
 +
           inc LineCounter       ; 5 / 73 (65)
           ldy LineCounter       ; 3 / 76* (68)
@@ -147,10 +143,18 @@ FillBottomScreen:
           sta GRP0
           sta GRP1
           sta ENABL
-
 ;;; 
-
 ScreenJumpLogic:
+          lda DoorMode
+          cmp #DoorScrollToEnd
+          beq DoorScrolling
+          cmp #DoorLoadNextRoom
+          beq DoorSwitchRoom
+          cmp #DoorScrollIntoRoom
+          beq AfterDoorScrolling
+          cmp #DoorLoadSprites
+          beq AfterDoorSprites
+
           lda PlayerY
           bmi GoScreenUp
           cmp #ScreenBottomEdge
@@ -161,23 +165,12 @@ ScreenJumpLogic:
           blt ScrollScreenRight
           cmp #ScreenRightEdge
           bge ScrollScreenLeft
-
-          lda DoorMode
-          cmp #DoorScrollToEnd
-          beq DoorScrolling
-          cmp #DoorLoadNextRoom
-          beq DoorSwitchRoom
-          cmp #DoorScrollIntoRoom
-          beq AfterDoorScrolling
-          cmp #DoorLoadSprites
-          beq AfterDoorSprites
-          gne ShouldIStayOrShouldIGo
+          glt ShouldIStayOrShouldIGo
 
 DoorScrolling:
           ldx DoorDirection
           bmi ShouldIStayOrShouldIGo
           ;; fall through
-
 ;;; 
 ScrollScreenLeft:
           lda ScrollLeft
@@ -189,7 +182,7 @@ ScrollScreenLeft:
           ldy # 2
           lda (MapPointer), y
           cmp Temp
-          blt DoneScrolling
+          blt DoorRightOrDone
 
           jsr UncombinePF0
 
@@ -248,13 +241,20 @@ DoneScrolling:
           sta WRITE + DoorMode
           gne ShouldIStayOrShouldIGo
 
+DoorRightOrDone:
+          bit DoorOpen          ; DoorOpenRight = $40 = V flag
+          bvc DoneScrolling
+          lda #DoorLoadNextRoom
+          sta WRITE + DoorMode
+          lda # 1
+          sta WRITE + DoorDirection
+          gne ShouldIStayOrShouldIGo
 ;;; 
-          
 ScrollScreenRight:
           ldy # 1
           lda (MapPointer), y
           cmp ScrollLeft
-          bge ShouldIStayOrShouldIGo
+          bge DoorLeftOrDone
 
           jsr UncombinePF0
 
@@ -267,7 +267,7 @@ ScrollScreenRight:
           tay
 
           jsr ScrollBack
-          
+
           jsr CombinePF0
 
 MoveSpritesRight:
@@ -304,6 +304,15 @@ MoveSpritesRight:
           bne -
 
           jmp DoneScrolling
+
+DoorLeftOrDone:
+          bit DoorOpen          ; DoorOpenLeft = $80 = N flag
+          bpl DoneScrolling
+          lda #DoorLoadNextRoom
+          sta WRITE + DoorMode
+          lda #-1
+          sta WRITE + DoorDirection
+          gne ShouldIStayOrShouldIGo
 ;;; 
 AfterDoorScrolling:
           ldx DoorDirection
@@ -319,11 +328,10 @@ AfterDoorSprites:
           jsr SetUpScreen.LoadSpriteList
           jmp ShouldIStayOrShouldIGo
 ;;; 
-          
 DoorSwitchRoom:
           ldx DoorDirection
           bpl GoRoomRight
-          
+
 GoRoomLeft:
           lda # 0               ; TODO figure out room to the left
           sta WRITE + CurrentMap
@@ -333,9 +341,17 @@ GoRoomLeft:
           sec
           sbc # 40
           sta ScrollLeft
-          ;; lda #-3
-          ;; sta WRITE + DoorWalkDirection
-          jmp ShouldIStayOrShouldIGo
+WipeSprites:
+          lda #DoorScrollIntoRoom
+          sta WRITE + DoorMode
+          lda # 0
+          sta WRITE + DoorOpen
+          ldx # 8
+-
+          sta WRITE + SpriteHP - 1, x
+          dex
+          bne -
+          geq ShouldIStayOrShouldIGo
 
 GoRoomRight:
           lda # 1               ; TODO figure out room to the right
@@ -343,12 +359,8 @@ GoRoomRight:
           jsr SetUpScreen.SearchForMap
           lda # 0
           sta ScrollLeft
-          ;; lda # 3
-          ;; sta WRITE + DoorWalkDirection
-          jmp ShouldIStayOrShouldIGo
-
+          jmp WipeSprites
 ;;; 
-          
 GoScreenUp:
           ldy #0
           lda (MapPointer), y
@@ -375,15 +387,12 @@ GoScreen:
           lda #ModePlayNewRoom
           sta WRITE + GameMode
           gne ShouldIStayOrShouldIGo
-
 ;;; 
-          
 ShouldIStayOrShouldIGo:
           lda GameMode
           cmp #ModePlay
           bne Leave
           jmp Loop
-;;; 
 Leave:
           cmp #ModePlayNewRoom
           beq SetUpScreen.NewRoom
@@ -403,16 +412,14 @@ Leave:
 
 UnknownMode:
           brk
-
+;;; 
 ShowSubscreen:
           .FarJSR MapServicesBank, ServiceSubscreen
           jmp SetUpScreen
-
-
+;;; 
 PF0Shift:
           ;; fast way to (ash x -4)
           .byte $00, $10, $20, $30, $40, $50, $60, $70
           .byte $80, $90, $a0, $b0, $c0, $d0, $e0, $f0
-
-
+;;; 
           .bend
