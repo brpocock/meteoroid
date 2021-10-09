@@ -319,10 +319,54 @@ AfterDoorScrolling:
           bpl AfterDoorScrollRight
 
 AfterDoorScrollLeft:
-          jmp SetUpScreen       ; FIXME
+          ldy DoorColumns
+          beq AfterDoorFindNextRoomLeft
+          dey
+          beq AfterDoorScrollDone
+          sty WRITE + DoorColumns
+          tya
+          lsr a                 ; ÷ 4 × 2
+          adc # 15
+          tay
+          jsr ScrollBack
+          jmp ShouldIStayOrShouldIGo
+
+AfterDoorFindNextRoomLeft:
+          lda # 0               ; FIXME
+          sta CurrentMap
+          jsr SetUpScreen.SearchForMap
+          lda # 40
+          sta WRITE + DoorColumns
+          jmp ShouldIStayOrShouldIGo
 
 AfterDoorScrollRight:
-          jmp SetUpScreen       ; FIXME
+          ldy DoorColumns
+          beq AfterDoorFindNextRoomRight
+          iny
+          cmp # 40
+          bge AfterDoorScrollDone
+          sty WRITE + DoorColumns
+          tya
+          lsr a                 ; ÷ 4 × 2
+          adc # 15
+          tay
+          jsr ScrollRight
+          jmp ShouldIStayOrShouldIGo
+
+AfterDoorScrollDone:
+          lda #DoorLoadSprites
+          sta WRITE + DoorMode
+          jmp ShouldIStayOrShouldIGo
+
+AfterDoorFindNextRoomRight:
+          lda # 1               ; FIXME: calculate room number
+          sta CurrentMap
+          jsr SetUpScreen.SearchForMap
+          lda # 1
+          sta WRITE + DoorColumns
+          jmp ShouldIStayOrShouldIGo
+          
+          
 ;;; 
 AfterDoorSprites:
           jsr SetUpScreen.LoadSpriteList

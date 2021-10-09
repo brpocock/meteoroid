@@ -63,8 +63,10 @@ Return:
 +
 
           lda MovementStyle
+CheckForTeleport:
           cmp #MoveTeleport
           bne NotTeleporting
+DecrementTeleportCounter:
           lda TeleportCountdown
           bmi TeleportCountNegative
           sbc # 1
