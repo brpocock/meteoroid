@@ -236,7 +236,8 @@ LastActivity:
           ;; URL is there for PlusCart.
           .enc "Unicode"
 RAMWrite:
-          .text "https://star-hope.org/games/Meteoroid/meteoroid.plx", 0
+          .text "/games/Meteoroid/meteoroid.plx", 0
+          .text "star-hope.org", 0
           .text "Meteoroid, © 2021 Bruce-Robert Pocock.", 0
           .if DEMO
           .text "F4SC"
@@ -245,7 +246,8 @@ RAMWrite:
           .fi
           .align $80, 0
 RAMRead:
-          .text "https://star-hope.org/games/Meteoroid/meteoroid.plx", 0
+          .text "/games/Meteoroid/meteoroid.plx", 0
+          .text "star-hope.org", 0
           .text "Meteoroid, © 2021 Bruce-Robert Pocock.", 0
           .if DEMO
           .text "F4SC"
