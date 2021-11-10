@@ -12,6 +12,7 @@ Loop:
           bne +
           stx WSYNC
 +
+
 ;;; 
 MainDrawLoop:
           lda # 0
@@ -161,12 +162,37 @@ ScreenJumpLogic:
           bge GoScreenDown
 
           lda PlayerX
+          cmp #ScreenDoorLeft
+          blt TryDoorLeft
+NoDoorLeft:
           cmp #ScreenLeftEdge
           blt ScrollScreenRight
+          cmp #ScreenDoorRight
+          bge TryDoorRight
+NoDoorRight:
           cmp #ScreenRightEdge
           bge ScrollScreenLeft
           glt ShouldIStayOrShouldIGo
 
+TryDoorLeft:
+          lda DoorOpen
+          cmp #DoorOpenLeft
+          bne NoDoorLeft
+          lda #-1
+          sta WRITE + DoorDirection
+          gne StartDoorScroll
+
+TryDoorRight:
+          lda DoorOpen
+          cmp #DoorOpenRight
+          bne NoDoorRight
+          lda # 1
+          sta WRITE + DoorDirection
+StartDoorScroll:
+          lda #DoorScrollIntoRoom
+          sta WRITE + DoorMode
+          gne ShouldIStayOrShouldIGo
+          
 DoorScrolling:
           ldx DoorDirection
           bmi ShouldIStayOrShouldIGo
@@ -244,7 +270,7 @@ DoneScrolling:
 DoorRightOrDone:
           bit DoorOpen          ; DoorOpenRight = $40 = V flag
           bvc DoneScrolling
-          lda #DoorLoadNextRoom
+          lda # 0
           sta WRITE + DoorMode
           lda # 1
           sta WRITE + DoorDirection
@@ -308,7 +334,7 @@ MoveSpritesRight:
 DoorLeftOrDone:
           bit DoorOpen          ; DoorOpenLeft = $80 = N flag
           bpl DoneScrolling
-          lda #DoorLoadNextRoom
+          lda # 0
           sta WRITE + DoorMode
           lda #-1
           sta WRITE + DoorDirection
@@ -343,7 +369,7 @@ AfterDoorScrollRight:
           ldy DoorColumns
           beq AfterDoorFindNextRoomRight
           iny
-          cmp # 40
+          cpy # 40
           bge AfterDoorScrollDone
           sty WRITE + DoorColumns
           tya
@@ -351,6 +377,13 @@ AfterDoorScrollRight:
           adc # 15
           tay
           jsr ScrollRight
+
+          lda PlayerX
+          sbc # 4
+          sta WRITE + PlayerX
+
+          lda #MoveWalk
+          sta WRITE + MovementStyle
           jmp ShouldIStayOrShouldIGo
 
 AfterDoorScrollDone:
@@ -386,6 +419,9 @@ GoRoomLeft:
           sbc # 40
           sta ScrollLeft
 WipeSprites:
+          ;; Hide all sprites except player while scrolling.
+          ;; Old sprites would not move at the correct speed,
+          ;; new sprites have not yet been loaded.
           lda #DoorScrollIntoRoom
           sta WRITE + DoorMode
           lda # 0
@@ -393,6 +429,11 @@ WipeSprites:
           ldx # 8
 -
           sta WRITE + SpriteHP - 1, x
+          dex
+          bne -
+          ldx # 5
+-
+          sta WRITE + PlayerMissileY - 1, x
           dex
           bne -
           geq ShouldIStayOrShouldIGo

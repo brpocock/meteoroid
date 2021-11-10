@@ -36,6 +36,11 @@ DoneScrollingToDoor:
 ScrollingToRight:
           rts
 
+KeepScrollingLeft:
+          sec
+          sbc # 1
+          sta ScrollLeft
+          rts
 ;;; 
 DestroyBlocks:
           cpx #-1
@@ -69,16 +74,12 @@ NextBlocksToDestroy:
           lda # 0
           sta WRITE + DoorColumns
           sta WRITE + DoorMode
+          ldy #DoorOpenLeft
           lda DoorDirection
           bmi OpenDoorLeft
-OpenDoorRight:
-          lda #DoorOpenRight
-          sta WRITE + DoorOpen
-          rts
-
+          ldy #DoorOpenRight
 OpenDoorLeft:
-          lda #DoorOpenLeft
-          sta WRITE + DoorOpen
+          sty WRITE + DoorOpen
           rts
 
 DestroyMoreBlocks:
@@ -107,14 +108,6 @@ DestroyLeftBlocks:
           sta BackgroundPF0, x
 
           jmp NextBlocksToDestroy
-
-;;; 
-
-KeepScrollingLeft:
-          sec
-          sbc # 1
-          sta ScrollLeft
-          rts
 
 ;;; 
           .bend

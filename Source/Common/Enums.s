@@ -146,6 +146,9 @@
           ScreenLeftEdge = $50
           ScreenRightEdge = $a0
 
+          ScreenDoorLeft = $49
+          ScreenDoorRight = $c0
+
           ScreenBottomEdge = 12 * 4
 ;;; 
 ;;; Localization

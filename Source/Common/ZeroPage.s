@@ -43,8 +43,6 @@ BackgroundPF1R:
 
 ;;; This data is saved to the first block of the save game file.
 ;;; It must never be more than 64 bytes (not that there's a great risk of that)
-;;; In fact, it must be less than ( 64 - 4 × ProvincesCount )
-;;; Currently ProvincesCount = 2 so it must be < 56 bytes
 
 GlobalGameData:
 
