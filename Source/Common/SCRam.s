@@ -138,17 +138,18 @@ AttractStoryProgress:
 DoorWalkDirection:
           .byte ?
 
+;;; What mode (see Enums.s) are we in w.r.t. door opening or walking?
+;;; Or, progress in revealing the title
+DoorMode:
+AttractTitleReveal:
+          .byte ?
+          
 ;;; If we are scrolling in a new room, how many columns remain?
 ;;; Or which panel of the story mode progress when in the attract sequence
 AttractStoryPanel:
-DoorWalkColumns:
+DoorColumns:
           .byte ?
 
-;;; If we have just completed the door walk, are we loading the sprite data?
-;;; Or, progress in revealing the title
-AttractTitleReveal:
-DoorWalkSummon:
-          .byte ?
 
 ;;; Teleport effect countdown (and count back up)
 ;;; Attract mode flag for whether the speech associated with a certain mode
