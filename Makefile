@@ -49,30 +49,33 @@ cart-pal:	Dist/Meteoroid.Demo.PAL.a26
 cart-secam:	Dist/Meteoroid.Demo.SECAM.a26
 	minipro -p AT27C256@DIP28 -w $<
 
+USBMOUNT=$(shell echo \"$$(mount | grep /run/media/$$USER | grep vfat | head -n 1 | perl -pne 's#^/dev/.+ on (.+) type vfat (.*)#$$1#g')\")
+
 # Basic Harmony cart only can handle 32k images
-HARMONY=/run/media/${USER}/HARMONY/
 harmony:	Dist/Meteoroid.Demo.NTSC.a26 \
 		Dist/Meteoroid.NTSC.a26 \
 		Dist/Meteoroid.Unerase.NTSC.a26
+	[ "$(USBMOUNT)" != "" ]
 	@if [ $$(uname -s) = 'Linux' ] ; then \
-	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(HARMONY)/Meteoroid/Demo.NTSC.a26 ;\
-	  cp -v Dist/Meteoroid.NTSC.a26 $(HARMONY)/Meteoroid/Meteoroid.NTSC.a26 ;\
-	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(HARMONY)/Meteoroid/Unerase.NTSC.a26 ;\
+	  mkdir -p $(USBMOUNT)/Meteoroid/ ;\
+	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(USBMOUNT)/Meteoroid/Demo.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.NTSC.a26 $(USBMOUNT)/Meteoroid/Meteoroid.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(USBMOUNT)/Meteoroid/Unerase.NTSC.a26 ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi
 
 # Uno needs special extension to detect  us as an EF cartridge and shows
 # fairyl short names only
-UNOCART=/run/media/${USER}/TBA_2600/
 uno:	Dist/Meteoroid.NTSC.a26 \
 	Dist/Meteoroid.Demo.NTSC.a26 \
 	Dist/Meteoroid.Unerase.NTSC.a26
+	[ "$(USBMOUNT)" != "" ]
 	@if [ $$(uname -s) = 'Linux' ] ; then \
-	  mkdir -p $(UNOCART)/METEOROID/ ;\
-	  cp -v Dist/Meteoroid.NTSC.a26 $(UNOCART)/METEOROID/METEOROID.NTSC.a26 ;\
-	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(UNOCART)/METEOROID/DEMO.NTSC.a26 ;\
-	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(UNOCART)/METEOROID/UNERASE.NTSC.a26 ;\
+	  mkdir -p $(USBMOUNT)/METEOROID/ ;\
+	  cp -v Dist/Meteoroid.NTSC.a26 $(USBMOUNT)/METEOROID/METEOROID.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.Demo.NTSC.a26 $(USBMOUNT)/METEOROID/DEMO.NTSC.a26 ;\
+	  cp -v Dist/Meteoroid.Unerase.NTSC.a26 $(USBMOUNT)/METEOROID/UNERASE.NTSC.a26 ;\
 	else \
 	  echo "Patch Makefile for your $$(uname -s) OS" ; \
 	fi
